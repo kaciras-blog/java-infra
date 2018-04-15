@@ -1,13 +1,13 @@
 package net.kaciras.blog.infrastructure.event.category;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-@Setter
+@NoArgsConstructor
 @Getter
 public class CategoryRemovedEvent extends CategoryEvent {
 
-	private final int parent;
+	private int parent;
 
 	public CategoryRemovedEvent(int id, int parent) {
 		super(id);

@@ -1,17 +1,18 @@
 package net.kaciras.blog.infrastructure.event.discussion;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import net.kaciras.blog.infrastructure.message.DomainEvent;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public abstract class DiscussionEvent extends DomainEvent {
 
-	private final int discussionId;
-	private final int parent;
+	private int discussionId;
+	private int parent;
 
-	private final int articleId;
-	private final int userId;
+	private int articleId;
+	private int userId;
 }

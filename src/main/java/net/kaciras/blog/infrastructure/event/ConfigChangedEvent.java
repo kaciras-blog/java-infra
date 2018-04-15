@@ -1,15 +1,16 @@
 package net.kaciras.blog.infrastructure.event;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import net.kaciras.blog.infrastructure.message.DomainEvent;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class ConfigChangedEvent extends DomainEvent {
 
-	private final String key;
-	private final String oldValue;
-	private final String newValue;
+	private String key;
+	private String oldValue;
+	private String newValue;
 }

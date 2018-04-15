@@ -7,7 +7,13 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class RedisJavaSerializeCodec<T> implements RedisCodec<String, T> {
+public class RedisCodecAdapter implements RedisCodec<String, Event> {
+
+	private final Codec codec;
+
+	public RedisCodecAdapter(Codec codec) {
+		this.codec = codec;
+	}
 
 	@Override
 	public String decodeKey(ByteBuffer buffer) {
@@ -17,13 +23,11 @@ public class RedisJavaSerializeCodec<T> implements RedisCodec<String, T> {
 	}
 
 	@Override
-	public T decodeValue(ByteBuffer buffer) {
-		try (ObjectInputStream ois = new ObjectInputStream(new ByteBufferInputStream(buffer))) {
-			return (T) ois.readObject();
+	public Event decodeValue(ByteBuffer buffer) {
+		try (InputStream ois = new ByteBufferInputStream(buffer)) {
+			return codec.deserialize(ois);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
-		} catch (ClassNotFoundException e) {
-			throw new Error("未知的Class类型", e);
 		}
 	}
 
@@ -33,11 +37,10 @@ public class RedisJavaSerializeCodec<T> implements RedisCodec<String, T> {
 	}
 
 	@Override
-	public ByteBuffer encodeValue(T o) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try(ObjectOutput out = new ObjectOutputStream(baos)) {
-			out.writeObject(o);
-			return ByteBuffer.wrap(baos.toByteArray());
+	public ByteBuffer encodeValue(Event o) {
+		try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+			codec.serialize(out, o);
+			return ByteBuffer.wrap(out.toByteArray());
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}

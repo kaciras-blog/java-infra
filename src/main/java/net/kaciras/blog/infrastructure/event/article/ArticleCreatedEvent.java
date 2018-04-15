@@ -1,16 +1,16 @@
 package net.kaciras.blog.infrastructure.event.article;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor
 @Getter
 public class ArticleCreatedEvent extends ArticleEvent {
 
-	private final int draftId;
-	private final List<Integer> categories;
+	private int draftId;
+	private List<Integer> categories;
 
 	public ArticleCreatedEvent(int article, int draftId, List<Integer> categories) {
 		super(article);

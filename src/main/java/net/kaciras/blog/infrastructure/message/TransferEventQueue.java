@@ -2,7 +2,7 @@ package net.kaciras.blog.infrastructure.message;
 
 import java.util.concurrent.*;
 
-public class TransferEventQueue implements EventSender, EventReceiver {
+public class TransferEventQueue implements Transmission {
 
 	private final Executor executor;
 	private TransferQueue<Event> queue = new LinkedTransferQueue<>();

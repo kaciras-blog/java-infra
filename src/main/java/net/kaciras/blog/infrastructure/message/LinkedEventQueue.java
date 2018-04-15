@@ -7,7 +7,7 @@ import java.util.concurrent.*;
  */
 @Deprecated
 @SuppressWarnings("unchecked")
-public class LinkedEventQueue implements EventSender, EventReceiver {
+public class LinkedEventQueue implements Transmission {
 
 	private final LinkedBlockingQueue<Event> queue = new LinkedBlockingQueue<>();
 	private final Executor executor;

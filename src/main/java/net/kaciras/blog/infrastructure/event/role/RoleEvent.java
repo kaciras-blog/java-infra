@@ -1,13 +1,14 @@
 package net.kaciras.blog.infrastructure.event.role;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import net.kaciras.blog.infrastructure.message.DomainEvent;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public abstract class RoleEvent extends DomainEvent {
 
-	private final int roleId;
+	private int roleId;
 }

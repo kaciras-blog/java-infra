@@ -1,9 +1,9 @@
 package net.kaciras.blog.infrastructure.event.discussion;
 
 import lombok.Getter;
-import lombok.Setter;
-import net.kaciras.blog.infrastructure.message.DomainEvent;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Getter
 public final class DiscussCreatedEvent extends DiscussionEvent {
 

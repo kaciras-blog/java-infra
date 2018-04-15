@@ -1,14 +1,11 @@
 package net.kaciras.blog.infrastructure.message;
 
-import io.lettuce.core.KeyValue;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
-public class RedisEventQueue implements EventSender, EventReceiver, AutoCloseable {
+public class RedisEventQueue implements Transmission, AutoCloseable {
 
 	private final String queueName;
 
@@ -21,9 +18,12 @@ public class RedisEventQueue implements EventSender, EventReceiver, AutoCloseabl
 
 	public RedisEventQueue(RedisClient client, String queueName) {
 		this.queueName = queueName;
-		RedisJavaSerializeCodec<Event> codec = new RedisJavaSerializeCodec<>();
-		popCommands = client.connect(codec).async();
-		pushCommands = client.connect(codec).async();
+		JacksonJsonCodec codec = new JacksonJsonCodec()
+				.registerEvents("net.kaciras.blog.infrastructure.event");
+		RedisCodecAdapter adapter = new RedisCodecAdapter(codec);
+
+		popCommands = client.connect(adapter).async();
+		pushCommands = client.connect(adapter).async();
 	}
 
 	@Override
