@@ -2,16 +2,16 @@ package net.kaciras.blog.infrastructure.message;
 
 import java.util.concurrent.*;
 
-public class TransferEventQueue implements Transmission {
+public class QueueTransmission implements Transmission {
 
 	private final Executor executor;
 	private TransferQueue<Event> queue = new LinkedTransferQueue<>();
 
-	public TransferEventQueue() {
+	public QueueTransmission() {
 		this(Executors.newSingleThreadExecutor());
 	}
 
-	public TransferEventQueue(Executor executor) {
+	public QueueTransmission(Executor executor) {
 		this.executor = executor;
 	}
 

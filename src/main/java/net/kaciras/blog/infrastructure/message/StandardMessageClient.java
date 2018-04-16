@@ -3,6 +3,7 @@ package net.kaciras.blog.infrastructure.message;
 import com.google.common.cache.CacheBuilder;
 import io.reactivex.Single;
 import io.reactivex.subjects.SingleSubject;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,6 +78,7 @@ public class StandardMessageClient implements MessageClient {
 		}
 	}
 
+	@RequiredArgsConstructor
 	private final class DispetchWork {
 
 		private final DomainEvent event;
@@ -85,10 +87,6 @@ public class StandardMessageClient implements MessageClient {
 
 		private int unfinished;
 		private boolean allInvoked;
-
-		private DispetchWork(DomainEvent event) {
-			this.event = event;
-		}
 
 		void dispetch() {
 			Class clazz = event.getClass();

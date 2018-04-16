@@ -9,21 +9,8 @@ import java.util.regex.Pattern;
 
 public final class ImageRefrenceDeserializer extends JsonDeserializer<ImageRefrence> {
 
-	private final Pattern regex = Pattern.compile("$[0-9A-F]{" + (ImageRefrence.HASH_SIZE << 1) + "}\\.");
-
 	@Override
 	public ImageRefrence deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-		String text = p.getText();
-		String[] split = text.split("\\.");
-		ImageRefrence refrence = new ImageRefrence();
-
-		if(regex.matcher(text).find()) {
-			refrence.setName(split[0]);
-			refrence.setType(ImageType.valueOf(split[1]));
-		} else {
-			refrence.setName(text);
-			refrence.setType(ImageType.Internal);
-		}
-		return refrence;
+		return ImageRefrence.parse(p.getText());
 	}
 }
