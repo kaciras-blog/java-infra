@@ -9,9 +9,9 @@ public final class DFCMatcher {
 	/**
 	 * null is valid for payload, so use an object to indicate the payload is not set
 	 */
-	private static final Object NULL = new Object();
+	private static final Object NONE = new Object();
 
-	private final Map<Character, Node> firstChars = new HashMap<>();
+	private final Node root = new Node();
 	private final Set<Character> stops = new HashSet<>();
 
 	/**
@@ -24,7 +24,7 @@ public final class DFCMatcher {
 		if (word.isEmpty()) {
 			return;
 		}
-		Map<Character, Node> map = firstChars;
+		Map<Character, Node> map = root.children;
 		Node node = null;
 
 		/* build character tree */
@@ -35,6 +35,48 @@ public final class DFCMatcher {
 
 		/* set payload for end node */
 		node.payload = payload;
+	}
+
+	/**
+	 * remove the character tree of the word.
+	 *
+	 * @param word word.
+	 * @return true if a tree was removed as a result of this call
+	 */
+	public boolean removeWord(String word) {
+		if (word == null || word.length() == 0) {
+			throw new IllegalArgumentException("word can't be null or empty");
+		}
+		char[] chars = word.toCharArray();
+		Map<Character, Node> map = root.children;
+
+		Deque<Node> stack = new LinkedList<>();
+		stack.addLast(root);
+
+		for (char ch : chars) {
+			Node node = map.get(ch);
+			if (node == null) {
+				return false;
+			}
+			stack.addLast(node);
+			map = node.children;
+		}
+
+		Node child = stack.removeLast();
+		if (child.payload == NONE) {
+			return false;
+		}
+		child.payload = NONE;
+
+		/* remove invalid nodes */
+		for (int i = chars.length - 1; i >= 0; i--) {
+			Node parent = stack.pollLast();
+			if (child.payload == NONE && child.children.isEmpty()) {
+				parent.children.remove(chars[i]);
+			}
+			child = parent;
+		}
+		return true;
 	}
 
 	public void addStopWord(Character character) {
@@ -53,7 +95,7 @@ public final class DFCMatcher {
 		Node lastNode = null;
 
 		for (int i = 0; i < chars.length; i++) {
-			node = firstChars.get(chars[i]);
+			node = root.children.get(chars[i]);
 			if (node == null) {
 				continue;
 			}
@@ -62,7 +104,7 @@ public final class DFCMatcher {
 			int position = 0;
 
 			for (; j <= chars.length && node != null; j++) {
-				if(!skip && node.payload != NULL) {
+				if (!skip && node.payload != NONE) {
 					position = j;
 					lastNode = node;
 				}
@@ -93,13 +135,14 @@ public final class DFCMatcher {
 			position.value = end;
 			sb.append(replacer.apply(payload));
 		});
+
 		sb.append(text, position.value, text.length());
 		return sb.toString();
 	}
 
 	private static final class Node {
 
-		private Object payload = DFCMatcher.NULL;
+		private Object payload = DFCMatcher.NONE;
 		private Map<Character, Node> children = new TreeMap<>();
 	}
 
@@ -137,7 +180,7 @@ public final class DFCMatcher {
 //				start = i;
 //				map = firstChars;
 //			} else {
-//				if (node.payload != NULL) {
+//				if (node.payload != NONE) {
 //					position = i;
 //					lastNode = node;
 //				}

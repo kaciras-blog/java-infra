@@ -19,8 +19,14 @@ final class STConvertorTest {
 	@Test
 	void testWord()  {
 		Assertions.assertEquals("簡單", stConverter.toTraditional("简单"));
-		Assertions.assertEquals("繁體", stConverter.toTraditional("繁体"));
 		Assertions.assertEquals("正體中文", stConverter.toTraditional("繁体中文"));
+
+		/* test removing */
+		Assertions.assertFalse(stConverter.removeSimpleMapping("繁体中"));
+		Assertions.assertTrue(stConverter.removeSimpleMapping("繁体中文"));
+		Assertions.assertFalse(stConverter.removeSimpleMapping("繁体中文"));
+
+		Assertions.assertEquals("繁體中文", stConverter.toTraditional("繁体中文"));
 	}
 
 	@Test

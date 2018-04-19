@@ -61,6 +61,14 @@ public final class STConverter {
 		t2s.addWord(traditional, simple);
 	}
 
+	public boolean removeSimpleMapping(String simple) {
+		return s2t.removeWord(simple);
+	}
+
+	public boolean removeTraditionalMapping(String traditional){
+		return t2s.removeWord(traditional);
+	}
+
 	/**
 	 * convert a traditional Chinese text to a simplified Chinese text.
 	 *
