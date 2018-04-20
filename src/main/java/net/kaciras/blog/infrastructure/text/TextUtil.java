@@ -1,9 +1,53 @@
 package net.kaciras.blog.infrastructure.text;
 
+import net.kaciras.text.STConverter;
+import net.kaciras.text.SensitiveWordDetector;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 public final class TextUtil {
 
+	private static final SensitiveWordDetector swd = new SensitiveWordDetector();
+	private static final STConverter stConverter;
+
+	static {
+		swd.addStopChars(" _-~!@#$%&*(),.，。、".toCharArray());
+		loadSensitiveWords("sensitive/porn");
+		loadSensitiveWords("sensitive/Political");
+
+		try {
+			stConverter = new STConverter();
+		} catch (IOException e) {
+			throw new RuntimeException("繁简转换词库加载失败");
+		}
+	}
+
+	private static void loadSensitiveWords(String name) {
+		try{
+			InputStream stream = SensitiveWordDetector.class.getClassLoader().getResourceAsStream(name);
+			InputStreamReader insr = new InputStreamReader(stream, StandardCharsets.UTF_8);
+
+			try (BufferedReader reader = new BufferedReader(insr)) {
+				reader.lines()
+						.map(String::trim)
+						.filter(s -> !s.isEmpty())
+						.forEach(swd::addWords);
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException("敏感词词库加载失败");
+		}
+	}
+
 	public static boolean isDanger(String text) {
-		return false;
+		return !swd.getDangerWords(text).isEmpty();
+	}
+
+	public static String toSimplified(String text) {
+		return stConverter.toSimplified(text);
 	}
 
 	public static int getHeight(String text, int width) {
