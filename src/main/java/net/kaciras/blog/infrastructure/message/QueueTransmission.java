@@ -35,4 +35,9 @@ public class QueueTransmission implements Transmission {
 	public <T extends Event> void sendEvent(T event) {
 		queue.add(event);
 	}
+
+	@Override
+	public void close() throws Exception {
+
+	}
 }

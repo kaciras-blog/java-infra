@@ -5,7 +5,7 @@ import io.lettuce.core.api.async.RedisAsyncCommands;
 
 import java.util.concurrent.CompletionStage;
 
-public class RedisEventQueue implements Transmission, AutoCloseable {
+public class RedisEventQueue implements Transmission {
 
 	private final String queueName;
 

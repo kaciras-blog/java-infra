@@ -2,7 +2,7 @@ package net.kaciras.blog.infrastructure.message;
 
 import java.util.concurrent.CompletionStage;
 
-public interface Transmission {
+public interface Transmission extends AutoCloseable{
 
 	CompletionStage<Event> getEventAsync();
 

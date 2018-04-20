@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Slf4j
-public class StandardMessageClient implements MessageClient {
+public class StandardMessageClient implements MessageClient, AutoCloseable {
 
 	private final Transmission transmission;
 
@@ -76,6 +76,11 @@ public class StandardMessageClient implements MessageClient {
 		} else {
 			new DispetchWork((DomainEvent) event).dispetch();
 		}
+	}
+
+	@Override
+	public void close() throws Exception {
+		transmission.close();
 	}
 
 	@RequiredArgsConstructor

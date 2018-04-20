@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @EqualsAndHashCode(of = "eventId")
-abstract class Event implements Serializable {
+public abstract class Event implements Serializable {
 
 	private final UUID eventId = UUID.randomUUID();
 
