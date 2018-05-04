@@ -16,8 +16,8 @@ public final class TextUtil {
 
 	static {
 		swd.addStopChars(" _-~!@#$%&*(),.，。、".toCharArray());
-		loadSensitiveWords("sensitive/porn");
-		loadSensitiveWords("sensitive/Political");
+		loadSensitiveWords("sensitive/Porn.txt");
+		loadSensitiveWords("sensitive/Political.txt");
 
 		try {
 			stConverter = new STConverter();
