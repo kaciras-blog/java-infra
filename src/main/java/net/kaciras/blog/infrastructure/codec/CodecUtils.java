@@ -3,14 +3,19 @@ package net.kaciras.blog.infrastructure.codec;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public final class CodecUtils {
 
 	private static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-	private static final byte[] prefix = new byte[12];
-
-	static { prefix[10] = prefix[11] = (byte)0xFF; }
-
+	/**
+	 * encode a part of bytes to upper case hex string.
+	 *
+	 * @param bytes  bytes to be encode.
+	 * @param offset start position.
+	 * @param length length of part.
+	 * @return hex string.
+	 */
 	public static String encodeHex(byte[] bytes, int offset, int length) {
 		char[] out = new char[length << 1];
 		for (int i = offset, j = 0; i < offset + length; i++) {
@@ -20,19 +25,39 @@ public final class CodecUtils {
 		return new String(out);
 	}
 
+	/**
+	 * encode bytes to upper case hex string.
+	 *
+	 * @param bytes bytes to be encode.
+	 * @return hex string.
+	 */
 	public static String encodeHex(byte[] bytes) {
 		return encodeHex(bytes, 0, bytes.length);
 	}
 
+	/**
+	 * decode a hex string to bytes. The length of hex string must be even.
+	 *
+	 * @param text hex string.
+	 * @return bytes.
+	 */
 	public static byte[] decodeHex(String text) {
 		return decodeHex(new byte[text.length() >> 1], 0, text);
 	}
 
+	/**
+	 * decode a hex string into a byte array. The length of hex string must be even.
+	 *
+	 * @param target a byte array to put decode result.
+	 * @param offset start position.
+	 * @param text   hex string.
+	 * @return the <code>target</code>
+	 */
 	public static byte[] decodeHex(byte[] target, int offset, String text) {
 		char[] data = text.toCharArray();
 
 		if ((data.length & 1) != 0) {
-			throw new IllegalArgumentException("Hex字符串长度不是偶数");
+			throw new IllegalArgumentException("The length of hex string must be even");
 		}
 
 		for (int i = offset, j = 0; j < data.length; i++, j++) {
@@ -47,17 +72,30 @@ public final class CodecUtils {
 	private static int toDigit(char ch, int index) {
 		int digit = Character.digit(ch, 16);
 		if (digit == -1) {
-			throw new IllegalArgumentException("位置" + index + "出现非Hex字符" + ch);
+			throw new IllegalArgumentException("char at index " + index + " is not a hex digit: " + ch);
 		}
 		return digit;
 	}
 
+	/**
+	 * Returns the index within a bytearray of the first occurrence of
+	 * the specified subarray.
+	 *
+	 * @param bytes the bytearray.
+	 * @param part  subarray.
+	 * @param start the index from which to start the search.
+	 * @return the index of the first occurrence of the subarray in the
+	 * 			bytearray, or {@code -1} if the character does not occur.
+	 */
 	public static int indexOfBytes(byte[] bytes, byte[] part, int start) {
 		int len = bytes.length - part.length + 1;
 		for (int i = start; i < len; ++i) {
 			boolean found = true;
 			for (int j = 0; j < part.length; ++j) {
-				if (bytes[i + j] != part[j]) { found = false; break; }
+				if (bytes[i + j] != part[j]) {
+					found = false;
+					break;
+				}
 			}
 			if (found) return i;
 		}
@@ -71,7 +109,7 @@ public final class CodecUtils {
 	 * @return 字节数组
 	 */
 	public static byte[] toIPv6Address(InetAddress address) {
-		if(address instanceof Inet6Address) {
+		if (address instanceof Inet6Address) {
 			return address.getAddress();
 		}
 		return mappingToIPv6(address.getAddress());
@@ -80,14 +118,14 @@ public final class CodecUtils {
 	/**
 	 * 使用IPv4-mapped addresses,将IPv4的4字节地址转换成IPv6的16字节地址
 	 *
-	 * @see <a href="https://tools.ietf.org/html/rfc3493#section-3.7">IPv4-mapped addresses</a>
 	 * @param ipv4 表示IPv4地址的4个字节
 	 * @return IPv4-mapped IPv6 Address bytes
+	 * @see <a href="https://tools.ietf.org/html/rfc3493#section-3.7">IPv4-mapped addresses</a>
 	 */
 	private static byte[] mappingToIPv6(byte[] ipv4) {
 		byte[] ipv6 = new byte[16];
+		ipv6[10] = ipv6[11] = (byte) 0xFF;
 		System.arraycopy(ipv4, 0, ipv6, 12, 4);
-		System.arraycopy(prefix, 0, ipv6, 0, 12);
 		return ipv6;
 	}
 
