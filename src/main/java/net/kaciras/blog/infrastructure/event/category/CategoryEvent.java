@@ -2,7 +2,7 @@ package net.kaciras.blog.infrastructure.event.category;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.kaciras.blog.infrastructure.message.DomainEvent;
+import net.kaciras.blog.infrastructure.event.DomainEvent;
 
 @NoArgsConstructor
 @Getter

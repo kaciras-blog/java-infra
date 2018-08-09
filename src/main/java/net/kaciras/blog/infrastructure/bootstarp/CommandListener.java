@@ -32,7 +32,7 @@ public class CommandListener {
 			socketChannel.configureBlocking(false);
 			SelectLoop.getLoop().register(socketChannel, SelectionKey.OP_READ, this::handleCommand, 30000);
 		} catch (IOException e) {
-			log.error("无法接受连接", e);
+			logger.error("无法接受连接", e);
 		}
 	}
 
@@ -49,7 +49,7 @@ public class CommandListener {
 			}
 			channel.close();
 		} catch (IOException e) {
-			log.error("读取命令时出错", e);
+			logger.error("读取命令时出错", e);
 		}
 	}
 

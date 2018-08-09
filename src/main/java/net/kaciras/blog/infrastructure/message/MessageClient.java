@@ -1,27 +1,52 @@
 package net.kaciras.blog.infrastructure.message;
 
-import io.reactivex.Single;
+import lombok.extern.slf4j.Slf4j;
+import net.kaciras.blog.infrastructure.event.DomainEvent;
+import net.kaciras.blog.infrastructure.event.Event;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-public interface MessageClient {
+@Slf4j
+public class MessageClient implements AutoCloseable {
 
-	/**
-	 * 发送一个事件，并返回一个用于通知事件完成状态的对象。
-	 *
-	 * @param event 事件
-	 * @param <T> 事件类型
-	 * @return 通知事件完成状态的对象
-	 */
-	<T extends DomainEvent> Single<ResultEvent> send(T event);
+	private final Redis5StreamTransmission transmission;
 
-	/**
-	 * 订阅事件，将在在收到事件时调用consumer的方法。
-	 * 事件具有继承机制，订阅父类的事件能够接收到子类型事件的通知。
-	 *
-	 * @param type 事件的Class
-	 * @param consumer 监听器，在收到事件时将被调用
-	 * @param <T> 事件类型
-	 */
-	<T extends DomainEvent> void subscribe(Class<T> type, Consumer<T> consumer);
+	private final Map<Class<?>, Collection<Consumer>> subs = new ConcurrentHashMap<>();
+
+	private Executor executor;
+
+	public MessageClient(Redis5StreamTransmission transmission) {
+		this(transmission, Runnable::run);
+	}
+
+	public MessageClient(Redis5StreamTransmission transmission, Executor executor) {
+		this.transmission = transmission;
+		this.executor = executor;
+		transmission.revceive().subscribe(this::dispetch);
+	}
+
+	public <T extends DomainEvent> String send(T event) {
+		return transmission.send(event).block();
+	}
+
+	public <T extends DomainEvent> void subscribe(Class<T> type, Consumer<T> consumer) {
+		subs.computeIfAbsent(type, k -> new ArrayList<>()).add(consumer);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void dispetch(Event event) {
+		new Notification(event, subs, executor).invoke();
+	}
+
+	@Override
+	public void close() {
+		transmission.close();
+	}
+
 }

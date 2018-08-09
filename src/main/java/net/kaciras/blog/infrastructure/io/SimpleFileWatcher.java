@@ -28,7 +28,7 @@ public class SimpleFileWatcher implements AutoCloseable {
 
 		thread = new Thread(this::watchLoop, "FileWatcher");
 		thread.setDaemon(true);
-		thread.setUncaughtExceptionHandler((t, e) -> log.error("未检查的错误", e));
+		thread.setUncaughtExceptionHandler((t, e) -> logger.error("未检查的错误", e));
 		thread.start();
 	}
 
@@ -42,9 +42,9 @@ public class SimpleFileWatcher implements AutoCloseable {
 		} catch (InterruptedException ex) {
 			Thread.interrupted();
 		} catch (ClosedWatchServiceException ignore) {
-			log.trace("文件监视服务在等待事件时被关闭");
+			logger.trace("文件监视服务在等待事件时被关闭");
 		}
-		log.debug("监视循环线程结束");
+		logger.debug("监视循环线程结束");
 	}
 
 	public void register(Path path, Consumer<WatchEvent> callback,

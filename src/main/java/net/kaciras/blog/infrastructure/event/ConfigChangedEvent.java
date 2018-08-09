@@ -3,7 +3,6 @@ package net.kaciras.blog.infrastructure.event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.kaciras.blog.infrastructure.message.DomainEvent;
 
 @NoArgsConstructor
 @AllArgsConstructor

@@ -48,10 +48,10 @@ public final class SelectLoop implements AutoCloseable {
 			}
 		} catch (ClosedSelectorException ignore) {
 		} catch (Exception ex) {
-			log.error("主循环中发生了未捕获的错误", ex);
+			logger.error("主循环中发生了未捕获的错误", ex);
 		}
 		running = false;
-		log.info("主循环线程结束");
+		logger.info("主循环线程结束");
 	}
 
 	private long checkTimeout() {
