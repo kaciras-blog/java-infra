@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.bootstarp;
+package net.kaciras.blog.infrastructure.io;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.bootstarp;
+package net.kaciras.blog.infrastructure.io;
 
 import lombok.extern.slf4j.Slf4j;
 import net.kaciras.blog.infrastructure.io.SelectLoop;
