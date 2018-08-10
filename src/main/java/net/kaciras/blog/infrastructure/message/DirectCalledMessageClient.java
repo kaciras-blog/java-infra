@@ -16,11 +16,11 @@ import java.util.function.Consumer;
  * 使用此实现避免分布式消息的事务问题，以便于直接使用基于线程的事务管理机制（例
  * 如Spring的@Transactional），同时也能够向发送者屏蔽订阅者，实现解耦。
  */
-public class DirectCalledMessageClient {
+public class DirectCalledMessageClient implements MessageClient{
 
 	private final Map<Class, Collection<Consumer>> subs = new ConcurrentHashMap<>();
 
-	public <T extends DomainEvent> void send(T event) {
+	public <T extends DomainEvent> String send(T event) {
 		Class clazz = event.getClass();
 
 		while (!clazz.equals(Event.class)) {
@@ -31,9 +31,18 @@ public class DirectCalledMessageClient {
 			}
 			consumers.forEach(c -> c.accept(event));
 		}
+		return event.getEventId().toString();
+	}
+
+	@Override
+	public <T extends DomainEvent> String broadcast(T event) {
+		return send(event);
 	}
 
 	public <T extends DomainEvent> void subscribe(Class<T> type, Consumer<T> consumer) {
 		subs.computeIfAbsent(type, k -> new ArrayList<>()).add(consumer);
 	}
+
+	@Override
+	public void close() {}
 }
