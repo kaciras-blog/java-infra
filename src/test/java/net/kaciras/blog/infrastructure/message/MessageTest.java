@@ -24,7 +24,7 @@ class MessageTest {
 		p.setPassword("ZuDNpaB7]vv_iBynJG6ZwPexPPewP]kf");
 
 		var t = new Redis5StreamTransmission(p, s);
-		client = new MessageClient(t);
+		client = new StandardMessageClient(t);
 	}
 
 	@Test

@@ -38,7 +38,7 @@ public final class ImageRefrenceTypeHandler extends BaseTypeHandler<ImageRefrenc
 		if(bytes == null) {
 			return null;
 		}
-		ImageRefrence refrence = new ImageRefrence();
+		var refrence = new ImageRefrence();
 		refrence.setType(ImageType.values()[bytes[0]]);
 
 		if (refrence.getType() == ImageType.Internal) {

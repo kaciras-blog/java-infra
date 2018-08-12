@@ -35,8 +35,8 @@ public class SimpleFileWatcher implements AutoCloseable {
 	private void watchLoop() {
 		try {
 			while (running) {
-				WatchKey key = watcher.take();
-				Consumer<WatchEvent> listener = listeners.get(key);
+				var key = watcher.take();
+				var listener = listeners.get(key);
 				key.pollEvents().forEach(listener);
 			}
 		} catch (InterruptedException ex) {

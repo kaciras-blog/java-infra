@@ -19,11 +19,11 @@ public final class ExtendsCodecModule extends Module {
 
 	@Override
 	public void setupModule(SetupContext context) {
-		SimpleSerializers serializers = new SimpleSerializers();
+		var serializers = new SimpleSerializers();
 		serializers.addSerializer(ImageRefrence.class, new ImageRefrenceSerializer());
 		context.addSerializers(serializers);
 
-		SimpleDeserializers deserializers = new SimpleDeserializers();
+		var deserializers = new SimpleDeserializers();
 		deserializers.addDeserializer(ImageRefrence.class, new ImageRefrenceDeserializer());
 		context.addDeserializers(deserializers);
 	}

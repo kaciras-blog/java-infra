@@ -81,7 +81,7 @@ public final class SelectLoop implements AutoCloseable {
 	}
 
 	private void service(Set<SelectionKey> keys) {
-		Iterator<SelectionKey> itr = keys.iterator();
+		var itr = keys.iterator();
 		while (itr.hasNext()) {
 			SelectionKey key = itr.next();
 			itr.remove();
@@ -111,7 +111,7 @@ public final class SelectLoop implements AutoCloseable {
 	}
 
 	public void remove(SelectableChannel channel) {
-		SelectionKey key = channel.keyFor(selector);
+		var key = channel.keyFor(selector);
 		if (key != null) key.cancel();
 	}
 

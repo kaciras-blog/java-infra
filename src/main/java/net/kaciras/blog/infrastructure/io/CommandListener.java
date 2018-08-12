@@ -28,7 +28,7 @@ public class CommandListener {
 
 	private void acceptSocket(SelectionKey key) {
 		try {
-			SocketChannel socketChannel = serverChannel.accept();
+			var socketChannel = serverChannel.accept();
 			socketChannel.configureBlocking(false);
 			SelectLoop.getLoop().register(socketChannel, SelectionKey.OP_READ, this::handleCommand, 30000);
 		} catch (IOException e) {
@@ -38,11 +38,11 @@ public class CommandListener {
 
 	private void handleCommand(SelectionKey key) {
 		try {
-			SocketChannel channel = (SocketChannel) key.channel();
+			var channel = (SocketChannel) key.channel();
 			key.cancel();
 			channel.configureBlocking(true);
-			Scanner scanner = new Scanner(channel.socket().getInputStream());
-			String line = scanner.nextLine();
+			var scanner = new Scanner(channel.socket().getInputStream());
+			var line = scanner.nextLine();
 
 			if(line.equals("SHUTDOWN")) {
 				if(onShutdown != null) onShutdown.run();
