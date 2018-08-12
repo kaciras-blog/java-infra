@@ -1,6 +1,6 @@
 package net.kaciras.blog.infrastructure.exception;
 
-public class PermissionException extends RuntimeException {
+public class PermissionException extends WebBusinessException {
 
 	public PermissionException() { this("你没有权限执行这个操作"); }
 
@@ -14,5 +14,10 @@ public class PermissionException extends RuntimeException {
 
 	public PermissionException(Throwable cause) {
 		this("你没有权限执行这个操作", cause);
+	}
+
+	@Override
+	public int statusCode() {
+		return 403;
 	}
 }

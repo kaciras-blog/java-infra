@@ -1,6 +1,6 @@
 package net.kaciras.blog.infrastructure.exception;
 
-public class DataTooBigException extends RuntimeException {
+public class DataTooBigException extends WebBusinessException {
 
 	public DataTooBigException() { this("请求所带的数据过长"); }
 
@@ -14,5 +14,10 @@ public class DataTooBigException extends RuntimeException {
 
 	public DataTooBigException(Throwable cause) {
 		this("请求所带的数据过长", cause);
+	}
+
+	@Override
+	public int statusCode() {
+		return 413;
 	}
 }

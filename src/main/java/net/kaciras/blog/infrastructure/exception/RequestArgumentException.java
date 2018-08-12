@@ -1,6 +1,6 @@
 package net.kaciras.blog.infrastructure.exception;
 
-public class RequestArgumentException extends RuntimeException {
+public class RequestArgumentException extends WebBusinessException {
 
 	public RequestArgumentException() {
 		this("请求中含有不合法的数据");
@@ -16,5 +16,10 @@ public class RequestArgumentException extends RuntimeException {
 
 	public RequestArgumentException(Throwable cause) {
 		this("请求中含有不合法的数据", cause);
+	}
+
+	@Override
+	public int statusCode() {
+		return 400;
 	}
 }

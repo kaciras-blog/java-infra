@@ -1,6 +1,6 @@
 package net.kaciras.blog.infrastructure.exception;
 
-public class ResourceDeletedException extends RuntimeException {
+public class ResourceDeletedException extends WebBusinessException {
 
 	public ResourceDeletedException() {
 		this("请求的资源已经被删除");
@@ -15,4 +15,9 @@ public class ResourceDeletedException extends RuntimeException {
 	}
 
 	public ResourceDeletedException(String message) { super(message);}
+
+	@Override
+	public int statusCode() {
+		return 410;
+	}
 }
