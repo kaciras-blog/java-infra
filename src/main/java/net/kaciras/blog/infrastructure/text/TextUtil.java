@@ -2,6 +2,7 @@ package net.kaciras.blog.infrastructure.text;
 
 import net.kaciras.text.STConverter;
 import net.kaciras.text.SensitiveWordDetector;
+import net.kaciras.text.SkipableAhoCorasick;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,11 +12,11 @@ import java.nio.charset.StandardCharsets;
 
 public final class TextUtil {
 
-	private static final SensitiveWordDetector swd = new SensitiveWordDetector();
+	private static final SensitiveWordDetector swd = new SensitiveWordDetector(new SkipableAhoCorasick());
 	private static final STConverter stConverter;
 
 	static {
-		swd.addStopChars(" _-~!@#$%&*(),.，。、".toCharArray());
+		swd.getMatcher().addStopChars(" _-~!@#$%&*()[]{},.，。、");
 		loadSensitiveWords("sensitive/Porn.txt");
 		loadSensitiveWords("sensitive/Political.txt");
 
@@ -35,7 +36,7 @@ public final class TextUtil {
 				reader.lines()
 						.map(String::trim)
 						.filter(s -> !s.isEmpty())
-						.forEach(swd::addWords);
+						.forEach(swd.getMatcher()::addWords);
 			}
 		} catch (IOException ex) {
 			throw new RuntimeException("敏感词词库加载失败");
