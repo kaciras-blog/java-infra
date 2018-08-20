@@ -11,6 +11,10 @@ import java.sql.SQLException;
 
 import static net.kaciras.blog.infrastructure.codec.ImageRefrence.HASH_SIZE;
 
+/**
+ * 图片文件的引用，该类将对Hash作为文件名的图片路径做二进制编码，存储在数据库
+ * 中时比字符串更高效，但也限制了文件名的长度。
+ */
 public final class ImageRefrenceTypeHandler extends BaseTypeHandler<ImageRefrence> {
 
 	private byte[] encode(ImageRefrence refrence) {

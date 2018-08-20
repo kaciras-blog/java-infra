@@ -1,14 +1,17 @@
 package net.kaciras.blog.infrastructure.exception;
 
+/**
+ * 表示由用户的输入而产生的异常，这些异常通常需要返回信息给前端。
+ */
 public abstract class WebBusinessException extends RuntimeException {
 
 	public abstract int statusCode();
 
-	public WebBusinessException(String message) {
+	WebBusinessException(String message) {
 		super(message);
 	}
 
-	public WebBusinessException(String message, Throwable cause) {
+	WebBusinessException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

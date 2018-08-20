@@ -1,5 +1,6 @@
 package net.kaciras.blog.infrastructure.text;
 
+import lombok.extern.slf4j.Slf4j;
 import net.kaciras.text.STConverter;
 import net.kaciras.text.SensitiveWordDetector;
 import net.kaciras.text.SkipableAhoCorasick;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public final class TextUtil {
 
 	private static final SensitiveWordDetector swd = new SensitiveWordDetector(new SkipableAhoCorasick());
@@ -25,6 +27,8 @@ public final class TextUtil {
 		} catch (IOException e) {
 			throw new RuntimeException("繁简转换词库加载失败");
 		}
+
+		logger.debug("加载了内置的词库");
 	}
 
 	private static void loadSensitiveWords(String name) {
