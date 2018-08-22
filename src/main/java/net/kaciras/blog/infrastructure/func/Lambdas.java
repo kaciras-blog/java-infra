@@ -1,7 +1,9 @@
 package net.kaciras.blog.infrastructure.func;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * some helper method for lambda expression.

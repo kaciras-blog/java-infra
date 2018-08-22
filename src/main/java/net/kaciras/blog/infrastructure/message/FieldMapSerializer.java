@@ -10,6 +10,13 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 以JSON格式来序列化对象的字段，序列化后的数据为字符串数组，其中奇数项为
+ * 字段名，偶数项为字段的值，第一对为被序列化对象的类型（以class为字段名）。
+ *
+ * 该序列化类能够处理复合对象和继承的属性，内部对象直接被序列化为一个
+ * Object的JSON类型。
+ */
 @RequiredArgsConstructor
 public class FieldMapSerializer {
 
@@ -44,6 +51,12 @@ public class FieldMapSerializer {
 		return (T) object;
 	}
 
+	/**
+	 * 缓存下对象的字段，下次序列化同类型对象时无需再递归查询继承的字段。
+	 *
+	 * @param clazz 被序列化对象的类型
+	 * @return 对象的所有字段
+	 */
 	private Field[] buildCache(Class clazz) {
 		var flux = Flux.<Field>empty();
 
@@ -51,7 +64,8 @@ public class FieldMapSerializer {
 			flux = flux.mergeWith(Flux.fromArray(clazz.getDeclaredFields()));
 			clazz = clazz.getSuperclass();
 		}
-		return flux.doOnNext(f -> f.setAccessible(true)).collectList()
+		return flux.doOnNext(f -> f.setAccessible(true))
+				.collectList()
 				.map(list -> list.toArray(new Field[0])).block();
 	}
 }
