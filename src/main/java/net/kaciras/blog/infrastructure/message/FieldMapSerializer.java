@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 该序列化类能够处理复合对象和继承的属性，内部对象直接被序列化为一个
  * Object的JSON类型。
  */
+@SuppressWarnings("WeakerAccess")
 @RequiredArgsConstructor
 public class FieldMapSerializer {
 

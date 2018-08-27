@@ -47,14 +47,27 @@ public final class TextUtil {
 		}
 	}
 
+	/**
+	 * 检查文本中是否含有和谐词。
+	 *
+	 * @param text 文本
+	 * @return true如果有，没有就是false
+	 */
 	public static boolean isDanger(String text) {
-		return !swd.getDangerWords(text).isEmpty();
+		return !swd.getDangerWords(toSimplified(text)).isEmpty();
 	}
 
 	public static String toSimplified(String text) {
 		return stConverter.toSimplified(text);
 	}
 
+	/**
+	 * 估算文本在显示时的行数。
+	 *
+	 * @param text 文本
+	 * @param width 行宽（每行字符数）
+	 * @return 行数
+	 */
 	public static int getHeight(String text, int width) {
 		char[] chars = text.toCharArray();
 		int length = 0;

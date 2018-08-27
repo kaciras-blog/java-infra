@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 
+/**
+ * A jackson module include serializers/deserializers in package.
+ */
 public final class ExtendsCodecModule extends Module {
 
 	@Override
