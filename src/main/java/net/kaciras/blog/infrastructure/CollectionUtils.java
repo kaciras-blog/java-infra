@@ -10,7 +10,7 @@ public final class CollectionUtils {
 	 * @return the element.
 	 * @throws IllegalArgumentException if iterable has no element.
 	 */
-	private static <T> T getFirst(Iterable<T> iterable) {
+	public static <T> T getFirst(Iterable<T> iterable) {
 		var iter = iterable.iterator();
 		if (iter.hasNext()) {
 			return iter.next();
