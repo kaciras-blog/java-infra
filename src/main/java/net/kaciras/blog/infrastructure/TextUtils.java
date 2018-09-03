@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.text;
+package net.kaciras.blog.infrastructure;
 
 import lombok.extern.slf4j.Slf4j;
 import net.kaciras.text.STConverter;
@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-public final class TextUtil {
+public final class TextUtils {
 
 	private static final SensitiveWordDetector swd = new SensitiveWordDetector(new SkipableAhoCorasick());
 	private static final STConverter stConverter;
@@ -89,5 +89,5 @@ public final class TextUtil {
 		return length / width + 1;
 	}
 
-	private TextUtil() {}
+	private TextUtils() {}
 }
