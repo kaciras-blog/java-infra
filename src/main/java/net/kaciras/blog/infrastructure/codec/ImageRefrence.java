@@ -5,7 +5,14 @@ import lombok.NoArgsConstructor;
 import net.kaciras.blog.infrastructure.exception.RequestArgumentException;
 
 /**
- * 表示一个图片的文件名
+ * 表示一个图片文件的引用，该类是连接前端、服务器和数据库的桥梁。向
+ * 前端序列化时将被转换为图片文件的URL，在数据库中能够以更紧凑的
+ * 格式来存储{@link ImageRefrenceTypeHandler ImageRefrenceTypeHandler}。
+ *
+ * 此类仅表示文件名，而不包含文件所在的目录、服务器等，这些信息由前端序列化时
+ * 处理 {@link ImageRefrenceJson.Serializer Serializer}，{@link ImageRefrenceJson.Deserializer Deserializer}。
+ *
+ * @author Kaciras
  */
 @NoArgsConstructor
 @Data
@@ -20,7 +27,7 @@ public final class ImageRefrence {
 	private ImageType type;
 
 	/**
-	 * 返回原始的文件名，包含扩展名。
+	 * 返回原始的文件名，包含扩展名，但是不包含文件所在的目录。
 	 *
 	 * @return 文件名
 	 */
@@ -58,21 +65,21 @@ public final class ImageRefrence {
 
 		int hexChars = 0;
 		for (char ch : sName.toCharArray()) {
-			if (ch > 0x2F && ch < 0x3A || (ch > 0x40 && ch < 0x47)) {
+			if (ch >= '0' && ch <= '9' || (ch >= 'A' && ch <= 'F')) {
 				hexChars++;
 			} else if (ch == '/' || ch == '\\') {
 				throw new RequestArgumentException("文件名中存在路径分隔符：" + ch);
 			}
 		}
 		if (hexChars != ImageRefrence.HASH_SIZE << 1) {
-			return null;
+			return null; // Hash长度不正确
 		}
 
 		ImageType type;
 		try {
 			type = ImageType.valueOf(ext.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return null;
+			return null; // 扩展名不正确
 		}
 
 		ImageRefrence refrence = new ImageRefrence();
