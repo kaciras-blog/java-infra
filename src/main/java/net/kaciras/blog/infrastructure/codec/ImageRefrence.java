@@ -59,13 +59,13 @@ public final class ImageRefrence {
 	}
 
 	private static ImageRefrence parseHex(String name) {
-		int dot = name.lastIndexOf('.');
-		String sName = name.substring(0, dot);
-		String ext = name.substring(dot + 1);
+		var dot = name.lastIndexOf('.');
+		var sName = name.substring(0, dot);
+		var ext = name.substring(dot + 1);
 
-		int hexChars = 0;
-		for (char ch : sName.toCharArray()) {
-			if (ch >= '0' && ch <= '9' || (ch >= 'A' && ch <= 'F')) {
+		var hexChars = 0;
+		for (var ch : sName.toCharArray()) {
+			if (ch >= '0' && ch <= '9' || (ch >= 'a' && ch <= 'f')) {
 				hexChars++;
 			} else if (ch == '/' || ch == '\\') {
 				throw new RequestArgumentException("文件名中存在路径分隔符：" + ch);
@@ -82,7 +82,7 @@ public final class ImageRefrence {
 			return null; // 扩展名不正确
 		}
 
-		ImageRefrence refrence = new ImageRefrence();
+		var refrence = new ImageRefrence();
 		refrence.setType(type);
 		refrence.setName(sName);
 		return refrence;
