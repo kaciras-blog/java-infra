@@ -23,7 +23,7 @@ class MessageTest {
 		p.setPort(33671);
 		p.setPassword("ZuDNpaB7]vv_iBynJG6ZwPexPPewP]kf");
 
-		var t = new Redis5StreamTransmission(p, s);
+		var t = new Redis5StreamTransmission(p, s, "TestGroup", "1");
 		client = new StandardMessageClient(t);
 	}
 

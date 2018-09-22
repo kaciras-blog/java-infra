@@ -1,17 +1,16 @@
 package net.kaciras.blog.infrastructure.event;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Getter
+@Data
 @EqualsAndHashCode(of = "eventId")
 public abstract class Event implements Serializable {
 
-	private final UUID eventId = UUID.randomUUID();
+	private String eventId;
 
-	private final LocalDateTime createdTime = LocalDateTime.now();
+	private LocalDateTime createdTime = LocalDateTime.now();
 }
