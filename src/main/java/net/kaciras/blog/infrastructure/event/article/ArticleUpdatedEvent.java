@@ -3,18 +3,16 @@ package net.kaciras.blog.infrastructure.event.article;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @NoArgsConstructor
 @Getter
 public class ArticleUpdatedEvent extends ArticleEvent {
 
 	private int draftId;
-	private List<Integer> categories;
+	private Integer category;
 
-	public ArticleUpdatedEvent(int articleId, int draftId, List<Integer> categories) {
+	public ArticleUpdatedEvent(int articleId, int draftId, Integer category) {
 		super(articleId);
 		this.draftId = draftId;
-		this.categories = categories;
+		this.category = category;
 	}
 }
