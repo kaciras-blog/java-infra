@@ -1,9 +1,9 @@
 package net.kaciras.blog.infrastructure;
 
 import lombok.extern.slf4j.Slf4j;
-import net.kaciras.text.STConverter;
-import net.kaciras.text.SensitiveWordDetector;
-import net.kaciras.text.SkipableAhoCorasick;
+import net.kaciras.patterns.STConverter;
+import net.kaciras.patterns.SensitiveWordDetector;
+import net.kaciras.patterns.SkipableAhoCorasick;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public final class TextUtils {
 				reader.lines()
 						.map(String::trim)
 						.filter(s -> !s.isEmpty())
-						.forEach(swd.getMatcher()::addWords);
+						.forEach(swd.getMatcher()::addPattern);
 			}
 		} catch (IOException ex) {
 			throw new RuntimeException("敏感词词库加载失败");
