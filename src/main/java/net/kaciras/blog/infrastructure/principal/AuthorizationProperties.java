@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("kaciras.authorization")
 @Data
-final class AuthorizationProperties {
+public final class AuthorizationProperties {
 
 	private boolean csrfVerify = true;
 

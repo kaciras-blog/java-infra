@@ -11,7 +11,7 @@ import java.security.Principal;
  * 登录，都将返回一个Principal。
  */
 @RequiredArgsConstructor
-class ReactivePrincipalFilter implements WebFilter {
+public class ReactivePrincipalFilter implements WebFilter {
 
 	private final AuthorizationProperties properties;
 
