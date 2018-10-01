@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * 使用此实现避免分布式消息的事务问题，以便于直接使用基于线程的事务管理机制（例
  * 如Spring的@Transactional），同时也能够向发送者屏蔽订阅者，实现解耦。
  */
-public class DirectMessageClient implements MessageClient{
+public class DirectMessageClient implements MessageClient {
 
 	private final Map<Class, Collection<Consumer>> subs = new ConcurrentHashMap<>();
 
