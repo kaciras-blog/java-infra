@@ -7,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 final class AuthorizationProperties {
 
-	private boolean csrfVerify;
+	private boolean csrfVerify = true;
 
-	private boolean debugMode;
+	private boolean debugMode = false;
 
 	private String csrfSessionName = "CSRF-Token";
 
