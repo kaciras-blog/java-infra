@@ -29,12 +29,12 @@ public final class SecurityContext {
 	 * @param id 用户id
 	 * @return 如果当前用户不存在，或用户id与参数指定的id不同则返回true，否则false
 	 */
-	public static boolean checkId(int id) {
+	public static boolean isNot(int id) {
 		return getPrincipal().getId() != id;
 	}
 
 	public static void requireId(int id) {
-		if (!checkId(id)) throw new PermissionException();
+		if (isNot(id)) throw new PermissionException();
 	}
 
 	public static void requireLogin() {
