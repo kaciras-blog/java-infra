@@ -43,8 +43,8 @@ public class KxPrincipalAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(name = "loadTimeWeaver")
-	public PrincipalAspect principalAspect() {
-		return new PrincipalAspect();
+	public AuthorizeAspect principalAspect() {
+		return new AuthorizeAspect();
 	}
 
 	@Bean

@@ -1,6 +1,7 @@
 package net.kaciras.blog.infrastructure.principal;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
+@Slf4j
 @RequiredArgsConstructor
 public final class ServletPrincipalFilter extends HttpFilter {
 
@@ -52,7 +54,13 @@ public final class ServletPrincipalFilter extends HttpFilter {
 				return true; //在配置文件里可以关闭CSRF检验
 			}
 			var csrf = getSession().getAttribute(properties.getCsrfSessionName());
-			return csrf != null && csrf.equals(getHeader(properties.getCsrfHeaderName()));
+			var header = getHeader(properties.getCsrfHeaderName());
+
+			if(csrf != null && csrf.equals(header)) {
+				return true;
+			}
+			logger.debug("CSRF check failed, expect:" + csrf + ", but got:" + header);
+			return false;
 		}
 	}
 }

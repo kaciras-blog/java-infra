@@ -1,6 +1,7 @@
 package net.kaciras.blog.infrastructure.principal;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
 
@@ -10,6 +11,7 @@ import java.security.Principal;
  * 从会话中查询用户的身份，作为ServerRequest中的Principal属性。无论用户是否
  * 登录，都将返回一个Principal。
  */
+@Slf4j
 @RequiredArgsConstructor
 public class ReactivePrincipalFilter implements WebFilter {
 
@@ -47,15 +49,20 @@ public class ReactivePrincipalFilter implements WebFilter {
 		 */
 		private WebPrincipal doGetPrincipal(WebSession session) {
 			var id = session.getAttribute("UserId");
-			var csrf = getDelegate().getRequest().getHeaders().get(properties.getCsrfHeaderName());
-
 			if (id == null) {
 				return new WebPrincipal(0);
 			}
-			if (properties.isCsrfVerify() && csrf != null
-					&& csrf.equals(session.getAttribute(properties.getCsrfSessionName()))) {
+			if (!properties.isCsrfVerify()) {
 				return new WebPrincipal((int) id);
 			}
+
+			var csrf = session.getAttribute(properties.getCsrfSessionName());
+			var header = getDelegate().getRequest().getHeaders().get(properties.getCsrfHeaderName());
+
+			if(csrf != null && csrf.equals(header)) {
+				return new WebPrincipal((int) id);
+			}
+			logger.debug("CSRF check failed, expect:" + csrf + ", but got:" + header);
 			return new WebPrincipal(0);
 		}
 	}

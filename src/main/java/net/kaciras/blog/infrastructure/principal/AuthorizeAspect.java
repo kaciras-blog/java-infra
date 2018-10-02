@@ -1,5 +1,6 @@
 package net.kaciras.blog.infrastructure.principal;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -11,8 +12,9 @@ import org.aspectj.lang.reflect.MethodSignature;
  * 权限比较简单的时候，直接用注解来过滤更方便，但权限比较复杂时还是
  * 需要些更详细的手动鉴权。
  */
+@Slf4j
 @Aspect
-public final class PrincipalAspect {
+public final class AuthorizeAspect {
 
 	@Pointcut("@within(net.kaciras.blog.infrastructure.principal.RequireAuthorize)")
 	private void clazz() {}
@@ -31,7 +33,7 @@ public final class PrincipalAspect {
 		var annotation = (RequireAuthorize) joinPoint.getSignature()
 				.getDeclaringType()
 				.getDeclaredAnnotation(RequireAuthorize.class);
-		check(annotation);
+		check(annotation, joinPoint);
 	}
 
 	/**
@@ -45,12 +47,14 @@ public final class PrincipalAspect {
 		var annotation = ((MethodSignature) joinPoint.getSignature())
 				.getMethod()
 				.getDeclaredAnnotation(RequireAuthorize.class);
-		check(annotation);
+		check(annotation, joinPoint);
 	}
 
-	private void check(RequireAuthorize annotation) throws Exception {
-		if (!SecurityContext.getPrincipal().hasPermission(annotation.value())) {
-			throw annotation.error().getConstructor().newInstance();
+	private void check(RequireAuthorize annotation, JoinPoint joinPoint) throws Exception {
+		if (SecurityContext.getPrincipal().hasPermission(annotation.value())) {
+			return;
 		}
+		logger.info("Permission check failed for method: " + joinPoint.getSignature());
+		throw annotation.error().getConstructor().newInstance();
 	}
 }
