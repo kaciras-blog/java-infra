@@ -25,8 +25,8 @@ public class KxPrincipalAutoConfiguration {
 
 		@Bean
 		@Order(Ordered.LOWEST_PRECEDENCE - 40)
-		public ServletPrincipalFilter servletPrincipalFilter() {
-			return new ServletPrincipalFilter(properties);
+		public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
+			return new ServletPrincipalFilter(properties, domain);
 		}
 	}
 
@@ -36,8 +36,8 @@ public class KxPrincipalAutoConfiguration {
 
 		@Bean
 		@Order(Ordered.LOWEST_PRECEDENCE - 40)
-		public ReactivePrincipalFilter reactivePrincipalFilter() {
-			return new ReactivePrincipalFilter(properties);
+		public ReactivePrincipalFilter reactivePrincipalFilter(Domain domain) {
+			return new ReactivePrincipalFilter(properties, domain);
 		}
 	}
 
