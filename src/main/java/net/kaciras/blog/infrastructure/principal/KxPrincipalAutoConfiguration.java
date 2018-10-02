@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,12 @@ public class KxPrincipalAutoConfiguration {
 		@Order(Ordered.LOWEST_PRECEDENCE - 40)
 		public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
 			return new ServletPrincipalFilter(properties, domain);
+		}
+
+		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
+		@Bean
+		public ServletSecurityContextFilter securityContextFilter() {
+			return new ServletSecurityContextFilter();
 		}
 	}
 

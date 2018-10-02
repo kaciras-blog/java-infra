@@ -7,6 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public final class AuthorizationProperties {
 
+	private boolean securityContext = false;
+
 	private boolean csrfVerify = true;
 
 	private boolean debugMode = false;
