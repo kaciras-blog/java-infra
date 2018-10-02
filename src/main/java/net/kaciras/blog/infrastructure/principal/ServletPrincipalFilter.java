@@ -15,6 +15,7 @@ import java.security.Principal;
 public final class ServletPrincipalFilter extends HttpFilter {
 
 	private final AuthorizationProperties properties;
+	private final Domain globalDomain;
 
 	@Override
 	protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -29,6 +30,10 @@ public final class ServletPrincipalFilter extends HttpFilter {
 
 		@Override
 		public Principal getUserPrincipal() {
+			return globalDomain.enter(doGetPrincipal());
+		}
+
+		private WebPrincipal doGetPrincipal() {
 			var session = super.getSession();
 			Object userId;
 

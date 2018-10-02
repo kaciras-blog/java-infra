@@ -3,6 +3,7 @@ package net.kaciras.blog.infrastructure.principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,5 +45,11 @@ public class KxPrincipalAutoConfiguration {
 	@ConditionalOnBean(name = "loadTimeWeaver")
 	public PrincipalAspect principalAspect() {
 		return new PrincipalAspect();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(Domain.class)
+	public Domain globalDomain() {
+		return principal -> principal;
 	}
 }

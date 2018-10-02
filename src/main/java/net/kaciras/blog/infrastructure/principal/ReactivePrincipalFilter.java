@@ -14,6 +14,7 @@ import java.security.Principal;
 public class ReactivePrincipalFilter implements WebFilter {
 
 	private final AuthorizationProperties properties;
+	private final Domain globalDomain;
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -32,7 +33,10 @@ public class ReactivePrincipalFilter implements WebFilter {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T extends Principal> Mono<T> getPrincipal() {
-			return (Mono<T>) getDelegate().getSession().map(this::doGetPrincipal);
+			return (Mono<T>) getDelegate()
+					.getSession()
+					.map(this::doGetPrincipal)
+					.map(globalDomain::enter);
 		}
 
 		/**

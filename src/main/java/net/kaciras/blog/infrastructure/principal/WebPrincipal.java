@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.security.Principal;
-import java.util.Collection;
 
 @EqualsAndHashCode(of = "id")
 @Value
@@ -32,12 +31,16 @@ public class WebPrincipal implements Principal {
 		return id == ADMIN_ID;
 	}
 
+	/**
+	 * 判断该用户是否具有给定的权限。
+	 * 默认的实现仅允许系统用户和管理员具有实现。
+	 * 在进入Domain后，装饰的新身份上重写此方法来实现自定义权限逻辑。
+	 *
+	 * @param name 权限名
+	 * @return 如果有则为true，反之false。
+	 */
 	public boolean hasPermission(String name) {
 		return isAdministor() || isSystem();
-	}
-
-	public Collection<Role> getRoles() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
