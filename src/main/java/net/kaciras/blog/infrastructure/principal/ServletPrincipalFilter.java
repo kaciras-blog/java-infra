@@ -39,9 +39,6 @@ public final class ServletPrincipalFilter extends HttpFilter {
 			var session = super.getSession();
 			Object userId;
 
-			if (properties.isDebugMode()) {
-				return new WebPrincipal(WebPrincipal.ADMIN_ID);
-			}
 			if (session == null || (userId = session.getAttribute("UserId")) == null || !checkCSRF()) {
 				return new WebPrincipal(WebPrincipal.ANYNOMOUS_ID);
 			}
@@ -56,7 +53,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 			var csrf = getSession().getAttribute(properties.getCsrfSessionName());
 			var header = getHeader(properties.getCsrfHeaderName());
 
-			if(csrf != null && csrf.equals(header)) {
+			if (csrf != null && csrf.equals(header)) {
 				return true;
 			}
 			logger.debug("CSRF check failed, expect:" + csrf + ", but got:" + header);

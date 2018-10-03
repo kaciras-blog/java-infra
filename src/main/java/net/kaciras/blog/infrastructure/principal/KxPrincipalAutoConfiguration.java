@@ -1,33 +1,40 @@
 package net.kaciras.blog.infrastructure.principal;
 
 import lombok.RequiredArgsConstructor;
+import net.kaciras.blog.infrastructure.DevelopmentProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.web.reactive.DispatcherHandler;
-import org.springframework.web.servlet.DispatcherServlet;
 
-@EnableConfigurationProperties(AuthorizationProperties.class)
+@EnableConfigurationProperties({AuthorizationProperties.class, DevelopmentProperties.class})
 @Configuration
 @RequiredArgsConstructor
 public class KxPrincipalAutoConfiguration {
 
-	private final AuthorizationProperties properties;
+	private final AuthorizationProperties authorizationProperties;
+	private final DevelopmentProperties developmentProperties;
 
-	@ConditionalOnClass(DispatcherServlet.class)
+	/**
+	 * Servlet 环境下的配置，将启用基于 Servlet 技术栈的组件。
+	 */
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Configuration
 	protected class MvcPrincipalConfiguration {
 
 		@Bean
 		@Order(Ordered.LOWEST_PRECEDENCE - 40)
 		public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
-			return new ServletPrincipalFilter(properties, domain);
+			if (developmentProperties.isAdminPrincipal()) {
+				domain = new DevelopAdminDomain(domain);
+			}
+			return new ServletPrincipalFilter(authorizationProperties, domain);
 		}
 
 		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
@@ -37,23 +44,41 @@ public class KxPrincipalAutoConfiguration {
 		}
 	}
 
-	@ConditionalOnClass(DispatcherHandler.class)
+	/**
+	 * Spring Webflux 环境下的配置，将启用基于 Spring Webflux 技术栈的组件。
+	 */
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Configuration
 	protected class WebFluxPrincipalConfiguration {
 
 		@Bean
 		@Order(Ordered.LOWEST_PRECEDENCE - 40)
 		public ReactivePrincipalFilter reactivePrincipalFilter(Domain domain) {
-			return new ReactivePrincipalFilter(properties, domain);
+			if (developmentProperties.isAdminPrincipal()) {
+				domain = new DevelopAdminDomain(domain);
+			}
+			return new ReactivePrincipalFilter(authorizationProperties, domain);
 		}
 	}
 
+	/**
+	 * 注册AOP权限拦截器，可以对一些简单的权限进行拦截。
+	 *
+	 * @return 切面类
+	 * @see AuthorizeAspect
+	 * @see RequireAuthorize
+	 */
 	@Bean
 	@ConditionalOnBean(name = "loadTimeWeaver")
 	public AuthorizeAspect principalAspect() {
 		return new AuthorizeAspect();
 	}
 
+	/**
+	 * 适配没有注册全局 Domain 的情况。
+	 *
+	 * @return 一个Domain，原样返回 Principal
+	 */
 	@Bean
 	@ConditionalOnMissingBean(Domain.class)
 	public Domain globalDomain() {

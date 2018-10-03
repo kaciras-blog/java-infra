@@ -11,8 +11,6 @@ public final class AuthorizationProperties {
 
 	private boolean csrfVerify = true;
 
-	private boolean debugMode = false;
-
 	private String csrfSessionName = "CSRF-Token";
 
 	private String csrfHeaderName = "X-CSRF-Token";
