@@ -10,8 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 @EnableConfigurationProperties({AuthorizationProperties.class, DevelopmentProperties.class})
 @Configuration
@@ -29,7 +27,6 @@ public class KxPrincipalAutoConfiguration {
 	protected class MvcPrincipalConfiguration {
 
 		@Bean
-		@Order(Ordered.LOWEST_PRECEDENCE - 40)
 		public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
 			if (developmentProperties.isAdminPrincipal()) {
 				domain = new DevelopAdminDomain(domain);
@@ -52,7 +49,6 @@ public class KxPrincipalAutoConfiguration {
 	protected class WebFluxPrincipalConfiguration {
 
 		@Bean
-		@Order(Ordered.LOWEST_PRECEDENCE - 40)
 		public ReactivePrincipalFilter reactivePrincipalFilter(Domain domain) {
 			if (developmentProperties.isAdminPrincipal()) {
 				domain = new DevelopAdminDomain(domain);

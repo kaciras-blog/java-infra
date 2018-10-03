@@ -2,6 +2,7 @@ package net.kaciras.blog.infrastructure.principal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
 
@@ -13,7 +14,8 @@ import java.security.Principal;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ReactivePrincipalFilter implements WebFilter {
+@Order(1024)
+final class ReactivePrincipalFilter implements WebFilter {
 
 	private final AuthorizationProperties properties;
 	private final Domain globalDomain;

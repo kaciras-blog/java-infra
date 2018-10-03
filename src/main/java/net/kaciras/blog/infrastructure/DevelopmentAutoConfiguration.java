@@ -12,7 +12,7 @@ import javax.servlet.Filter;
 
 @RequiredArgsConstructor
 @EnableConfigurationProperties(DevelopmentProperties.class)
-@ConditionalOnProperty(name = "development")
+@Configuration
 public class DevelopmentAutoConfiguration {
 
 	private final DevelopmentProperties properties;
@@ -36,10 +36,10 @@ public class DevelopmentAutoConfiguration {
 		// WARN：同步阻塞！
 		@ConditionalOnProperty("development.delay")
 		@Bean
-		public Filter servletPrincipalFilter() {
+		public Filter delayFilter() {
 			return (req, res, chain) -> {
-				chain.doFilter(req, res);
 				sleepIgnoreInterrupt(properties.getDelay().toMillis());
+				chain.doFilter(req, res);
 			};
 		}
 	}
@@ -53,7 +53,7 @@ public class DevelopmentAutoConfiguration {
 
 		@ConditionalOnProperty("development.delay")
 		@Bean
-		public WebFilter servletPrincipalFilter() {
+		public WebFilter delayFilter() {
 			return (exchange, chain) -> chain.filter(exchange).delaySubscription(properties.getDelay());
 		}
 	}

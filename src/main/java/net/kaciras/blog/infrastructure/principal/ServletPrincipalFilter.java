@@ -2,6 +2,7 @@ package net.kaciras.blog.infrastructure.principal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,7 +15,8 @@ import java.security.Principal;
 
 @Slf4j
 @RequiredArgsConstructor
-public final class ServletPrincipalFilter extends HttpFilter {
+@Order(1024)
+final class ServletPrincipalFilter extends HttpFilter {
 
 	private final AuthorizationProperties properties;
 	private final Domain globalDomain;
