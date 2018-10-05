@@ -6,7 +6,7 @@
 
 	<groupId>net.kaciras.blog</groupId>
 	<artifactId>Infrastructure</artifactId>
-	<version>1.3</version>
+	<version>1.4</version>
 	<description>Kaciras Blog V8 Infrastructure</description>
 
 	<properties>
