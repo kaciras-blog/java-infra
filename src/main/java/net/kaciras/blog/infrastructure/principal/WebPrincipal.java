@@ -43,6 +43,10 @@ public class WebPrincipal implements Principal {
 		return isAdministor() || isSystem();
 	}
 
+	public WebPrincipal exitDomain() {
+		return this;
+	}
+
 	@Override
 	public String getName() {
 		switch (id) {
