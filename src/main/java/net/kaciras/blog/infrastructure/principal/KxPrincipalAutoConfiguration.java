@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.server.WebFilter;
 
 @EnableConfigurationProperties({AuthorizationProperties.class, DevelopmentProperties.class})
 @Configuration
@@ -54,6 +55,13 @@ public class KxPrincipalAutoConfiguration {
 				domain = new DevelopAdminDomain(domain);
 			}
 			return new ReactivePrincipalFilter(authorizationProperties, domain);
+		}
+
+		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
+		@Bean
+		WebFilter securityContextFilter() {
+			return (exchange, chain) -> exchange.<WebPrincipal>getPrincipal()
+					.doOnNext(SecurityContext::setPrincipal).flatMap(p -> chain.filter(exchange));
 		}
 	}
 
