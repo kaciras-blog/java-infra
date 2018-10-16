@@ -3,10 +3,12 @@ package net.kaciras.blog.infrastructure.principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
+import java.util.Optional;
 
 /**
  * 从会话中查询用户的身份，作为ServerRequest中的Principal属性。无论用户是否
@@ -25,12 +27,18 @@ final class ReactivePrincipalFilter implements WebFilter {
 		return chain.filter(new IMWebExchange(exchange));
 	}
 
+	private void changeCsrfCookie(ServerWebExchange exchange) {
+		var oldCookie = exchange.getRequest().getCookies().getFirst(properties.getCsrfSessionName());
+//		ResponseCookie.from(oldCookie.getName(), UUID.randomUUID().toString())
+//				.domain()
+	}
+
 	/**
 	 * 封装默认的请求对象，重写getPrincipal()方法使其返回自定义的Principal。
 	 */
 	private final class IMWebExchange extends ServerWebExchangeDecorator {
 
-		IMWebExchange(ServerWebExchange delegate) {
+		private IMWebExchange(ServerWebExchange delegate) {
 			super(delegate);
 		}
 
@@ -49,23 +57,24 @@ final class ReactivePrincipalFilter implements WebFilter {
 		 * @param session 会话
 		 * @return 用户的身份
 		 */
-		private WebPrincipal doGetPrincipal(WebSession session) {
-			var id = session.getAttribute("UserId");
-			if (id == null) {
-				return new WebPrincipal(0);
+		private WebPrincipal doGetPrincipal(@NonNull WebSession session) {
+			var userId = session.getAttribute("UserId");
+			if (userId != null && checkCSRF()) {
+				return new WebPrincipal((Integer) userId);
 			}
+			return new WebPrincipal(WebPrincipal.ANYNOMOUS_ID);
+		}
+
+		private boolean checkCSRF() {
 			if (!properties.isCsrfVerify()) {
-				return new WebPrincipal((int) id);
+				return true; // 在配置文件里可以关闭CSRF检验
 			}
+			var header = getRequest().getHeaders().getFirst(properties.getCsrfHeaderName());
+			var cookie = getRequest().getCookies().getFirst(properties.getCsrfSessionName());
 
-			var csrf = session.getAttribute(properties.getCsrfSessionName());
-			var header = getDelegate().getRequest().getHeaders().get(properties.getCsrfHeaderName());
-
-			if(csrf != null && csrf.equals(header)) {
-				return new WebPrincipal((int) id);
-			}
-			logger.debug("CSRF check failed, expect:" + csrf + ", but got:" + header);
-			return new WebPrincipal(0);
+			return Optional.ofNullable(cookie)
+					.map(_cookie -> _cookie.getValue().equals(header))
+					.orElse(false);
 		}
 	}
 }

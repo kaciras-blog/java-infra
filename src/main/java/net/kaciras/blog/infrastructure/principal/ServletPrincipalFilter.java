@@ -3,15 +3,15 @@ package net.kaciras.blog.infrastructure.principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
+import org.springframework.web.util.WebUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,8 +22,27 @@ final class ServletPrincipalFilter extends HttpFilter {
 	private final Domain globalDomain;
 
 	@Override
-	protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-		chain.doFilter(new PrincipalRequestWrapper(request), response);
+	protected void doFilter(HttpServletRequest request,
+							HttpServletResponse response,
+							FilterChain chain)
+			throws IOException, ServletException {
+
+		request = new PrincipalRequestWrapper(request);
+		chain.doFilter(request, response);
+
+		if (properties.isDynamicCsrfCookie()
+				&& ((WebPrincipal) request.getUserPrincipal()).isLogined()) {
+			changeCsrfCookie(request, response);
+		}
+	}
+
+	private void changeCsrfCookie(HttpServletRequest request, HttpServletResponse response) {
+		var Oldcookie = WebUtils.getCookie(request, properties.getCsrfSessionName());
+		assert Oldcookie != null;
+
+		var newCookie = (Cookie) Oldcookie.clone();
+		newCookie.setValue(UUID.randomUUID().toString());
+		response.addCookie(newCookie);
 	}
 
 	private class PrincipalRequestWrapper extends HttpServletRequestWrapper {
@@ -37,29 +56,25 @@ final class ServletPrincipalFilter extends HttpFilter {
 			return globalDomain.enter(doGetPrincipal());
 		}
 
+		// system principal?
 		private WebPrincipal doGetPrincipal() {
-			var session = super.getSession();
-			Object userId;
-
-			if (session == null || (userId = session.getAttribute("UserId")) == null || !checkCSRF()) {
-				return new WebPrincipal(WebPrincipal.ANYNOMOUS_ID);
+			var userId = Optional.ofNullable(getSession()).map(session -> session.getAttribute("UserId"));
+			if (userId.isPresent() && checkCSRF()) {
+				return new WebPrincipal((Integer) userId.get());
 			}
-			// system principal?
-			return new WebPrincipal((Integer) userId);
+			return new WebPrincipal(WebPrincipal.ANYNOMOUS_ID);
 		}
 
 		private boolean checkCSRF() {
 			if (!properties.isCsrfVerify()) {
-				return true; //在配置文件里可以关闭CSRF检验
+				return true; // 在配置文件里可以关闭CSRF检验
 			}
-			var csrf = getSession().getAttribute(properties.getCsrfSessionName());
 			var header = getHeader(properties.getCsrfHeaderName());
+			var cookie = WebUtils.getCookie(this, properties.getCsrfSessionName());
 
-			if (csrf != null && csrf.equals(header)) {
-				return true;
-			}
-			logger.debug("CSRF check failed, expect:" + csrf + ", but got:" + header);
-			return false;
+			return Optional.ofNullable(cookie)
+					.map(_cookie -> _cookie.getValue().equals(header))
+					.orElse(false);
 		}
 	}
 }
