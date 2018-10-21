@@ -15,6 +15,9 @@ import org.springframework.web.server.session.WebSessionIdResolver;
 
 import java.time.Duration;
 
+/**
+ * Spring Session 对 Cookie 的序列化没有自动配置支持，所以写了这个类来自动设置。
+ */
 @EnableConfigurationProperties(SessionCookieProperties.class)
 @ConditionalOnClass(Session.class)
 @Configuration

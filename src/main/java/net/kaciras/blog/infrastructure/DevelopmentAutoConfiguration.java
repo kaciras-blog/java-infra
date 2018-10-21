@@ -1,6 +1,7 @@
 package net.kaciras.blog.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,6 +11,7 @@ import org.springframework.web.server.WebFilter;
 
 import javax.servlet.Filter;
 
+@ConditionalOnClass
 @RequiredArgsConstructor
 @EnableConfigurationProperties(DevelopmentProperties.class)
 @Configuration
@@ -33,7 +35,7 @@ public class DevelopmentAutoConfiguration {
 	@Configuration
 	protected class MvcDevelopmentConfiguration {
 
-		// WARN：同步阻塞！
+		// WARN：同步阻塞
 		@ConditionalOnProperty("development.delay")
 		@Bean
 		public Filter delayFilter() {

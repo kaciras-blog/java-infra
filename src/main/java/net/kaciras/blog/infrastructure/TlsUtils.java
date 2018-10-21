@@ -18,7 +18,7 @@ public final class TlsUtils {
 	}
 
 	/**
-	 * 屏蔽HttpsURLConnection默认的证书检查。
+	 * 屏蔽 HttpsURLConnection 默认的证书检查。
 	 *
 	 * @throws GeneralSecurityException 如果发生了啥错误。
 	 */

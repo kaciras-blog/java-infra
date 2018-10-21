@@ -81,7 +81,7 @@ public final class TextUtils {
 					length += width;
 					continue;
 				case '\t':
-					length += 8; //一个Tab占8个位置
+					length += 4; //一个Tab占4个位置，前端设置CSS: tab-size: 4;
 					continue;
 			}
 			length++;
