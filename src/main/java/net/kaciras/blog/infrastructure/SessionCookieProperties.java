@@ -7,6 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public final class SessionCookieProperties {
 
+	private String name = "SESSION";
+
 	private String domain = "localhost";
 
 	private String sameSite;

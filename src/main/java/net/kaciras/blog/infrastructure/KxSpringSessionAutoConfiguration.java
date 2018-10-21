@@ -31,6 +31,7 @@ public class KxSpringSessionAutoConfiguration {
 		@Bean
 		public CookieSerializer cookieSerializer(SessionCookieProperties options) {
 			var serializer = new DefaultCookieSerializer();
+			serializer.setCookieName(options.getName());
 			serializer.setDomainName(options.getDomain());
 			serializer.setSameSite(options.getSameSite());
 			serializer.setCookieMaxAge(options.getMaxAge());
@@ -54,6 +55,8 @@ public class KxSpringSessionAutoConfiguration {
 					.domain(options.getDomain())
 					.sameSite(options.getSameSite())
 					.secure(options.isSecure()));
+
+			res.setCookieName(options.getName());
 			res.setCookieMaxAge(Duration.ofSeconds(options.getMaxAge()));
 			return res;
 		}
