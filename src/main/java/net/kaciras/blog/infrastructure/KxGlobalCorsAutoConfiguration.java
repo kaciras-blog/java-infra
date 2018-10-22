@@ -34,20 +34,20 @@ public class KxGlobalCorsAutoConfiguration {
 		}
 
 		if (properties.getOrigins() != null) {
-			config.setAllowedOrigins(List.of(properties.getOrigins()));
+			config.setAllowedOrigins(properties.getOrigins());
+		}
+		if (properties.getMethods() != null) {
+			config.setAllowedMethods(properties.getMethods());
 		}
 		if (properties.getAllowHeaders() != null) {
-			config.setAllowedHeaders(List.of(properties.getAllowHeaders()));
+			config.setAllowedHeaders(properties.getAllowHeaders());
 		}
 		if (properties.getExposedHeaders() != null) {
-			config.setExposedHeaders(List.of(properties.getExposedHeaders()));
+			config.setExposedHeaders(properties.getExposedHeaders());
 		}
 		if (properties.getMaxAge() != null) {
 			config.setMaxAge(properties.getMaxAge());
 		}
-
-		config.addAllowedOrigin("http://localhost");
-		config.addAllowedOrigin("https://localhost");
 		return config;
 	}
 
