@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure;
+package net.kaciras.blog.infrastructure.autoconfig;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -36,11 +36,11 @@ public class DevelopmentAutoConfiguration {
 	protected class MvcDevelopmentConfiguration {
 
 		// WARN：同步阻塞
-		@ConditionalOnProperty("development.delay")
+		@ConditionalOnProperty("development.httpDelay")
 		@Bean
 		public Filter delayFilter() {
 			return (req, res, chain) -> {
-				sleepIgnoreInterrupt(properties.getDelay().toMillis());
+				sleepIgnoreInterrupt(properties.getHttpDelay().toMillis());
 				chain.doFilter(req, res);
 			};
 		}
@@ -53,10 +53,10 @@ public class DevelopmentAutoConfiguration {
 	@Configuration
 	protected class WebFluxDevelopmentConfiguration {
 
-		@ConditionalOnProperty("development.delay")
+		@ConditionalOnProperty("development.httpDelay")
 		@Bean
 		public WebFilter delayFilter() {
-			return (exchange, chain) -> chain.filter(exchange).delaySubscription(properties.getDelay());
+			return (exchange, chain) -> chain.filter(exchange).delaySubscription(properties.getHttpDelay());
 		}
 	}
 }

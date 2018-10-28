@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
  * 开发测试用，将匿名用户转换为管理员，便于调试。
  */
 @RequiredArgsConstructor
-final class DevelopAdminDomain implements Domain {
+public final class DevelopAdminDomain implements Domain {
 
 	private final Domain innerDomain;
 

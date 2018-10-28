@@ -1,14 +1,16 @@
-package net.kaciras.blog.infrastructure.codec;
+package net.kaciras.blog.infrastructure.autoconfig;
 
+import net.kaciras.blog.infrastructure.codec.ExtendsCodecModule;
+import net.kaciras.blog.infrastructure.codec.ImageRefrenceTypeHandler;
+import net.kaciras.blog.infrastructure.codec.IpAddressTypeHandler;
 import org.mybatis.spring.boot.autoconfigure.ConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-public class KxCodecConfiguration {
+public class KxCodecAutoConfiguration {
 
 	@ConditionalOnClass(ConfigurationCustomizer.class)
 	@Bean

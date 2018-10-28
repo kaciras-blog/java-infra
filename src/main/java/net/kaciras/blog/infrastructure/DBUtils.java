@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.sql;
+package net.kaciras.blog.infrastructure;
 
 import net.kaciras.blog.infrastructure.exception.ResourceNotFoundException;
 

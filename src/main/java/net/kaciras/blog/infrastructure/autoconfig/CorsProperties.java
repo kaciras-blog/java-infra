@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure;
+package net.kaciras.blog.infrastructure.autoconfig;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

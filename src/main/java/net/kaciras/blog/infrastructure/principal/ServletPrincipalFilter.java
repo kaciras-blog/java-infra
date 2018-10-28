@@ -16,7 +16,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Order(1024)
-final class ServletPrincipalFilter extends HttpFilter {
+public final class ServletPrincipalFilter extends HttpFilter {
 
 	private final AuthorizationProperties properties;
 	private final Domain globalDomain;

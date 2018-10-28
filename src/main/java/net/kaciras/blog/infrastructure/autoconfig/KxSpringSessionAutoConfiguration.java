@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure;
+package net.kaciras.blog.infrastructure.autoconfig;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

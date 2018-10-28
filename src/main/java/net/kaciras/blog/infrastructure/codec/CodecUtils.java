@@ -89,10 +89,10 @@ public final class CodecUtils {
 	 * 			bytearray, or {@code -1} if the character does not occur.
 	 */
 	public static int indexOfBytes(byte[] bytes, byte[] part, int start) {
-		int len = bytes.length - part.length + 1;
-		for (int i = start; i < len; ++i) {
-			boolean found = true;
-			for (int j = 0; j < part.length; ++j) {
+		var len = bytes.length - part.length + 1;
+		for (var i = start; i < len; ++i) {
+			var found = true;
+			for (var j = 0; j < part.length; ++j) {
 				if (bytes[i + j] != part[j]) {
 					found = false;
 					break;

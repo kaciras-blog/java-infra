@@ -7,10 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ServletSecurityContextFilter extends HttpFilter {
+public final class ServletSecurityContextFilter extends HttpFilter {
 
 	@Override
-	protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+	protected void doFilter(HttpServletRequest request,
+							HttpServletResponse response,
+							FilterChain chain)
+			throws IOException, ServletException {
+
 		SecurityContext.setPrincipal((WebPrincipal) request.getUserPrincipal());
 		chain.doFilter(request, response);
 		SecurityContext.setPrincipal(null); // protection.

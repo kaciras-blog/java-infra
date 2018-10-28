@@ -1,7 +1,7 @@
-package net.kaciras.blog.infrastructure.principal;
+package net.kaciras.blog.infrastructure.autoconfig;
 
 import lombok.RequiredArgsConstructor;
-import net.kaciras.blog.infrastructure.DevelopmentProperties;
+import net.kaciras.blog.infrastructure.principal.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -60,8 +60,7 @@ public class KxPrincipalAutoConfiguration {
 		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
 		@Bean
 		WebFilter securityContextFilter() {
-			return (exchange, chain) -> exchange.<WebPrincipal>getPrincipal()
-					.doOnNext(SecurityContext::setPrincipal).flatMap(p -> chain.filter(exchange));
+			return new ReactiveSecurityContextFilter();
 		}
 	}
 

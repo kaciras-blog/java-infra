@@ -1,10 +1,12 @@
-package net.kaciras.blog.infrastructure;
+package net.kaciras.blog.infrastructure.autoconfig;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("kaciras.spring.session.cookie")
-@Data
+@Getter
+@Setter
 public final class SessionCookieProperties {
 
 	private String name = "SESSION";

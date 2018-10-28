@@ -7,9 +7,9 @@ import javax.net.ssl.X509TrustManager;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
-public final class TlsUtils {
+public final class Misc {
 
-	private TlsUtils() {}
+	private Misc() {}
 
 	private static final class TrustAllManager implements X509TrustManager {
 		public void checkClientTrusted(X509Certificate[] chain, String authType) {}
@@ -22,10 +22,26 @@ public final class TlsUtils {
 	 *
 	 * @throws GeneralSecurityException 如果发生了啥错误。
 	 */
-	public static void disableForHttpsURLConnection() throws GeneralSecurityException {
+	public static void disableURLConnectionCertVerify() throws GeneralSecurityException {
 		var sslc = SSLContext.getInstance("TLS");
 		sslc.init(null, new TrustManager[]{ new TrustAllManager() }, null);
 		HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
 		HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+	}
+
+	/**
+	 * Helper method to get fitst element from a iterable.
+	 *
+	 * @param iterable iterable object.
+	 * @param <T> type of element.
+	 * @return the element.
+	 * @throws IllegalArgumentException if iterable has no element.
+	 */
+	public static <T> T getFirst(Iterable<T> iterable) {
+		var iter = iterable.iterator();
+		if (iter.hasNext()) {
+			return iter.next();
+		}
+		throw new IllegalArgumentException("iterable has no element.");
 	}
 }

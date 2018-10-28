@@ -17,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Order(1024)
-final class ReactivePrincipalFilter implements WebFilter {
+public final class ReactivePrincipalFilter implements WebFilter {
 
 	private final AuthorizationProperties properties;
 	private final Domain globalDomain;
