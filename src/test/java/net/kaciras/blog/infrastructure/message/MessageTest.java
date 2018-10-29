@@ -30,9 +30,7 @@ class MessageTest {
 	@Test
 	void test() throws InterruptedException {
 		var cdl = new CountDownLatch(2);
-		client.subscribe(RoleEvent.class, (x) -> {
-			cdl.countDown();
-		});
+		client.subscribe(RoleEvent.class).subscribe(x -> cdl.countDown());
 		client.send(new RoleRemovedEvent(999));
 		client.send(new RoleIncludeChangedEvent(0, List.of(1, 2), List.of(3, 4, 5)));
 
