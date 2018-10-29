@@ -13,19 +13,27 @@ import org.springframework.context.annotation.Configuration;
 public class KxCodecAutoConfiguration {
 
 	@ConditionalOnClass(ConfigurationCustomizer.class)
-	@Bean
-	public ConfigurationCustomizer mybatisCustomizer() {
-		return config -> {
-			var registry = config.getTypeHandlerRegistry();
-			registry.register(ImageRefrenceTypeHandler.class);
-			registry.register(IpAddressTypeHandler.class);
-		};
+	@Configuration
+	static class MybatisConfiguration {
+
+		@Bean
+		public ConfigurationCustomizer mybatisCustomizer() {
+			return config -> {
+				var registry = config.getTypeHandlerRegistry();
+				registry.register(ImageRefrenceTypeHandler.class);
+				registry.register(IpAddressTypeHandler.class);
+			};
+		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@ConditionalOnClass(Jackson2ObjectMapperBuilderCustomizer.class)
-	@Bean
-	public Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer() {
-		return builder -> builder.modulesToInstall(ExtendsCodecModule.class);
+	@Configuration
+	static class JacksonConfiguration {
+
+		@SuppressWarnings("unchecked")
+		@Bean
+		public Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer() {
+			return builder -> builder.modulesToInstall(ExtendsCodecModule.class);
+		}
 	}
 }
