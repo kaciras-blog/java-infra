@@ -1,8 +1,7 @@
 package net.kaciras.blog.infrastructure.message;
 
 import net.kaciras.blog.infrastructure.event.DomainEvent;
-
-import java.util.function.Consumer;
+import reactor.core.publisher.Flux;
 
 public interface MessageClient extends AutoCloseable {
 
@@ -10,5 +9,5 @@ public interface MessageClient extends AutoCloseable {
 
 	<T extends DomainEvent> String broadcast(T event);
 
-	<T extends DomainEvent> void subscribe(Class<T> type, Consumer<T> consumer);
+	<T extends DomainEvent> Flux<T> subscribe(Class<T> type);
 }

@@ -2,12 +2,11 @@ package net.kaciras.blog.infrastructure.message;
 
 import net.kaciras.blog.infrastructure.event.DomainEvent;
 import net.kaciras.blog.infrastructure.event.Event;
+import reactor.core.publisher.DirectProcessor;
+import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * 这是一个‘假的’消息队列，它将直接在发送线程调用订阅者的方法。
@@ -16,21 +15,20 @@ import java.util.function.Consumer;
  * 使用此实现避免分布式消息的事务问题，以便于直接使用基于线程的事务管理机制（例
  * 如Spring的@Transactional），同时也能够向发送者屏蔽订阅者，实现解耦。
  */
-public class DirectMessageClient implements MessageClient {
+public final class DirectMessageClient implements MessageClient {
 
-	private final Map<Class, Collection<Consumer>> subs = new ConcurrentHashMap<>();
+	private final Map<Class, DirectProcessor> subs = new ConcurrentHashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public <T extends DomainEvent> String send(T event) {
-		Class clazz = event.getClass();
+		Class<?> clazz = event.getClass();
 
 		while (!clazz.equals(Event.class)) {
-			Collection<Consumer> consumers = subs.get(clazz);
+			var consumers = subs.get(clazz);
 			clazz = clazz.getSuperclass();
-			if (consumers == null) {
-				continue;
+			if (consumers != null) {
+				consumers.onNext(event);
 			}
-			consumers.forEach(c -> c.accept(event));
 		}
 		return event.getEventId();
 	}
@@ -40,8 +38,10 @@ public class DirectMessageClient implements MessageClient {
 		return send(event);
 	}
 
-	public <T extends DomainEvent> void subscribe(Class<T> type, Consumer<T> consumer) {
-		subs.computeIfAbsent(type, k -> new ArrayList<>()).add(consumer);
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends DomainEvent> Flux<T> subscribe(Class<T> type) {
+		return subs.computeIfAbsent(type, k -> DirectProcessor.create());
 	}
 
 	@Override

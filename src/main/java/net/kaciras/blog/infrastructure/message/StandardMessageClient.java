@@ -3,20 +3,19 @@ package net.kaciras.blog.infrastructure.message;
 import lombok.extern.slf4j.Slf4j;
 import net.kaciras.blog.infrastructure.event.DomainEvent;
 import net.kaciras.blog.infrastructure.event.Event;
+import reactor.core.publisher.DirectProcessor;
+import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 @Slf4j
 public class StandardMessageClient implements MessageClient {
 
 	private final Redis5StreamTransmission transmission;
 
-	private final Map<Class<?>, Collection<Consumer>> subs = new ConcurrentHashMap<>();
+	private final Map<Class<?>, DirectProcessor> subs = new ConcurrentHashMap<>();
 
 	private Executor executor;
 
@@ -27,7 +26,7 @@ public class StandardMessageClient implements MessageClient {
 	public StandardMessageClient(Redis5StreamTransmission transmission, Executor executor) {
 		this.transmission = transmission;
 		this.executor = executor;
-		transmission.revceive().subscribe(this::dispetch);
+		transmission.revceive().subscribe(this::dispatch);
 	}
 
 	@Override
@@ -40,19 +39,26 @@ public class StandardMessageClient implements MessageClient {
 		return transmission.broadcast(event).block();
 	}
 
-	@Override
-	public <T extends DomainEvent> void subscribe(Class<T> type, Consumer<T> consumer) {
-		subs.computeIfAbsent(type, k -> new ArrayList<>()).add(consumer);
+	@SuppressWarnings("unchecked")
+	private <T extends Event> void dispatch(T event) {
+		Class<?> clazz = event.getClass();
+		while (!clazz.equals(Event.class)) {
+			var consumers = subs.get(clazz);
+			clazz = clazz.getSuperclass();
+			if (consumers != null) {
+				consumers.onNext(event);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void dispetch(Event event) {
-		new Notification(event, subs, executor).invoke();
+	@Override
+	public <T extends DomainEvent> Flux<T> subscribe(Class<T> type) {
+		return subs.computeIfAbsent(type, k -> DirectProcessor.create());
 	}
 
 	@Override
 	public void close() {
 		transmission.close();
 	}
-
 }
