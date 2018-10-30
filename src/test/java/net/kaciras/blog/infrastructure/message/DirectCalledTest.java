@@ -16,8 +16,8 @@ public class DirectCalledTest {
 	void test() {
 		var value = new AtomicInteger();
 
-		client.subscribe(DomainEvent.class).subscribe(e -> value.incrementAndGet());
-		client.subscribe(ArticleCreatedEvent.class).subscribe(e -> value.incrementAndGet());
+		client.getChannel(DomainEvent.class).subscribe(e -> value.incrementAndGet());
+		client.getChannel(ArticleCreatedEvent.class).subscribe(e -> value.incrementAndGet());
 
 		client.send(new DiscussCreatedEvent());
 		Assertions.assertEquals(1, value.get());

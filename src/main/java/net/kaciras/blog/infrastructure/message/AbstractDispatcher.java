@@ -16,7 +16,7 @@ public abstract class AbstractDispatcher implements MessageClient {
 	private final FluxProcessor NOP = DirectProcessor.create();
 
 	@Override
-	public <T extends DomainEvent> Flux<T> subscribe(Class<T> type) {
+	public <T extends DomainEvent> Flux<T> getChannel(Class<T> type) {
 		return subs.computeIfAbsent(type, k -> DirectProcessor.create());
 	}
 
