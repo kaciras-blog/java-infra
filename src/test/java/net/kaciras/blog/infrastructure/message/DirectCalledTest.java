@@ -23,7 +23,8 @@ public class DirectCalledTest {
 		Assertions.assertEquals(1, value.get());
 
 		value.set(0);
+		client.getChannel(DomainEvent.class).subscribe(e -> value.incrementAndGet());
 		client.send(new ArticleCreatedEvent());
-		Assertions.assertEquals(2, value.get());
+		Assertions.assertEquals(3, value.get());
 	}
 }

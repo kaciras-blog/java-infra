@@ -1,0 +1,21 @@
+spring:
+  main:
+    web-application-type: servlet
+    banner-mode: "off"
+
+  datasource:
+    url: jdbc:mariadb://192.168.0.11:3316/blog?allowMultiQueries=true
+    username: root
+    password: IY*J<0+T.[Skcoxd
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  redis:
+    host: 192.168.0.11
+    port: 33671
+    password: ZuDNpaB7]vv_iBynJG6ZwPexPPewP]kf
+
+  session:
+    store-type: redis
+    timeout: 30m
+    redis:
+      namespace: test
