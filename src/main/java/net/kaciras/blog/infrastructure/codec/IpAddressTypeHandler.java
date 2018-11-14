@@ -3,8 +3,6 @@ package net.kaciras.blog.infrastructure.codec;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.*;
@@ -44,7 +42,7 @@ public final class IpAddressTypeHandler extends BaseTypeHandler<InetAddress> {
 	 */
 	private static InetAddress decode(byte[] bytes) throws SQLDataException {
 		try {
-			//InetAddress.getByAddress()能自动识别IPv4-mapped addresses
+			// InetAddress.getByAddress() 能自动识别 IPv4-Mapped addresses
 			return InetAddress.getByAddress(bytes);
 		} catch (UnknownHostException e) {
 			throw new SQLDataException("读取的数据不是IP地址", e);

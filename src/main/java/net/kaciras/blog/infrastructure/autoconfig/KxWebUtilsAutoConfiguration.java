@@ -23,15 +23,20 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.Map;
 import java.util.Set;
 
-/**
- * 使Http服务器支持双端口连接，例如同时监听80和443，额外的端口由选项server.http-port指定。
- */
+
 @RequiredArgsConstructor
 @Configuration
 public class KxWebUtilsAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
+	/**
+	 * 使Http服务器支持双端口连接，例如同时监听80和443，额外的端口由选项server.http-port指定。
+	 * 这回导致多一个Connector，消耗更多的资源。
+	 *
+	 * @param port HTTP连接端口
+	 * @return 配置器
+	 */
 	@ConditionalOnProperty(name = "server.http-port")
 	@ConditionalOnClass(TomcatServletWebServerFactory.class)
 	@Bean
@@ -54,7 +59,7 @@ public class KxWebUtilsAutoConfiguration {
 	@ResponseBody
 	private static final class ExceptionReslover {
 
-		private static final Set<Class<?>> ARG_EXCEPTIONS = Set.of(
+		private static final Set<Class<?>> ARGUMENT_EXCEPTIONS = Set.of(
 				MethodArgumentNotValidException.class,
 				BindException.class,
 				MethodArgumentTypeMismatchException.class
@@ -70,7 +75,7 @@ public class KxWebUtilsAutoConfiguration {
 			}
 
 			/* 控制器方法的参数绑定失败 */
-			if (ARG_EXCEPTIONS.contains(ex.getClass())) {
+			if (ARGUMENT_EXCEPTIONS.contains(ex.getClass())) {
 				return ResponseEntity.status(400).body(Map.of("message", "请求参数或内容不合法"));
 			}
 

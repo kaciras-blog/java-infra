@@ -11,6 +11,7 @@ import java.io.IOException;
 
 /**
  * 将ImageRefrence和Json(com.fasterxml.jackson)互相转换的工具。
+ * 转换时会加上图片所在服务器的URL前缀。
  */
 public final class ImageRefrenceJson {
 

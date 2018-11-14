@@ -3,6 +3,7 @@ package net.kaciras.blog.infrastructure.autoconfig;
 import lombok.RequiredArgsConstructor;
 import net.kaciras.blog.infrastructure.autoconfig.CorsProperties.CorsTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,10 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
+/**
+ * 配置全局的CORS处理，该类使用CorsFilter拦截器，有别于WebConfigurer中的配置。
+ * 该类将检查 kaciras.cors 空间下的配置。
+ */
 @EnableConfigurationProperties(CorsProperties.class)
 @Configuration
 @RequiredArgsConstructor
@@ -51,7 +56,7 @@ public class KxGlobalCorsAutoConfiguration {
 		return config;
 	}
 
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Configuration
 	class ServletSessionConfiguration {
 
@@ -63,7 +68,7 @@ public class KxGlobalCorsAutoConfiguration {
 		}
 	}
 
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Configuration
 	class ReactiveSessionConfiguration {
 

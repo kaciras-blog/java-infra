@@ -9,6 +9,10 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 自动注册与 net.kaciras.blog.infrastructure.codec 包下的类相关的基础设施，
+ * 包括Jackson的序列号模块、mybatis的TypeHandler。
+ */
 @Configuration
 public class KxCodecAutoConfiguration {
 
