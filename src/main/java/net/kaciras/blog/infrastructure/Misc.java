@@ -4,6 +4,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
@@ -27,6 +28,29 @@ public final class Misc {
 		sslc.init(null, new TrustManager[]{ new TrustAllManager() }, null);
 		HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
 		HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+	}
+
+	public static void disableIllegalAccessWarning() {
+		var javaVersionElements = System.getProperty("java.version").split("\\.");
+		if (Integer.parseInt(javaVersionElements[0]) == 1) {
+			return; // 1.8.x_xx or lower
+		}
+		try {
+			var theUnsafe = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
+			theUnsafe.setAccessible(true);
+			var u = theUnsafe.get(null);
+
+			var cls = Class.forName("jdk.internal.module.IllegalAccessLogger");
+			var logger = cls.getDeclaredField("logger");
+
+			var offset = (long) u.getClass()
+					.getMethod("staticFieldOffset", Field.class).invoke(u, logger);
+
+			u.getClass().getMethod("putObjectVolatile", Object.class, long.class, Object.class)
+					.invoke(u, cls, offset, null);
+		} catch (Exception ignore) {
+			throw new UnsupportedClassVersionError("Can not desable illegal access warning");
+		}
 	}
 
 	/**
