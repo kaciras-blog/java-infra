@@ -7,6 +7,7 @@ import javax.net.ssl.X509TrustManager;
 import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
+import java.util.NoSuchElementException;
 
 public final class Misc {
 
@@ -59,13 +60,13 @@ public final class Misc {
 	 * @param iterable iterable object.
 	 * @param <T> type of element.
 	 * @return the element.
-	 * @throws IllegalArgumentException if iterable has no element.
+	 * @throws NoSuchElementException if iterable has no element.
 	 */
 	public static <T> T getFirst(Iterable<T> iterable) {
 		var iter = iterable.iterator();
 		if (iter.hasNext()) {
 			return iter.next();
 		}
-		throw new IllegalArgumentException("iterable has no element.");
+		throw new NoSuchElementException("iterable has no element.");
 	}
 }

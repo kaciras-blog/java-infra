@@ -65,7 +65,7 @@ public final class Lambdas {
 	}
 
 	/**
-	 * this is a 'static' class can not be instance.
+	 * This is a 'static' class and can not be instance.
 	 */
 	private Lambdas() {}
 }
