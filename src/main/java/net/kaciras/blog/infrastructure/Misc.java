@@ -20,13 +20,14 @@ public final class Misc {
 	}
 
 	/**
-	 * 屏蔽 HttpsURLConnection 默认的证书检查。
+	 * 屏蔽 HttpsURLConnection 和 HttpClient(Java11) 默认的证书检查。
 	 *
 	 * @throws GeneralSecurityException 如果发生了啥错误。
 	 */
 	public static void disableURLConnectionCertVerify() throws GeneralSecurityException {
 		var sslc = SSLContext.getInstance("TLS");
 		sslc.init(null, new TrustManager[]{ new TrustAllManager() }, null);
+		SSLContext.setDefault(sslc);
 		HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
 		HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 	}
