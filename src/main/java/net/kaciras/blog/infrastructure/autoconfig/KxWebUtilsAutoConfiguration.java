@@ -34,6 +34,7 @@ public class KxWebUtilsAutoConfiguration {
 	 * 使Http服务器支持双端口连接，例如同时监听80和443，额外的端口由选项server.http-port指定。
 	 * 这回导致多一个Connector，消耗更多的资源。
 	 *
+	 * @since 1.6
 	 * @param port HTTP连接端口
 	 * @return 配置器
 	 */

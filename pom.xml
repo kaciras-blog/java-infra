@@ -3,11 +3,11 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<description>Kaciras Blog V10 Infrastructure</description>
 
 	<groupId>net.kaciras.blog</groupId>
 	<artifactId>Infrastructure</artifactId>
 	<version>1.7</version>
-	<description>Kaciras Blog V8 Infrastructure</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -6,7 +6,7 @@ import java.util.function.Function;
 /**
  * some helper method for lambda expression.
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings("unchecked")
 public final class Lambdas {
 
 	private static Runnable RUNNABLE = () -> { };

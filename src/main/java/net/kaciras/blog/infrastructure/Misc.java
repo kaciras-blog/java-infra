@@ -21,6 +21,7 @@ public final class Misc {
 
 	/**
 	 * 屏蔽 HttpsURLConnection 和 HttpClient(Java11) 默认的证书检查。
+	 * 该方法直接修改全局设置，可能会产生副作用，使用须谨慎。
 	 *
 	 * @throws GeneralSecurityException 如果发生了啥错误。
 	 */
@@ -32,6 +33,10 @@ public final class Misc {
 		HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 	}
 
+	/**
+	 * 从Java9开始的模块系统禁止了一些不合法的访问，而很多第三方库仍然依赖这些操作，不合法的
+	 * 访问在程序控制台中将输出几段警告信息，看着挺烦人，所以这里给禁止掉。
+	 */
 	public static void disableIllegalAccessWarning() {
 		var javaVersionElements = System.getProperty("java.version").split("\\.");
 		if (Integer.parseInt(javaVersionElements[0]) == 1) {
@@ -48,7 +53,8 @@ public final class Misc {
 			var offset = (long) u.getClass()
 					.getMethod("staticFieldOffset", Field.class).invoke(u, logger);
 
-			u.getClass().getMethod("putObjectVolatile", Object.class, long.class, Object.class)
+			u.getClass()
+					.getMethod("putObjectVolatile", Object.class, long.class, Object.class)
 					.invoke(u, cls, offset, null);
 		} catch (Exception ignore) {
 			throw new UnsupportedClassVersionError("Can not desable illegal access warning");
