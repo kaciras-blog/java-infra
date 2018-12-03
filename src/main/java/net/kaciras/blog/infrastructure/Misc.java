@@ -25,7 +25,7 @@ public final class Misc {
 	 *
 	 * @throws GeneralSecurityException 如果发生了啥错误。
 	 */
-	public static void disableURLConnectionCertVerify() throws GeneralSecurityException {
+	public static void disableHttpClientCertificateVerify() throws GeneralSecurityException {
 		var sslc = SSLContext.getInstance("TLS");
 		sslc.init(null, new TrustManager[]{ new TrustAllManager() }, null);
 		SSLContext.setDefault(sslc);
@@ -35,7 +35,7 @@ public final class Misc {
 
 	/**
 	 * 从Java9开始的模块系统禁止了一些不合法的访问，而很多第三方库仍然依赖这些操作，不合法的
-	 * 访问在程序控制台中将输出几段警告信息，看着挺烦人，所以这里给禁止掉。
+	 * 访问在程序控制台中将输出几段警告信息，看着就烦，这里给禁止掉。
 	 */
 	public static void disableIllegalAccessWarning() {
 		var javaVersionElements = System.getProperty("java.version").split("\\.");
@@ -68,11 +68,11 @@ public final class Misc {
 	 * 说好的 SpringBoot dev-tool 能自动检查JAR启动的呢？
 	 */
 	public static void disableSpringDevToolOnJarStartup() {
-		var walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-		var clazz = walker.getCallerClass();
-
-		var location = clazz.getResource('/' + clazz.getName().replace('.', '/') + ".class");
-		if (location.toString().startsWith("jar:")) {
+		var clazz = StackWalker
+				.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+				.getCallerClass();
+		var url = clazz.getResource('/' + clazz.getName().replace('.', '/') + ".class");
+		if (url.toString().startsWith("jar:")) {
 			System.setProperty("spring.devtools.restart.enabled", "false");
 		}
 	}
