@@ -62,6 +62,22 @@ public final class Misc {
 	}
 
 	/**
+	 * 自动检测调用者所在的类是否在Jar包里，如果是则关闭 Spring Boot 的 Dev-Tool。
+	 * 请在 main() 方法中使用，并且要放在Spring启动之前。
+	 *
+	 * 说好的 SpringBoot dev-tool 能自动检查JAR启动的呢？
+	 */
+	public static void disableSpringDevToolOnJarStartup() {
+		var walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+		var clazz = walker.getCallerClass();
+
+		var location = clazz.getResource('/' + clazz.getName().replace('.', '/') + ".class");
+		if (location.toString().startsWith("jar:")) {
+			System.setProperty("spring.devtools.restart.enabled", "false");
+		}
+	}
+
+	/**
 	 * Helper method to get fitst element from a iterable.
 	 *
 	 * @param iterable iterable object.

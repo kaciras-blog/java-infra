@@ -23,7 +23,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.Map;
 import java.util.Set;
 
-
 @RequiredArgsConstructor
 @Configuration
 public class KxWebUtilsAutoConfiguration {
