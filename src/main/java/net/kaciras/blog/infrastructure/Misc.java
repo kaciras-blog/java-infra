@@ -1,10 +1,8 @@
 package net.kaciras.blog.infrastructure;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.lang.reflect.Field;
+import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.NoSuchElementException;
@@ -13,21 +11,36 @@ public final class Misc {
 
 	private Misc() {}
 
-	private static final class TrustAllManager implements X509TrustManager {
+	private static final class TrustAllManager extends X509ExtendedTrustManager {
+		public void checkClientTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
+		public void checkServerTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
+		public void checkClientTrusted(X509Certificate[] certificates, String s, SSLEngine sslEngine) {}
+		public void checkServerTrusted(X509Certificate[] certificates, String s, SSLEngine sslEngine) {}
 		public void checkClientTrusted(X509Certificate[] chain, String authType) {}
 		public void checkServerTrusted(X509Certificate[] chain, String authType) {}
 		public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
 	}
 
 	/**
+	 * 创建一个SSLContext对象，其已经初始化为接受所有证书。
+	 *
+	 * @return SSLContext对象
+	 * @throws GeneralSecurityException 如果发生了错误
+	 */
+	public static SSLContext createTrustAllSSLContext() throws GeneralSecurityException {
+		var sslc = SSLContext.getInstance("TLS");
+		sslc.init(null, new TrustManager[]{new TrustAllManager()}, null);
+		return sslc;
+	}
+
+	/**
 	 * 屏蔽 HttpsURLConnection 和 HttpClient(Java11) 默认的证书检查。
 	 * 该方法直接修改全局设置，可能会产生副作用，使用须谨慎。
 	 *
-	 * @throws GeneralSecurityException 如果发生了啥错误。
+	 * @throws GeneralSecurityException 如果发生了错误
 	 */
 	public static void disableHttpClientCertificateVerify() throws GeneralSecurityException {
-		var sslc = SSLContext.getInstance("TLS");
-		sslc.init(null, new TrustManager[]{ new TrustAllManager() }, null);
+		var sslc = createTrustAllSSLContext();
 		SSLContext.setDefault(sslc);
 		HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
 		HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
