@@ -1,11 +1,14 @@
 package net.kaciras.blog.infrastructure.codec;
 
+import lombok.experimental.UtilityClass;
+
 import java.net.Inet6Address;
 import java.net.InetAddress;
 
-public final class CodecUtils {
+@UtilityClass
+public class CodecUtils {
 
-	private static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+	private final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 			'a', 'b', 'c', 'd', 'e', 'f'};
 
 	/**
@@ -16,7 +19,7 @@ public final class CodecUtils {
 	 * @param length length of part.
 	 * @return hex string.
 	 */
-	public static String encodeHex(byte[] bytes, int offset, int length) {
+	public String encodeHex(byte[] bytes, int offset, int length) {
 		char[] out = new char[length << 1];
 		for (int i = offset, j = 0; i < offset + length; i++) {
 			out[j++] = DIGITS[(0xF0 & bytes[i]) >>> 4];
@@ -31,7 +34,7 @@ public final class CodecUtils {
 	 * @param bytes bytes to be encode.
 	 * @return hex string.
 	 */
-	public static String encodeHex(byte[] bytes) {
+	public String encodeHex(byte[] bytes) {
 		return encodeHex(bytes, 0, bytes.length);
 	}
 
@@ -41,7 +44,7 @@ public final class CodecUtils {
 	 * @param text hex string.
 	 * @return bytes.
 	 */
-	public static byte[] decodeHex(String text) {
+	public byte[] decodeHex(String text) {
 		return decodeHex(new byte[text.length() >> 1], 0, text);
 	}
 
@@ -53,7 +56,7 @@ public final class CodecUtils {
 	 * @param text   hex string.
 	 * @return the <code>target</code>
 	 */
-	public static byte[] decodeHex(byte[] target, int offset, String text) {
+	public byte[] decodeHex(byte[] target, int offset, String text) {
 		char[] data = text.toCharArray();
 
 		if ((data.length & 1) != 0) {
@@ -69,7 +72,7 @@ public final class CodecUtils {
 		return target;
 	}
 
-	private static int toDigit(char ch, int index) {
+	private int toDigit(char ch, int index) {
 		int digit = Character.digit(ch, 16);
 		if (digit == -1) {
 			throw new IllegalArgumentException("char at index " + index + " is not a hex digit: " + ch);
@@ -87,7 +90,7 @@ public final class CodecUtils {
 	 * @return the index of the first occurrence of the subarray in the
 	 * 			bytearray, or {@code -1} if the character does not occur.
 	 */
-	public static int indexOfBytes(byte[] bytes, byte[] part, int start) {
+	public int indexOfBytes(byte[] bytes, byte[] part, int start) {
 		var len = bytes.length - part.length + 1;
 		for (var i = start; i < len; ++i) {
 			var found = true;
@@ -108,7 +111,7 @@ public final class CodecUtils {
 	 * @param address 地址
 	 * @return 字节数组
 	 */
-	public static byte[] toIPv6Address(InetAddress address) {
+	public byte[] toIPv6Address(InetAddress address) {
 		if (address instanceof Inet6Address) {
 			return address.getAddress();
 		}
@@ -122,12 +125,10 @@ public final class CodecUtils {
 	 * @return IPv4-mapped IPv6 Address bytes
 	 * @see <a href="https://tools.ietf.org/html/rfc3493#section-3.7">IPv4-mapped addresses</a>
 	 */
-	private static byte[] mappingToIPv6(byte[] ipv4) {
+	private byte[] mappingToIPv6(byte[] ipv4) {
 		byte[] ipv6 = new byte[16];
 		ipv6[10] = ipv6[11] = (byte) 0xFF;
 		System.arraycopy(ipv4, 0, ipv6, 12, 4);
 		return ipv6;
 	}
-
-	private CodecUtils() {}
 }

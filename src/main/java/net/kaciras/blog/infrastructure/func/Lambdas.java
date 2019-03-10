@@ -1,5 +1,7 @@
 package net.kaciras.blog.infrastructure.func;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -7,18 +9,19 @@ import java.util.function.Function;
  * some helper method for lambda expression.
  */
 @SuppressWarnings("unchecked")
-public final class Lambdas {
+@UtilityClass
+public class Lambdas {
 
-	private static Runnable RUNNABLE = () -> { };
-	private static Consumer CONSUMER = t -> { };
-	private static Function KEEP_INTACT = t -> t;
+	private Runnable RUNNABLE = () -> { };
+	private Consumer CONSUMER = t -> { };
+	private Function KEEP_INTACT = t -> t;
 
 	/**
 	 * 返回一个Runnable对象，它不执行任何操作。
 	 *
 	 * @return 一个Runnable实例
 	 */
-	public static Runnable nopRunnable() {
+	public Runnable nopRunnable() {
 		return RUNNABLE;
 	}
 
@@ -27,7 +30,7 @@ public final class Lambdas {
 	 *
 	 * @return 一个Consumer实例
 	 */
-	public static <T> Consumer<T> nopConsumer() {
+	public <T> Consumer<T> nopConsumer() {
 		return CONSUMER;
 	}
 
@@ -36,24 +39,12 @@ public final class Lambdas {
 	 *
 	 * @return 一个Function实例
 	 */
-	public static <T> Function<T, T> keepIntact() {
+	public <T> Function<T, T> keepIntact() {
 		return KEEP_INTACT;
 	}
 
-	/**
-	 * 将能够抛出未检查异常的方法包装为只抛出运行时异常的方法。原始的异常将
-	 * 被包装成RuntimeException抛出。
-	 *
-	 * @param origin 原方法
-	 * @param <T> 原方法入参类型
-	 * @param <R> 原方法返回值类型
-	 * @return 包装后的方法
-	 */
-	public static <T, R> Function<T, R> check(UncheckedFunction<T, R> origin) {
-		return check(origin, e -> { throw new RuntimeException(e); });
-	}
 
-	public static <T, R, E extends Throwable> Function<T, R> check(
+	public <T, R, E extends Throwable> Function<T, R> check(
 			UncheckedFunction<T, R> origin, Function<E, R> onError) {
 		return arg -> {
 			try {
@@ -65,7 +56,15 @@ public final class Lambdas {
 	}
 
 	/**
-	 * This is a 'static' class and can not be instance.
+	 * 将能够抛出未检查异常的方法包装为只抛出运行时异常的方法。原始的异常将
+	 * 被包装成RuntimeException抛出。
+	 *
+	 * @param origin 原方法
+	 * @param <T> 原方法入参类型
+	 * @param <R> 原方法返回值类型
+	 * @return 包装后的方法
 	 */
-	private Lambdas() {}
+	public <T, R> Function<T, R> check(UncheckedFunction<T, R> origin) {
+		return check(origin, e -> { throw new RuntimeException(e); });
+	}
 }

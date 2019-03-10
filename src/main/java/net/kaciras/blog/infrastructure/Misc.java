@@ -1,5 +1,7 @@
 package net.kaciras.blog.infrastructure;
 
+import lombok.experimental.UtilityClass;
+
 import javax.net.ssl.*;
 import java.lang.reflect.Field;
 import java.net.Socket;
@@ -7,11 +9,10 @@ import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.NoSuchElementException;
 
-public final class Misc {
+@UtilityClass
+public class Misc {
 
-	private Misc() {}
-
-	private static final class TrustAllManager extends X509ExtendedTrustManager {
+	private class TrustAllManager extends X509ExtendedTrustManager {
 		public void checkClientTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
 		public void checkServerTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
 		public void checkClientTrusted(X509Certificate[] certificates, String s, SSLEngine sslEngine) {}
@@ -27,7 +28,7 @@ public final class Misc {
 	 * @return SSLContext对象
 	 * @throws GeneralSecurityException 如果发生了错误
 	 */
-	public static SSLContext createTrustAllSSLContext() throws GeneralSecurityException {
+	public SSLContext createTrustAllSSLContext() throws GeneralSecurityException {
 		var sslc = SSLContext.getInstance("TLS");
 		sslc.init(null, new TrustManager[]{new TrustAllManager()}, null);
 		return sslc;
@@ -39,7 +40,7 @@ public final class Misc {
 	 *
 	 * @throws GeneralSecurityException 如果发生了错误
 	 */
-	public static void disableHttpClientCertificateVerify() throws GeneralSecurityException {
+	public void disableHttpClientCertificateVerify() throws GeneralSecurityException {
 		var sslc = createTrustAllSSLContext();
 		SSLContext.setDefault(sslc);
 		HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
@@ -50,7 +51,7 @@ public final class Misc {
 	 * 从Java9开始的模块系统禁止了一些不合法的访问，而很多第三方库仍然依赖这些操作，不合法的
 	 * 访问在程序控制台中将输出几段警告信息，看着就烦，这里给禁止掉。
 	 */
-	public static void disableIllegalAccessWarning() {
+	public void disableIllegalAccessWarning() {
 		var javaVersionElements = System.getProperty("java.version").split("\\.");
 		if (Integer.parseInt(javaVersionElements[0]) == 1) {
 			return; // 1.8.x_xx or lower
@@ -80,7 +81,7 @@ public final class Misc {
 	 *
 	 * 说好的 SpringBoot dev-tool 能自动检查JAR启动的呢？
 	 */
-	public static void disableSpringDevToolOnJarStartup() {
+	public void disableSpringDevToolOnJarStartup() {
 		var clazz = StackWalker
 				.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 				.getCallerClass();
@@ -98,7 +99,7 @@ public final class Misc {
 	 * @return the element.
 	 * @throws NoSuchElementException if iterable has no element.
 	 */
-	public static <T> T getFirst(Iterable<T> iterable) {
+	public <T> T getFirst(Iterable<T> iterable) {
 		var iter = iterable.iterator();
 		if (iter.hasNext()) {
 			return iter.next();
