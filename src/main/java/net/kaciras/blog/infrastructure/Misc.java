@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 @UtilityClass
 public class Misc {
 
-	private class TrustAllManager extends X509ExtendedTrustManager {
+	private static final class TrustAllManager extends X509ExtendedTrustManager {
 		public void checkClientTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
 		public void checkServerTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
 		public void checkClientTrusted(X509Certificate[] certificates, String s, SSLEngine sslEngine) {}
