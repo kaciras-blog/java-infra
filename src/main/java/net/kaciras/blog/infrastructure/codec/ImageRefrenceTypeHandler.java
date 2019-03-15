@@ -27,10 +27,10 @@ public final class ImageRefrenceTypeHandler extends BaseTypeHandler<ImageRefrenc
 	 * +------------------+--------+
 	 * | 文件名长度 1byte | 文件名 |
 	 * +------------------+--------+
-	 * 剩余则是文件名是文件的hash值的情况，该情况下内容为文件hash的原始字节形式。
+	 * 剩余则是文件名是文件的hash值的情况，该情况下内容为hash值。
 	 *
 	 * 该编码输出固定长度的字节数组，其长度为文件Hash字节长度 + 1；ImageType.Internal类型的
-	 * 文件名不能超出这个长度。
+	 * 文件名不能超出这个长度，不足的话尾部填0。
 	 *
 	 * @since 1.0
 	 * @param refrence ImageRefrence对象
@@ -61,15 +61,14 @@ public final class ImageRefrenceTypeHandler extends BaseTypeHandler<ImageRefrenc
 		if(bytes == null) {
 			return null;
 		}
-		var refrence = new ImageRefrence();
-		refrence.setType(ImageType.values()[bytes[0]]);
+		var type = ImageType.values()[bytes[0]];
 
-		if (refrence.getType() == ImageType.Internal) {
-			refrence.setName(new String(bytes, 2, bytes[1], StandardCharsets.UTF_8));
+		if (type == ImageType.Internal) {
+			var name = new String(bytes, 2, bytes[1], StandardCharsets.UTF_8);
+			return new ImageRefrence(name, type);
 		} else {
-			refrence.setName(CodecUtils.encodeHex(bytes, 1, HASH_SIZE));
+			return new ImageRefrence(CodecUtils.encodeHex(bytes, 1, HASH_SIZE), type);
 		}
-		return refrence;
 	}
 
 	@Override

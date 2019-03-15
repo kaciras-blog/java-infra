@@ -1,8 +1,9 @@
 package net.kaciras.blog.infrastructure.principal;
 
+import lombok.experimental.UtilityClass;
 import net.kaciras.blog.infrastructure.exception.PermissionException;
 
-
+@UtilityClass
 public final class SecurityContext {
 
 	private static final ThreadLocal<WebPrincipal> threadLogal = new ThreadLocal<>();
@@ -26,8 +27,7 @@ public final class SecurityContext {
 	}
 
 	public static void require(String perm) {
-		if (!getPrincipal().hasPermission(perm))
-			throw new PermissionException();
+		if (!getPrincipal().hasPermission(perm)) throw new PermissionException();
 	}
 
 	/**
@@ -55,11 +55,6 @@ public final class SecurityContext {
 	}
 
 	public static void requireSelf(int id, String perm) {
-		if (!checkSelf(id, perm)) {
-			throw new PermissionException();
-		}
+		if (!checkSelf(id, perm)) throw new PermissionException();
 	}
-
-	/** This is a static class */
-	private SecurityContext() {}
 }
