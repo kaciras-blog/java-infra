@@ -28,7 +28,7 @@ public class Misc {
 	 * @return SSLContext对象
 	 * @throws GeneralSecurityException 如果发生了错误
 	 */
-	public SSLContext createTrustAllSSLContext() throws GeneralSecurityException {
+	public static SSLContext createTrustAllSSLContext() throws GeneralSecurityException {
 		var sslc = SSLContext.getInstance("TLS");
 		sslc.init(null, new TrustManager[]{new TrustAllManager()}, null);
 		return sslc;
@@ -40,7 +40,7 @@ public class Misc {
 	 *
 	 * @throws GeneralSecurityException 如果发生了错误
 	 */
-	public void disableHttpClientCertificateVerify() throws GeneralSecurityException {
+	public static void disableHttpClientCertificateVerify() throws GeneralSecurityException {
 		var sslc = createTrustAllSSLContext();
 		SSLContext.setDefault(sslc);
 		HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
@@ -51,7 +51,7 @@ public class Misc {
 	 * 从Java9开始的模块系统禁止了一些不合法的访问，而很多第三方库仍然依赖这些操作，不合法的
 	 * 访问在程序控制台中将输出几段警告信息，看着就烦，这里给禁止掉。
 	 */
-	public void disableIllegalAccessWarning() {
+	public static void disableIllegalAccessWarning() {
 		var javaVersionElements = System.getProperty("java.version").split("\\.");
 		if (Integer.parseInt(javaVersionElements[0]) == 1) {
 			return; // 1.8.x_xx or lower
@@ -81,7 +81,7 @@ public class Misc {
 	 *
 	 * 说好的 SpringBoot dev-tool 能自动检查JAR启动的呢？
 	 */
-	public void disableSpringDevToolOnJarStartup() {
+	public static void disableSpringDevToolOnJarStartup() {
 		var clazz = StackWalker
 				.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 				.getCallerClass();
@@ -99,7 +99,7 @@ public class Misc {
 	 * @return the element.
 	 * @throws NoSuchElementException if iterable has no element.
 	 */
-	public <T> T getFirst(Iterable<T> iterable) {
+	public static <T> T getFirst(Iterable<T> iterable) {
 		var iter = iterable.iterator();
 		if (iter.hasNext()) {
 			return iter.next();

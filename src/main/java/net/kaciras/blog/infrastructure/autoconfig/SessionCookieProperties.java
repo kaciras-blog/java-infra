@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("kaciras.spring.session.cookie")
+@ConfigurationProperties("kaciras.session.cookie")
 @Getter
 @Setter
 public final class SessionCookieProperties {
