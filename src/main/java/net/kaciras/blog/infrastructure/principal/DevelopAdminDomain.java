@@ -13,7 +13,7 @@ public final class DevelopAdminDomain implements Domain {
 
 	@Override
 	public WebPrincipal enter(WebPrincipal principal) {
-		if (principal.isAnynomous()) {
+		if (principal.isAnonymous()) {
 			principal = new WebPrincipal(WebPrincipal.ADMIN_ID);
 		}
 		return innerDomain.enter(principal);

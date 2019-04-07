@@ -37,7 +37,7 @@ public final class ImageReference {
 	}
 
 	/**
-	 * 解析文件名，生成ImageRefrence实例。
+	 * 解析文件名，生成 ImageReference 实例。
 	 *
 	 * @param name 文件名
 	 * @return ImageReference
@@ -47,9 +47,9 @@ public final class ImageReference {
 			throw new RequestArgumentException("无效的图片文件名");
 		}
 
-		var refrence = parseHex(name);
-		if (refrence != null) {
-			return refrence;
+		var reference = parseHex(name);
+		if (reference != null) {
+			return reference;
 		}
 
 		// 不是以Hash命名的文件，直接以原始文件名创建

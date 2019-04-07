@@ -46,7 +46,7 @@ public final class SecurityContext {
 	}
 
 	public static void requireLogin() {
-		if (getPrincipal().isAnynomous()) throw new PermissionException();
+		if (getPrincipal().isAnonymous()) throw new PermissionException();
 	}
 
 	public static boolean checkSelf(int id, String perm) {

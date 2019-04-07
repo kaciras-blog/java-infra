@@ -51,13 +51,13 @@ public class KxWebUtilsAutoConfiguration {
 	}
 
 	@Bean
-	public ExceptionReslover exceptionReslover() {
-		return new ExceptionReslover();
+	public ExceptionResolver exceptionResolver() {
+		return new ExceptionResolver();
 	}
 
 	@ControllerAdvice
 	@ResponseBody
-	private static final class ExceptionReslover {
+	private static final class ExceptionResolver {
 
 		private static final Set<Class<?>> ARGUMENT_EXCEPTIONS = Set.of(
 				MethodArgumentNotValidException.class,

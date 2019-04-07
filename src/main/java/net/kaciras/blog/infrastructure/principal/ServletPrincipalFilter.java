@@ -31,7 +31,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 		chain.doFilter(request, response);
 
 		if (properties.isDynamicCsrfCookie()
-				&& ((WebPrincipal) request.getUserPrincipal()).isLogined()) {
+				&& ((WebPrincipal) request.getUserPrincipal()).isLogged()) {
 			changeCsrfCookie(request, response);
 		}
 	}
@@ -62,7 +62,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 			if (userId.isPresent() && checkCSRF()) {
 				return new WebPrincipal((Integer) userId.get());
 			}
-			return new WebPrincipal(WebPrincipal.ANYNOMOUS_ID);
+			return new WebPrincipal(WebPrincipal.ANONYMOUS_ID);
 		}
 
 		private boolean checkCSRF() {

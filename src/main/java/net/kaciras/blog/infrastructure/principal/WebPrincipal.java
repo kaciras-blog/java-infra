@@ -9,13 +9,13 @@ import java.security.Principal;
 @Value
 public class WebPrincipal implements Principal {
 
-	public static final int ANYNOMOUS_ID = 0;
+	public static final int ANONYMOUS_ID = 0;
 	public static final int SYSTEM_ID = 1;
 	public static final int ADMIN_ID = 2;
 
 	private final int id;
 
-	public boolean isLogined() {
+	public boolean isLogged() {
 		return id > 1;
 	}
 
@@ -23,11 +23,11 @@ public class WebPrincipal implements Principal {
 		return id == SYSTEM_ID;
 	}
 
-	public boolean isAnynomous() {
-		return id == ANYNOMOUS_ID;
+	public boolean isAnonymous() {
+		return id == ANONYMOUS_ID;
 	}
 
-	public boolean isAdministor() {
+	public boolean isAdminister() {
 		return id == ADMIN_ID;
 	}
 
@@ -40,7 +40,7 @@ public class WebPrincipal implements Principal {
 	 * @return 如果有则为true，反之false。
 	 */
 	public boolean hasPermission(String name) {
-		return isAdministor() || isSystem();
+		return isAdminister() || isSystem();
 	}
 
 	public WebPrincipal exitDomain() {
@@ -51,10 +51,10 @@ public class WebPrincipal implements Principal {
 	public String getName() {
 		switch (id) {
 			case 0:
-				return "Anynomous";
+				return "Anonymous";
 			case 1:
 				return "System";
 		}
-		return "Logined:" + id;
+		return "Logged:" + id;
 	}
 }

@@ -28,11 +28,12 @@ public final class CorsProperties {
 
 		/**
 		 * 将CORS配置为Spring中的默认状态。
+		 *
 		 * @see CorsConfiguration#applyPermitDefaultValues()
 		 */
 		Default,
 
-		/** 将CORS配置为允许所有（oridin，header，method...），所有的属性都设为"*" */
+		/** 将CORS配置为允许所有（origin，header，method...），所有的属性都设为"*" */
 		AllowAll
 	}
 }

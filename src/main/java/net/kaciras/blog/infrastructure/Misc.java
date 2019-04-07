@@ -71,7 +71,7 @@ public class Misc {
 					.getMethod("putObjectVolatile", Object.class, long.class, Object.class)
 					.invoke(u, cls, offset, null);
 		} catch (Exception ignore) {
-			throw new UnsupportedClassVersionError("Can not desable illegal access warning");
+			throw new UnsupportedClassVersionError("Can not disable illegal access warning");
 		}
 	}
 

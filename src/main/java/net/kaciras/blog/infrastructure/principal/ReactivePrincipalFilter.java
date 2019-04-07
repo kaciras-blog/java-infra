@@ -62,7 +62,7 @@ public final class ReactivePrincipalFilter implements WebFilter {
 			if (userId != null && checkCSRF()) {
 				return new WebPrincipal((Integer) userId);
 			}
-			return new WebPrincipal(WebPrincipal.ANYNOMOUS_ID);
+			return new WebPrincipal(WebPrincipal.ANONYMOUS_ID);
 		}
 
 		private boolean checkCSRF() {

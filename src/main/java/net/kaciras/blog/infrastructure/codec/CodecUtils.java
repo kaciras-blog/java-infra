@@ -81,14 +81,14 @@ public class CodecUtils {
 	}
 
 	/**
-	 * Returns the index within a bytearray of the first occurrence of
+	 * Returns the index within a byte array of the first occurrence of
 	 * the specified subarray.
 	 *
-	 * @param bytes the bytearray.
+	 * @param bytes the byte array.
 	 * @param part  subarray.
 	 * @param start the index from which to start the search.
 	 * @return the index of the first occurrence of the subarray in the
-	 * 			bytearray, or {@code -1} if the character does not occur.
+	 * 			byte array, or {@code -1} if the character does not occur.
 	 */
 	public int indexOfBytes(byte[] bytes, byte[] part, int start) {
 		var len = bytes.length - part.length + 1;
