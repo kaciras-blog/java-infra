@@ -10,28 +10,28 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 
 /**
- * 将ImageRefrence和Json(com.fasterxml.jackson)互相转换的工具。
+ * 将 ImageReference 和Json(com.fasterxml.jackson)互相转换的工具。
  * 转换时会加上图片所在服务器的URL前缀。
  */
-public final class ImageRefrenceJson {
+final class ImageReferenceJson {
 
 	private static final String DIRECTORY = "/image/"; // 图片直接存储在前端服务器上
 
-	static final class Serializer extends JsonSerializer<ImageRefrence> {
+	static final class Serializer extends JsonSerializer<ImageReference> {
 
 		@Override
-		public void serialize(ImageRefrence value,
+		public void serialize(ImageReference value,
 							  JsonGenerator gen,
 							  SerializerProvider serializers) throws IOException {
 			gen.writeString(DIRECTORY + value.toString());
 		}
 	}
 
-	static final class Deserializer extends JsonDeserializer<ImageRefrence> {
+	static final class Deserializer extends JsonDeserializer<ImageReference> {
 
 		@Override
-		public ImageRefrence deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
-			return ImageRefrence.parse(p.getText().substring(DIRECTORY.length()));
+		public ImageReference deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
+			return ImageReference.parse(p.getText().substring(DIRECTORY.length()));
 		}
 	}
 }
