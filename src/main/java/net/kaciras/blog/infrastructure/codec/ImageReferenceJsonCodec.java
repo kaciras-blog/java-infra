@@ -13,7 +13,7 @@ import java.io.IOException;
  * 将 ImageReference 和Json(com.fasterxml.jackson)互相转换的工具。
  * 转换时会加上图片所在服务器的URL前缀。
  */
-final class ImageReferenceJson {
+final class ImageReferenceJsonCodec {
 
 	private static final String DIRECTORY = "/image/"; // 图片直接存储在前端服务器上
 

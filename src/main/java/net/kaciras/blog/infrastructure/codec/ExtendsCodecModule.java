@@ -23,11 +23,11 @@ public final class ExtendsCodecModule extends Module {
 	@Override
 	public void setupModule(SetupContext context) {
 		var serializers = new SimpleSerializers();
-		serializers.addSerializer(ImageReference.class, new ImageReferenceJson.Serializer());
+		serializers.addSerializer(ImageReference.class, new ImageReferenceJsonCodec.Serializer());
 		context.addSerializers(serializers);
 
 		var deserializers = new SimpleDeserializers();
-		deserializers.addDeserializer(ImageReference.class, new ImageReferenceJson.Deserializer());
+		deserializers.addDeserializer(ImageReference.class, new ImageReferenceJsonCodec.Deserializer());
 		context.addDeserializers(deserializers);
 	}
 }

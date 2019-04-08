@@ -11,7 +11,7 @@ import net.kaciras.blog.infrastructure.exception.RequestArgumentException;
  * 格式来存储{@link ImageReferenceTypeHandler ImageReferenceTypeHandler}。
  * <p>
  * 此类仅表示文件名，而不包含文件所在的目录、服务器等，这些信息由前端序列化时
- * 处理 {@link ImageReferenceJson.Serializer Serializer}，{@link ImageReferenceJson.Deserializer Deserializer}。
+ * 处理 {@link ImageReferenceJsonCodec.Serializer Serializer}，{@link ImageReferenceJsonCodec.Deserializer Deserializer}
  *
  * @author Kaciras
  */
