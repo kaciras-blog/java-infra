@@ -65,23 +65,25 @@ public final class ImageReference {
 	 */
 	private static ImageReference parseHex(String name) {
 		var dot = name.lastIndexOf('.');
-		var sName = name.substring(0, dot);
+		var plainName = name.substring(0, dot);
 		var ext = name.substring(dot + 1);
 
+		// 要检查文件名里有没有路径分割符，必须一个个查看
 		var hexChars = 0;
-		for (var ch : sName.toCharArray()) {
-			if (ch >= '0' && ch <= '9' || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F')) {
+		for (var ch : plainName.toCharArray()) {
+			if (!CodecUtils.isHexDigit(ch)) {
 				hexChars++;
 			} else if (ch == '/' || ch == '\\') {
-				throw new RequestArgumentException("文件名中存在路径分隔符：" + ch);
+				throw new RequestArgumentException("文件名中存在路径分隔符：" + name);
 			}
 		}
+
 		if (hexChars != ImageReference.HASH_SIZE << 1) {
-			return null; // Hash长度不正确
+			return null;
 		}
 
 		try {
-			return new ImageReference(name, ImageType.valueOf(ext.toUpperCase()));
+			return new ImageReference(plainName, ImageType.valueOf(ext.toUpperCase()));
 		} catch (IllegalArgumentException e) {
 			return null; // 扩展名不是定义在 ImageType 里的
 		}

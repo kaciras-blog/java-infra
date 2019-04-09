@@ -48,6 +48,10 @@ public class CodecUtils {
 		return decodeHex(new byte[text.length() >> 1], 0, text);
 	}
 
+	public boolean isHexDigit(char ch) {
+		return ch >= '0' && ch <= '9' || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
+	}
+
 	/**
 	 * decode a hex string into a byte array. The length of hex string must be even.
 	 *
