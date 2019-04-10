@@ -3,15 +3,16 @@ package net.kaciras.blog.infrastructure;
 import net.kaciras.blog.infrastructure.codec.CodecUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+/**
+ * 对比几种检查字符串是否是HEX的方式的性能。
+ */
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Thread)
@@ -93,6 +94,6 @@ public class HexMatch {
 				.warmupIterations(5)
 				.measurementIterations(5)
 				.build();
-		Collection<RunResult> results = new Runner(opt).run();
+		var results = new Runner(opt).run();
 	}
 }

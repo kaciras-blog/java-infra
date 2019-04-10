@@ -32,23 +32,22 @@ public final class ImageReferenceTypeHandler extends BaseTypeHandler<ImageRefere
 	 * 该编码输出固定长度的字节数组，其长度为文件Hash字节长度 + 1；ImageType.Internal类型的
 	 * 文件名不能超出这个长度，不足的话尾部填0。
 	 *
-	 * @since 1.0
-	 * @param refrence ImageRefrence对象
+	 * @param reference ImageReference对象
 	 * @return 编码后的数据
 	 */
-	private byte[] encode(ImageReference refrence) {
+	private byte[] encode(ImageReference reference) {
 		var bytes = new byte[HASH_SIZE + 1];
-		bytes[0] = (byte) refrence.getType().ordinal();
+		bytes[0] = (byte) reference.getType().ordinal();
 
-		if (refrence.getType() == ImageType.Internal) {
-			var nameBytes = refrence.getName().getBytes(StandardCharsets.UTF_8);
+		if (reference.getType() == ImageType.Internal) {
+			var nameBytes = reference.getName().getBytes(StandardCharsets.UTF_8);
 			if(nameBytes.length > HASH_SIZE - 1) {
 				throw new IllegalArgumentException("预置图片文件名不能超过" + (HASH_SIZE - 4) + "字节");
 			}
 			bytes[1] = (byte) nameBytes.length;
 			System.arraycopy(nameBytes, 0, bytes, 2, nameBytes.length);
 		} else {
-			var hash = CodecUtils.decodeHex(refrence.getName());
+			var hash = CodecUtils.decodeHex(reference.getName());
 			if(hash.length != HASH_SIZE) {
 				throw new IllegalArgumentException("无效的图片Hash值");
 			}
@@ -62,7 +61,6 @@ public final class ImageReferenceTypeHandler extends BaseTypeHandler<ImageRefere
 			return null;
 		}
 		var type = ImageType.values()[bytes[0]];
-
 		if (type == ImageType.Internal) {
 			var name = new String(bytes, 2, bytes[1], StandardCharsets.UTF_8);
 			return new ImageReference(name, type);

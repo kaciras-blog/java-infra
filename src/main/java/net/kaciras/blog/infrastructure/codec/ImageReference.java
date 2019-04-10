@@ -85,7 +85,7 @@ public final class ImageReference {
 		try {
 			return new ImageReference(plainName, ImageType.valueOf(ext.toUpperCase()));
 		} catch (IllegalArgumentException e) {
-			return null; // 扩展名不是定义在 ImageType 里的
+			return null; // 不支持的格式认为是非HASH文件名？
 		}
 	}
 }

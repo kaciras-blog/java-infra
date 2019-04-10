@@ -20,7 +20,7 @@ public class CodecUtils {
 	 * @return hex string.
 	 */
 	public String encodeHex(byte[] bytes, int offset, int length) {
-		char[] out = new char[length << 1];
+		var out = new char[length << 1];
 		for (int i = offset, j = 0; i < offset + length; i++) {
 			out[j++] = DIGITS[(0xF0 & bytes[i]) >>> 4];
 			out[j++] = DIGITS[0x0F & bytes[i]];
@@ -61,14 +61,14 @@ public class CodecUtils {
 	 * @return the <code>target</code>
 	 */
 	public byte[] decodeHex(byte[] target, int offset, String text) {
-		char[] data = text.toCharArray();
+		var data = text.toCharArray();
 
 		if ((data.length & 1) != 0) {
 			throw new IllegalArgumentException("The length of hex string must be even");
 		}
 
 		for (int i = offset, j = 0; j < data.length; i++, j++) {
-			int f = toDigit(data[j], j) << 4;
+			var f = toDigit(data[j], j) << 4;
 			j++;
 			f = f | toDigit(data[j], j);
 			target[i] = (byte) (f & 0xFF);
@@ -77,7 +77,7 @@ public class CodecUtils {
 	}
 
 	private int toDigit(char ch, int index) {
-		int digit = Character.digit(ch, 16);
+		var digit = Character.digit(ch, 16);
 		if (digit == -1) {
 			throw new IllegalArgumentException("char at index " + index + " is not a hex digit: " + ch);
 		}
@@ -130,7 +130,7 @@ public class CodecUtils {
 	 * @see <a href="https://tools.ietf.org/html/rfc3493#section-3.7">IPv4-mapped addresses</a>
 	 */
 	private byte[] mappingToIPv6(byte[] ipv4) {
-		byte[] ipv6 = new byte[16];
+		var ipv6 = new byte[16];
 		ipv6[10] = ipv6[11] = (byte) 0xFF;
 		System.arraycopy(ipv4, 0, ipv6, 12, 4);
 		return ipv6;
