@@ -15,5 +15,5 @@ public enum ImageType {
 	/** 内置的图片，文件名不是Hash值 */
 	Internal,
 
-	JPG, JPEG, PNG, GIF, SVG, BMP,
+	JPG, WEBP, PNG, GIF, SVG, BMP,
 }
