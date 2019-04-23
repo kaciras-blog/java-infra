@@ -42,29 +42,4 @@ public class Lambdas {
 	public <T> Function<T, T> keepIntact() {
 		return KEEP_INTACT;
 	}
-
-
-	public <T, R, E extends Throwable> Function<T, R> check(
-			UncheckedFunction<T, R> origin, Function<E, R> onError) {
-		return arg -> {
-			try {
-				return origin.apply(arg);
-			} catch (Exception e) {
-				return onError.apply((E) e);
-			}
-		};
-	}
-
-	/**
-	 * 将能够抛出未检查异常的方法包装为只抛出运行时异常的方法。原始的异常将
-	 * 被包装成RuntimeException抛出。
-	 *
-	 * @param origin 原方法
-	 * @param <T> 原方法入参类型
-	 * @param <R> 原方法返回值类型
-	 * @return 包装后的方法
-	 */
-	public <T, R> Function<T, R> check(UncheckedFunction<T, R> origin) {
-		return check(origin, e -> { throw new RuntimeException(e); });
-	}
 }
