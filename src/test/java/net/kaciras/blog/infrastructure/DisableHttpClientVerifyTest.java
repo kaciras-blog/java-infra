@@ -63,9 +63,9 @@ class DisableHttpClientVerifyTest {
 		var url = new URL("https://localhost:" + server.port());
 		var conn = ((HttpsURLConnection) url.openConnection());
 
-		var sslc = Misc.createTrustAllSSLContext();
+		var sslContext = Misc.createTrustAllSSLContext();
 		conn.setHostnameVerifier((host, session) -> true);
-		conn.setSSLSocketFactory(sslc.getSocketFactory());
+		conn.setSSLSocketFactory(sslContext.getSocketFactory());
 
 		try (var stream = conn.getInputStream()) {
 			Assertions.assertThat(stream.readAllBytes()).containsExactly("Hellow".getBytes());
