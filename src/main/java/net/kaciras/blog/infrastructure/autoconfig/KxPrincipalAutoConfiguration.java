@@ -2,7 +2,6 @@ package net.kaciras.blog.infrastructure.autoconfig;
 
 import lombok.RequiredArgsConstructor;
 import net.kaciras.blog.infrastructure.principal.*;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -72,7 +71,6 @@ public class KxPrincipalAutoConfiguration {
 	 * @see RequireAuthorize
 	 */
 	@Bean
-	@ConditionalOnBean(name = "loadTimeWeaver")
 	public AuthorizeAspect principalAspect() {
 		return new AuthorizeAspect();
 	}
