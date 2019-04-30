@@ -37,10 +37,10 @@ public final class ServletPrincipalFilter extends HttpFilter {
 	}
 
 	private void changeCsrfCookie(HttpServletRequest request, HttpServletResponse response) {
-		var Oldcookie = WebUtils.getCookie(request, properties.getCsrfSessionName());
-		assert Oldcookie != null;
+		var OldCookie = WebUtils.getCookie(request, properties.getCsrfSessionName());
+		assert OldCookie != null;
 
-		var newCookie = (Cookie) Oldcookie.clone();
+		var newCookie = (Cookie) OldCookie.clone();
 		newCookie.setValue(UUID.randomUUID().toString());
 		response.addCookie(newCookie);
 	}

@@ -6,18 +6,18 @@ import net.kaciras.blog.infrastructure.exception.PermissionException;
 @UtilityClass
 public final class SecurityContext {
 
-	private static final ThreadLocal<WebPrincipal> threadLogal = new ThreadLocal<>();
+	private static final ThreadLocal<WebPrincipal> threadLocal = new ThreadLocal<>();
 
-	static void setPrincipal(WebPrincipal principal) {
-		threadLogal.set(principal);
+	public static void setPrincipal(WebPrincipal principal) {
+		threadLocal.set(principal);
 	}
 
 	public static WebPrincipal getPrincipal() {
-		return threadLogal.get();
+		return threadLocal.get();
 	}
 
 	public static void enter(Domain domain) {
-		threadLogal.set(domain.enter(threadLogal.get()));
+		threadLocal.set(domain.enter(threadLocal.get()));
 	}
 
 /* ==================================== Helper Methods ==================================== */
