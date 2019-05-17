@@ -5,6 +5,7 @@ import net.kaciras.blog.infrastructure.autoconfig.CorsProperties.CorsTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -21,6 +22,9 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class KxGlobalCorsAutoConfiguration {
+
+	// 尽量提早过滤掉无效的请求
+	private static final int FILTER_ORDER = Integer.MIN_VALUE + 10;
 
 	private final CorsProperties properties;
 
@@ -61,10 +65,14 @@ public class KxGlobalCorsAutoConfiguration {
 	class ServletSessionConfiguration {
 
 		@Bean
-		public CorsFilter corsFilter() {
+		public FilterRegistrationBean<CorsFilter> corsFilter() {
 			var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
 			source.registerCorsConfiguration("/**", getCorsConfig());
-			return new CorsFilter(source);
+
+			var registration = new FilterRegistrationBean<CorsFilter>();
+			registration.setOrder(FILTER_ORDER);
+			registration.setFilter(new CorsFilter(source));
+			return registration;
 		}
 	}
 

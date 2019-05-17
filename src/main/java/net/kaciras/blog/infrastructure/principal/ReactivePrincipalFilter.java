@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Order(1024)
+@Order(10_000)
 public final class ReactivePrincipalFilter implements WebFilter {
 
 	private final AuthorizationProperties properties;
