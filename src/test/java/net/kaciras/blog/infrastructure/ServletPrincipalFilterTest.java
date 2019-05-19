@@ -37,7 +37,7 @@ public class ServletPrincipalFilterTest {
 	}
 
 	@Test
-	void login() throws Exception {
+	void validHeader() throws Exception {
 		var props = new AuthorizationProperties();
 		var filter = new ServletPrincipalFilter(props, v -> v);
 
@@ -73,6 +73,45 @@ public class ServletPrincipalFilterTest {
 	}
 
 	@Test
+	void validParameter() throws Exception {
+		var props = new AuthorizationProperties();
+		props.setCsrfParameterName("csrf");
+		props.setCsrfHeaderName(null);
+		var filter = new ServletPrincipalFilter(props, v -> v);
+
+		var session = new MockHttpSession();
+		session.setAttribute("UserId", 666);
+
+		var request = new MockHttpServletRequest();
+		request.setSession(session);
+		request.setCookies(new Cookie(props.getCsrfCookieName(), "FOOBAR"));
+		request.addParameter("csrf", "FOOBAR");
+
+		doFilter(filter, request, (req, res) -> {
+			var principal = (WebPrincipal) req.getUserPrincipal();
+			Assertions.assertEquals(666, principal.getId());
+		});
+	}
+
+	@Test
+	void invalidParameter() throws Exception {
+		var props = new AuthorizationProperties();
+		props.setCsrfParameterName("csrf");
+		props.setCsrfHeaderName(null);
+		var filter = new ServletPrincipalFilter(props, v -> v);
+
+		var session = new MockHttpSession();
+		session.setAttribute("UserId", 666);
+
+		var request = new MockHttpServletRequest();
+		request.setSession(session);
+		request.setCookies(new Cookie(props.getCsrfCookieName(), "FOOBAR"));
+
+		doFilter(filter, request, (req, res) ->
+				Assertions.assertEquals(WebPrincipal.ANONYMOUS, req.getUserPrincipal()));
+	}
+
+	@Test
 	void changeToken() throws Exception {
 		var props = new AuthorizationProperties();
 		props.setDynamicCsrfCookie(true);
@@ -86,7 +125,8 @@ public class ServletPrincipalFilterTest {
 		request.setCookies(new Cookie(props.getCsrfCookieName(), "FOOBAR"));
 		request.addHeader(props.getCsrfHeaderName(), "FOOBAR");
 
-		var response = doFilter(filter, request, (req, res) -> {});
+		var response = doFilter(filter, request, (req, res) -> {
+		});
 		Assertions.assertNotNull(response.getHeader("Set-Cookie"));
 	}
 }

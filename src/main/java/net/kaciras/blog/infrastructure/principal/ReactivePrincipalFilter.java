@@ -3,6 +3,7 @@ package net.kaciras.blog.infrastructure.principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
@@ -66,15 +67,18 @@ public final class ReactivePrincipalFilter implements WebFilter {
 		}
 
 		private boolean checkCSRF() {
-			if (!properties.isCsrfVerify()) {
-				return true; // 在配置文件里可以关闭CSRF检验
-			}
-			var header = getRequest().getHeaders().getFirst(properties.getCsrfHeaderName());
 			var cookie = getRequest().getCookies().getFirst(properties.getCsrfCookieName());
+			var nullable = Optional.ofNullable(cookie).map(HttpCookie::getValue);
 
-			return Optional.ofNullable(cookie)
-					.map(_cookie -> _cookie.getValue().equals(header))
-					.orElse(false);
+			if (properties.getCsrfHeaderName() != null) {
+				nullable = nullable.filter(token -> token.equals(getRequest()
+						.getHeaders().getFirst(properties.getCsrfHeaderName())));
+			}
+			if (properties.getCsrfParameterName() != null) {
+				nullable = nullable.filter(token -> token.equals(getRequest()
+						.getQueryParams().getFirst(properties.getCsrfParameterName())));
+			}
+			return nullable.isPresent();
 		}
 	}
 }

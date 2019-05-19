@@ -68,15 +68,16 @@ public final class ServletPrincipalFilter extends HttpFilter {
 		}
 
 		private boolean checkCSRF() {
-			if (!properties.isCsrfVerify()) {
-				return true; // 在配置文件里可以关闭CSRF检验
-			}
-			var header = getHeader(properties.getCsrfHeaderName());
 			var cookie = WebUtils.getCookie(this, properties.getCsrfCookieName());
+			var nullable = Optional.ofNullable(cookie).map(Cookie::getValue);
 
-			return Optional.ofNullable(cookie)
-					.map(_cookie -> _cookie.getValue().equals(header))
-					.orElse(false);
+			if (properties.getCsrfHeaderName() != null) {
+				nullable = nullable.filter(token -> token.equals(getHeader(properties.getCsrfHeaderName())));
+			}
+			if(properties.getCsrfParameterName() != null) {
+				nullable = nullable.filter(token -> token.equals(getParameter(properties.getCsrfParameterName())));
+			}
+			return nullable.isPresent();
 		}
 	}
 }
