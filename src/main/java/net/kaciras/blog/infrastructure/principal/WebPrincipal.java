@@ -13,6 +13,8 @@ public class WebPrincipal implements Principal {
 	public static final int SYSTEM_ID = 1;
 	public static final int ADMIN_ID = 2;
 
+	public static final WebPrincipal ANONYMOUS = new WebPrincipal(ANONYMOUS_ID);
+
 	private final int id;
 
 	public boolean isLogged() {

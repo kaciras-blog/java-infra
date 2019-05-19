@@ -28,7 +28,7 @@ public final class ReactivePrincipalFilter implements WebFilter {
 	}
 
 	private void changeCsrfCookie(ServerWebExchange exchange) {
-		var oldCookie = exchange.getRequest().getCookies().getFirst(properties.getCsrfSessionName());
+		var oldCookie = exchange.getRequest().getCookies().getFirst(properties.getCsrfCookieName());
 //		ResponseCookie.from(oldCookie.getName(), UUID.randomUUID().toString())
 //				.domain()
 	}
@@ -62,7 +62,7 @@ public final class ReactivePrincipalFilter implements WebFilter {
 			if (userId != null && checkCSRF()) {
 				return new WebPrincipal((Integer) userId);
 			}
-			return new WebPrincipal(WebPrincipal.ANONYMOUS_ID);
+			return WebPrincipal.ANONYMOUS;
 		}
 
 		private boolean checkCSRF() {
@@ -70,7 +70,7 @@ public final class ReactivePrincipalFilter implements WebFilter {
 				return true; // 在配置文件里可以关闭CSRF检验
 			}
 			var header = getRequest().getHeaders().getFirst(properties.getCsrfHeaderName());
-			var cookie = getRequest().getCookies().getFirst(properties.getCsrfSessionName());
+			var cookie = getRequest().getCookies().getFirst(properties.getCsrfCookieName());
 
 			return Optional.ofNullable(cookie)
 					.map(_cookie -> _cookie.getValue().equals(header))

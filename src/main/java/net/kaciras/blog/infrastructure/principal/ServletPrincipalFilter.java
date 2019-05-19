@@ -24,8 +24,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 	@Override
 	protected void doFilter(HttpServletRequest request,
 							HttpServletResponse response,
-							FilterChain chain)
-			throws IOException, ServletException {
+							FilterChain chain) throws IOException, ServletException {
 
 		request = new PrincipalRequestWrapper(request);
 		chain.doFilter(request, response);
@@ -37,11 +36,13 @@ public final class ServletPrincipalFilter extends HttpFilter {
 	}
 
 	private void changeCsrfCookie(HttpServletRequest request, HttpServletResponse response) {
-		var OldCookie = WebUtils.getCookie(request, properties.getCsrfSessionName());
+		var OldCookie = WebUtils.getCookie(request, properties.getCsrfCookieName());
 		assert OldCookie != null;
 
 		var newCookie = (Cookie) OldCookie.clone();
 		newCookie.setValue(UUID.randomUUID().toString());
+		// TODO: set cookie properties
+
 		response.addCookie(newCookie);
 	}
 
@@ -58,11 +59,12 @@ public final class ServletPrincipalFilter extends HttpFilter {
 
 		// system principal?
 		private WebPrincipal doGetPrincipal() {
-			var userId = Optional.ofNullable(getSession()).map(session -> session.getAttribute("UserId"));
-			if (userId.isPresent() && checkCSRF()) {
-				return new WebPrincipal((Integer) userId.get());
-			}
-			return new WebPrincipal(WebPrincipal.ANONYMOUS_ID);
+			return Optional
+					.ofNullable(getSession())
+					.map(session -> session.getAttribute("UserId"))
+					.filter((__) -> checkCSRF())
+					.map((id) -> new WebPrincipal((Integer) id))
+					.orElse(WebPrincipal.ANONYMOUS);
 		}
 
 		private boolean checkCSRF() {
@@ -70,7 +72,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 				return true; // 在配置文件里可以关闭CSRF检验
 			}
 			var header = getHeader(properties.getCsrfHeaderName());
-			var cookie = WebUtils.getCookie(this, properties.getCsrfSessionName());
+			var cookie = WebUtils.getCookie(this, properties.getCsrfCookieName());
 
 			return Optional.ofNullable(cookie)
 					.map(_cookie -> _cookie.getValue().equals(header))
