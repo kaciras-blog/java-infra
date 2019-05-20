@@ -3,14 +3,13 @@ package net.kaciras.blog.infrastructure;
 import net.kaciras.blog.infrastructure.principal.ServletPrincipalFilter;
 import net.kaciras.blog.infrastructure.principal.WebPrincipal;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class ServletPrincipalFilterTest {
 
@@ -18,23 +17,20 @@ public class ServletPrincipalFilterTest {
 	private static final String HEADER_NAME = "X-CSRF-Token";
 	private static final String PARAMETER_NAME = "csrf";
 
-	@FunctionalInterface
-	private interface HttpFilterChain {
-		void next(HttpServletRequest req, HttpServletResponse res);
-	}
+	private ServletPrincipalFilter filter;
+	private HttpSession sessionUser666;
 
-	private ServletPrincipalFilter filter = new ServletPrincipalFilter(v -> v);
-
-	private HttpServletResponse doFilter(HttpServletRequest request, HttpFilterChain chain) throws Exception {
-		var response = new MockHttpServletResponse();
-		filter.doFilter(request, response, (q, r) -> chain.next((HttpServletRequest) q, (HttpServletResponse) r));
-		return response;
+	@BeforeEach
+	void setUp() {
+		filter = new ServletPrincipalFilter(v -> v);
+		sessionUser666 = new MockHttpSession();
+		sessionUser666.setAttribute("UserId", 666);
 	}
 
 	@Test
 	void noCredit() throws Exception {
-		doFilter(new MockHttpServletRequest(), (req, res) ->
-				Assertions.assertEquals(WebPrincipal.ANONYMOUS, req.getUserPrincipal()));
+		var result = FilterChainCapture.doFilter(filter, new MockHttpServletRequest());
+		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
 	}
 
 	@Test
@@ -42,18 +38,15 @@ public class ServletPrincipalFilterTest {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setHeaderName(HEADER_NAME);
 
-		var session = new MockHttpSession();
-		session.setAttribute("UserId", 666);
-
 		var request = new MockHttpServletRequest();
-		request.setSession(session);
+		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 		request.addHeader(HEADER_NAME, "FOOBAR");
 
-		doFilter(request, (req, res) -> {
-			var principal = (WebPrincipal) req.getUserPrincipal();
-			Assertions.assertEquals(666, principal.getId());
-		});
+		var result = FilterChainCapture.doFilter(filter, request);
+
+		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
+		Assertions.assertEquals(666, principal.getId());
 	}
 
 	@Test
@@ -61,16 +54,13 @@ public class ServletPrincipalFilterTest {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setHeaderName(HEADER_NAME);
 
-		var session = new MockHttpSession();
-		session.setAttribute("UserId", 666);
-
 		var request = new MockHttpServletRequest();
-		request.setSession(session);
+		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 		request.addHeader(HEADER_NAME, "invalid");
 
-		doFilter(request, (req, res) ->
-				Assertions.assertEquals(WebPrincipal.ANONYMOUS, req.getUserPrincipal()));
+		var result = FilterChainCapture.doFilter(filter, request);
+		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
 	}
 
 	@Test
@@ -78,18 +68,15 @@ public class ServletPrincipalFilterTest {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setParameterName(PARAMETER_NAME);
 
-		var session = new MockHttpSession();
-		session.setAttribute("UserId", 666);
-
 		var request = new MockHttpServletRequest();
-		request.setSession(session);
+		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 		request.addParameter(PARAMETER_NAME, "FOOBAR");
 
-		doFilter(request, (req, res) -> {
-			var principal = (WebPrincipal) req.getUserPrincipal();
-			Assertions.assertEquals(666, principal.getId());
-		});
+		var result = FilterChainCapture.doFilter(filter, request);
+
+		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
+		Assertions.assertEquals(666, principal.getId());
 	}
 
 	@Test
@@ -97,30 +84,26 @@ public class ServletPrincipalFilterTest {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setParameterName(PARAMETER_NAME);
 
-		var session = new MockHttpSession();
-		session.setAttribute("UserId", 666);
-
 		var request = new MockHttpServletRequest();
-		request.setSession(session);
+		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 
-		doFilter(request, (req, res) ->
-				Assertions.assertEquals(WebPrincipal.ANONYMOUS, req.getUserPrincipal()));
+		var result = FilterChainCapture.doFilter(filter, request);
+		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
 	}
 
 //	@Test
 //	void changeToken() throws Exception {
 //		props.setDynamicCsrfCookie(true);
 //
-//		var session = new MockHttpSession();
-//		session.setAttribute("UserId", 666);
-//
 //		var request = new MockHttpServletRequest();
-//		request.setSession(session);
+//		request.setSession(sessionUser666);
 //		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 //		request.addHeader(HEADER_NAME, "FOOBAR");
 //
-//		var response = doFilter(request, (req, res) -> {});
-//		Assertions.assertNotNull(response.getHeader("Set-Cookie"));
+//		var result = FilterChainCapture.doFilter(filter, request);
+//
+//		var cookie = MockCookie.parse(result.inResponse.getHeader("Set-Cookie"));
+//		Assertions.assertEquals(COOKIE_NAME, cookie.getName());
 //	}
 }
