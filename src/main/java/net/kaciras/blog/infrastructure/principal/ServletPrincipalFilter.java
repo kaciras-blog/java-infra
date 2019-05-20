@@ -1,6 +1,7 @@
 package net.kaciras.blog.infrastructure.principal;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.util.WebUtils;
@@ -13,13 +14,17 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
+@Order(10_000)
 @Slf4j
 @RequiredArgsConstructor
-@Order(10_000)
+@Setter
 public final class ServletPrincipalFilter extends HttpFilter {
 
-	private final AuthorizationProperties properties;
 	private final Domain globalDomain;
+
+	private String cookieName;
+	private String headerName;
+	private String parameterName;
 
 	@Override
 	protected void doFilter(HttpServletRequest request,
@@ -29,19 +34,21 @@ public final class ServletPrincipalFilter extends HttpFilter {
 		request = new PrincipalRequestWrapper(request);
 		chain.doFilter(request, response);
 
-		if (properties.isDynamicCsrfCookie()
-				&& ((WebPrincipal) request.getUserPrincipal()).isLogged()) {
-			changeCsrfCookie(request, response);
-		}
+//		if (properties.isDynamicCsrfCookie()
+//				&& ((WebPrincipal) request.getUserPrincipal()).isLogged()) {
+//			changeCsrfCookie(request, response);
+//		}
 	}
 
 	private void changeCsrfCookie(HttpServletRequest request, HttpServletResponse response) {
-		var OldCookie = WebUtils.getCookie(request, properties.getCsrfCookieName());
+		var OldCookie = WebUtils.getCookie(request, cookieName);
 		assert OldCookie != null;
 
 		var newCookie = (Cookie) OldCookie.clone();
 		newCookie.setValue(UUID.randomUUID().toString());
-		// TODO: set cookie properties
+//		TODO newCookie.setDomain();
+		newCookie.setMaxAge(request.getSession().getMaxInactiveInterval());
+		newCookie.setPath("/");
 
 		response.addCookie(newCookie);
 	}
@@ -68,14 +75,16 @@ public final class ServletPrincipalFilter extends HttpFilter {
 		}
 
 		private boolean checkCSRF() {
-			var cookie = WebUtils.getCookie(this, properties.getCsrfCookieName());
-			var nullable = Optional.ofNullable(cookie).map(Cookie::getValue);
-
-			if (properties.getCsrfHeaderName() != null) {
-				nullable = nullable.filter(token -> token.equals(getHeader(properties.getCsrfHeaderName())));
+			if(cookieName == null) {
+				return true;
 			}
-			if(properties.getCsrfParameterName() != null) {
-				nullable = nullable.filter(token -> token.equals(getParameter(properties.getCsrfParameterName())));
+			var nullable = Optional.ofNullable(WebUtils.getCookie(this, cookieName)).map(Cookie::getValue);
+
+			if (headerName != null) {
+				nullable = nullable.filter(token -> token.equals(getHeader(headerName)));
+			}
+			if(parameterName != null) {
+				nullable = nullable.filter(token -> token.equals(getParameter(parameterName)));
 			}
 			return nullable.isPresent();
 		}

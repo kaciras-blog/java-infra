@@ -1,6 +1,7 @@
 package net.kaciras.blog.infrastructure.principal;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpCookie;
@@ -15,13 +16,17 @@ import java.util.Optional;
  * 从会话中查询用户的身份，作为ServerRequest中的Principal属性。无论用户是否
  * 登录，都将返回一个Principal。
  */
+@Order(10_000)
 @Slf4j
 @RequiredArgsConstructor
-@Order(10_000)
+@Setter
 public final class ReactivePrincipalFilter implements WebFilter {
 
-	private final AuthorizationProperties properties;
 	private final Domain globalDomain;
+
+	private String cookieName;
+	private String headerName;
+	private String parameterName;
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -29,7 +34,7 @@ public final class ReactivePrincipalFilter implements WebFilter {
 	}
 
 	private void changeCsrfCookie(ServerWebExchange exchange) {
-		var oldCookie = exchange.getRequest().getCookies().getFirst(properties.getCsrfCookieName());
+		var oldCookie = exchange.getRequest().getCookies().getFirst(cookieName);
 //		ResponseCookie.from(oldCookie.getName(), UUID.randomUUID().toString())
 //				.domain()
 	}
@@ -67,16 +72,17 @@ public final class ReactivePrincipalFilter implements WebFilter {
 		}
 
 		private boolean checkCSRF() {
-			var cookie = getRequest().getCookies().getFirst(properties.getCsrfCookieName());
-			var nullable = Optional.ofNullable(cookie).map(HttpCookie::getValue);
-
-			if (properties.getCsrfHeaderName() != null) {
-				nullable = nullable.filter(token -> token.equals(getRequest()
-						.getHeaders().getFirst(properties.getCsrfHeaderName())));
+			if(cookieName == null) {
+				return true;
 			}
-			if (properties.getCsrfParameterName() != null) {
-				nullable = nullable.filter(token -> token.equals(getRequest()
-						.getQueryParams().getFirst(properties.getCsrfParameterName())));
+			var request = getRequest();
+			var nullable = Optional.ofNullable(request.getCookies().getFirst(cookieName)).map(HttpCookie::getValue);
+
+			if (headerName != null) {
+				nullable = nullable.filter(token -> token.equals(request.getHeaders().getFirst(headerName)));
+			}
+			if (parameterName != null) {
+				nullable = nullable.filter(token -> token.equals(request.getQueryParams().getFirst(parameterName)));
 			}
 			return nullable.isPresent();
 		}

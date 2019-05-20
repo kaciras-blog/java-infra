@@ -12,13 +12,13 @@ public final class AuthorizationProperties {
 
 	private boolean dynamicCsrfCookie;
 
-	private String csrfCookieName = "CSRF-Token";
+	private String csrfCookie = "CSRF-Token";
 
 	/** 如果为null，则不验证请求头 */
 	@Nullable
-	private String csrfHeaderName = "X-CSRF-Token";
+	private String csrfHeader = "X-CSRF-Token";
 
 	/** 如果为null，则不验证请求参数 */
 	@Nullable
-	private String csrfParameterName;
+	private String csrfParameter;
 }

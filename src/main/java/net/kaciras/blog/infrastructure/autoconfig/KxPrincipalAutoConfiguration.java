@@ -31,7 +31,11 @@ public class KxPrincipalAutoConfiguration {
 			if (developmentProperties.isAdminPrincipal()) {
 				domain = new DevelopAdminDomain(domain);
 			}
-			return new ServletPrincipalFilter(authorizationProperties, domain);
+			var filter = new ServletPrincipalFilter(domain);
+			filter.setCookieName(authorizationProperties.getCsrfCookie());
+			filter.setHeaderName(authorizationProperties.getCsrfHeader());
+			filter.setParameterName(authorizationProperties.getCsrfParameter());
+			return filter;
 		}
 
 		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
@@ -53,7 +57,11 @@ public class KxPrincipalAutoConfiguration {
 			if (developmentProperties.isAdminPrincipal()) {
 				domain = new DevelopAdminDomain(domain);
 			}
-			return new ReactivePrincipalFilter(authorizationProperties, domain);
+			var filter = new ReactivePrincipalFilter(domain);
+			filter.setCookieName(authorizationProperties.getCsrfCookie());
+			filter.setHeaderName(authorizationProperties.getCsrfHeader());
+			filter.setParameterName(authorizationProperties.getCsrfParameter());
+			return filter;
 		}
 
 		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")

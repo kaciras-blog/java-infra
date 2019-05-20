@@ -1,11 +1,9 @@
 package net.kaciras.blog.infrastructure.principal;
 
-import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.security.Principal;
 
-@EqualsAndHashCode(of = "id")
 @Value
 public class WebPrincipal implements Principal {
 
