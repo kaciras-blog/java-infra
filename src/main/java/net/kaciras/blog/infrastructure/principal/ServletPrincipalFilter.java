@@ -3,6 +3,7 @@ package net.kaciras.blog.infrastructure.principal;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.kaciras.blog.infrastructure.Misc;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.util.WebUtils;
 
@@ -22,6 +23,9 @@ public final class ServletPrincipalFilter extends HttpFilter {
 
 	private final Domain globalDomain;
 
+	private String domain;
+	private boolean dynamicToken;
+
 	private String cookieName;
 	private String headerName;
 	private String parameterName;
@@ -34,23 +38,19 @@ public final class ServletPrincipalFilter extends HttpFilter {
 		request = new PrincipalRequestWrapper(request);
 		chain.doFilter(request, response);
 
-//		if (properties.isDynamicCsrfCookie()
-//				&& ((WebPrincipal) request.getUserPrincipal()).isLogged()) {
-//			changeCsrfCookie(request, response);
-//		}
+		// TODO: 用户登录后的初始Token是否也能搞到这里
+		var userId = request.getSession(true).getAttribute("UserId");
+		if (userId != null && dynamicToken && !Misc.idempotent(request)) {
+			changeCsrfCookie(request, response);
+		}
 	}
 
 	private void changeCsrfCookie(HttpServletRequest request, HttpServletResponse response) {
-		var OldCookie = WebUtils.getCookie(request, cookieName);
-		assert OldCookie != null;
-
-		var newCookie = (Cookie) OldCookie.clone();
-		newCookie.setValue(UUID.randomUUID().toString());
-//		TODO newCookie.setDomain();
-		newCookie.setMaxAge(request.getSession().getMaxInactiveInterval());
-		newCookie.setPath("/");
-
-		response.addCookie(newCookie);
+		var cookie = new Cookie(cookieName, UUID.randomUUID().toString());
+		cookie.setDomain(domain);
+		cookie.setPath("/");
+		cookie.setMaxAge(request.getSession().getMaxInactiveInterval());
+		response.addCookie(cookie);
 	}
 
 	private class PrincipalRequestWrapper extends HttpServletRequestWrapper {
@@ -75,7 +75,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 		}
 
 		private boolean checkCSRF() {
-			if(cookieName == null) {
+			if (cookieName == null) {
 				return true;
 			}
 			var nullable = Optional.ofNullable(WebUtils.getCookie(this, cookieName)).map(Cookie::getValue);
@@ -83,7 +83,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 			if (headerName != null) {
 				nullable = nullable.filter(token -> token.equals(getHeader(headerName)));
 			}
-			if(parameterName != null) {
+			if (parameterName != null) {
 				nullable = nullable.filter(token -> token.equals(getParameter(parameterName)));
 			}
 			return nullable.isPresent();

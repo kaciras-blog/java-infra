@@ -3,6 +3,7 @@ package net.kaciras.blog.infrastructure;
 import lombok.experimental.UtilityClass;
 
 import javax.net.ssl.*;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
@@ -12,6 +13,7 @@ import java.util.NoSuchElementException;
 @UtilityClass
 public class Misc {
 
+	//@formatter:off
 	private static final class TrustAllManager extends X509ExtendedTrustManager {
 		public void checkClientTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
 		public void checkServerTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
@@ -21,6 +23,7 @@ public class Misc {
 		public void checkServerTrusted(X509Certificate[] chain, String authType) {}
 		public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
 	}
+	//@formatter:on
 
 	/**
 	 * 创建一个SSLContext对象，其已经初始化为接受所有证书。
@@ -78,7 +81,7 @@ public class Misc {
 	/**
 	 * 自动检测调用者所在的类是否在Jar包里，如果是则关闭 Spring Boot 的 Dev-Tool。
 	 * 请在 main() 方法中使用，并且要放在Spring启动之前。
-	 *
+	 * <p>
 	 * 说好的 SpringBoot dev-tool 能自动检查JAR启动的呢？
 	 */
 	public static void disableSpringDevToolOnJarStartup() {
@@ -92,10 +95,10 @@ public class Misc {
 	}
 
 	/**
-	 * Helper method to get fitst element from a iterable.
+	 * Helper method to get first element from a iterable.
 	 *
 	 * @param iterable iterable object.
-	 * @param <T> type of element.
+	 * @param <T>      type of the element.
 	 * @return the element.
 	 * @throws NoSuchElementException if iterable has no element.
 	 */
@@ -105,5 +108,10 @@ public class Misc {
 			return iter.next();
 		}
 		throw new NoSuchElementException("iterable has no element.");
+	}
+
+	public static boolean idempotent(HttpServletRequest request) {
+		var method = request.getMethod();
+		return "GET".equals(method) || "HEAD".equals(method);
 	}
 }

@@ -16,8 +16,9 @@ import org.springframework.web.server.WebFilter;
 @RequiredArgsConstructor
 public class KxPrincipalAutoConfiguration {
 
-	private final AuthorizationProperties authorizationProperties;
-	private final DevelopmentProperties developmentProperties;
+	private final AuthorizationProperties authProps;
+	private final DevelopmentProperties devProps;
+	private final SessionCookieProperties sessionProps;
 
 	/**
 	 * Servlet 环境下的配置，将启用基于 Servlet 技术栈的组件。
@@ -28,13 +29,15 @@ public class KxPrincipalAutoConfiguration {
 
 		@Bean
 		public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
-			if (developmentProperties.isAdminPrincipal()) {
+			if (devProps.isAdminPrincipal()) {
 				domain = new DevelopAdminDomain(domain);
 			}
 			var filter = new ServletPrincipalFilter(domain);
-			filter.setCookieName(authorizationProperties.getCsrfCookie());
-			filter.setHeaderName(authorizationProperties.getCsrfHeader());
-			filter.setParameterName(authorizationProperties.getCsrfParameter());
+			filter.setCookieName(authProps.getCsrfCookie());
+			filter.setHeaderName(authProps.getCsrfHeader());
+			filter.setParameterName(authProps.getCsrfParameter());
+			filter.setDomain(sessionProps.getDomain());
+			filter.setDynamicToken(authProps.isDynamicCsrfCookie());
 			return filter;
 		}
 
@@ -54,13 +57,15 @@ public class KxPrincipalAutoConfiguration {
 
 		@Bean
 		public ReactivePrincipalFilter reactivePrincipalFilter(Domain domain) {
-			if (developmentProperties.isAdminPrincipal()) {
+			if (devProps.isAdminPrincipal()) {
 				domain = new DevelopAdminDomain(domain);
 			}
 			var filter = new ReactivePrincipalFilter(domain);
-			filter.setCookieName(authorizationProperties.getCsrfCookie());
-			filter.setHeaderName(authorizationProperties.getCsrfHeader());
-			filter.setParameterName(authorizationProperties.getCsrfParameter());
+			filter.setCookieName(authProps.getCsrfCookie());
+			filter.setHeaderName(authProps.getCsrfHeader());
+			filter.setParameterName(authProps.getCsrfParameter());
+			filter.setDomain(sessionProps.getDomain());
+			filter.setDynamicToken(authProps.isDynamicCsrfCookie());
 			return filter;
 		}
 

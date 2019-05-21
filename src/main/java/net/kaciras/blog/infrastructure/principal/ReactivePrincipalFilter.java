@@ -5,12 +5,14 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpCookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * 从会话中查询用户的身份，作为ServerRequest中的Principal属性。无论用户是否
@@ -24,6 +26,9 @@ public final class ReactivePrincipalFilter implements WebFilter {
 
 	private final Domain globalDomain;
 
+	private String domain;
+	private boolean dynamicToken;
+
 	private String cookieName;
 	private String headerName;
 	private String parameterName;
@@ -33,10 +38,17 @@ public final class ReactivePrincipalFilter implements WebFilter {
 		return chain.filter(new IMWebExchange(exchange));
 	}
 
-	private void changeCsrfCookie(ServerWebExchange exchange) {
-		var oldCookie = exchange.getRequest().getCookies().getFirst(cookieName);
-//		ResponseCookie.from(oldCookie.getName(), UUID.randomUUID().toString())
-//				.domain()
+	// unused
+	private Mono<WebSession> changeCsrfCookie(ServerWebExchange exchange) {
+		return exchange.getSession().doOnNext(session -> {
+			var cookie = ResponseCookie
+					.from(cookieName, UUID.randomUUID().toString())
+					.domain(domain)
+					.path("/")
+					.maxAge(session.getMaxIdleTime())
+					.build();
+			exchange.getResponse().addCookie(cookie);
+		});
 	}
 
 	/**

@@ -5,6 +5,7 @@ import net.kaciras.blog.infrastructure.principal.WebPrincipal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 
@@ -92,18 +93,22 @@ public class ServletPrincipalFilterTest {
 		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
 	}
 
-//	@Test
-//	void changeToken() throws Exception {
-//		props.setDynamicCsrfCookie(true);
-//
-//		var request = new MockHttpServletRequest();
-//		request.setSession(sessionUser666);
-//		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
-//		request.addHeader(HEADER_NAME, "FOOBAR");
-//
-//		var result = FilterChainCapture.doFilter(filter, request);
-//
-//		var cookie = MockCookie.parse(result.inResponse.getHeader("Set-Cookie"));
-//		Assertions.assertEquals(COOKIE_NAME, cookie.getName());
-//	}
+	@Test
+	void changeToken() throws Exception {
+		filter.setCookieName(COOKIE_NAME);
+		filter.setDomain("kaciras.example.com");
+		filter.setDynamicToken(true);
+
+		var request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.setSession(sessionUser666);
+		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
+		request.addHeader(HEADER_NAME, "FOOBAR");
+
+		var result = FilterChainCapture.doFilter(filter, request);
+
+		var cookie = MockCookie.parse(result.inResponse.getHeader("Set-Cookie"));
+		Assertions.assertEquals(COOKIE_NAME, cookie.getName());
+		Assertions.assertEquals("kaciras.example.com", cookie.getDomain());
+	}
 }
