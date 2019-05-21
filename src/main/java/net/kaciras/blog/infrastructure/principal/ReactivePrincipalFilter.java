@@ -5,12 +5,15 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpCookie;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +31,8 @@ public final class ReactivePrincipalFilter implements WebFilter {
 
 	private String domain;
 	private boolean dynamicToken;
+
+	private boolean skipSafeRequest;
 
 	private String cookieName;
 	private String headerName;
@@ -77,14 +82,17 @@ public final class ReactivePrincipalFilter implements WebFilter {
 		 */
 		private WebPrincipal doGetPrincipal(@NonNull WebSession session) {
 			var userId = session.getAttribute("UserId");
-			if (userId != null && checkCSRF()) {
+			if (userId == null) {
+				return WebPrincipal.ANONYMOUS;
+			}
+			if (skipSafeRequest && isSafeRequest(getRequest())) {
 				return new WebPrincipal((Integer) userId);
 			}
-			return WebPrincipal.ANONYMOUS;
+			return checkCSRF() ? new WebPrincipal((Integer) userId) : WebPrincipal.ANONYMOUS;
 		}
 
 		private boolean checkCSRF() {
-			if(cookieName == null) {
+			if (cookieName == null) {
 				return true;
 			}
 			var request = getRequest();
@@ -98,5 +106,13 @@ public final class ReactivePrincipalFilter implements WebFilter {
 			}
 			return nullable.isPresent();
 		}
+	}
+
+	// 没搞到MISC里去因为跟Servlet的重了
+	private static final EnumSet<HttpMethod> SAFE_METHODS =
+			EnumSet.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS);
+
+	private static boolean isSafeRequest(ServerHttpRequest request) {
+		return SAFE_METHODS.contains(request.getMethod());
 	}
 }

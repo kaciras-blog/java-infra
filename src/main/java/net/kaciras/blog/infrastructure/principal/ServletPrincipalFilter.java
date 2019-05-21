@@ -26,6 +26,8 @@ public final class ServletPrincipalFilter extends HttpFilter {
 	private String domain;
 	private boolean dynamicToken;
 
+	private boolean skipSafeRequest;
+
 	private String cookieName;
 	private String headerName;
 	private String parameterName;
@@ -40,7 +42,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 
 		// TODO: 用户登录后的初始Token是否也能搞到这里
 		var userId = request.getSession(true).getAttribute("UserId");
-		if (userId != null && dynamicToken && !Misc.idempotent(request)) {
+		if (userId != null && dynamicToken && !Misc.isSafeRequest(request)) {
 			changeCsrfCookie(request, response);
 		}
 	}
@@ -55,7 +57,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 
 	private class PrincipalRequestWrapper extends HttpServletRequestWrapper {
 
-		public PrincipalRequestWrapper(HttpServletRequest request) {
+		private PrincipalRequestWrapper(HttpServletRequest request) {
 			super(request);
 		}
 
@@ -66,12 +68,13 @@ public final class ServletPrincipalFilter extends HttpFilter {
 
 		// system principal?
 		private WebPrincipal doGetPrincipal() {
-			return Optional
-					.ofNullable(getSession())
-					.map(session -> session.getAttribute("UserId"))
-					.filter((__) -> checkCSRF())
-					.map((id) -> new WebPrincipal((Integer) id))
-					.orElse(WebPrincipal.ANONYMOUS);
+			var userId = Optional.ofNullable(getSession()).map(session -> session.getAttribute("UserId"));
+
+			if(!skipSafeRequest || !Misc.isSafeRequest(this)) {
+				userId = userId.filter((__) -> checkCSRF());
+			}
+
+			return userId.map((id) -> new WebPrincipal((Integer) id)).orElse(WebPrincipal.ANONYMOUS);
 		}
 
 		private boolean checkCSRF() {

@@ -33,6 +33,7 @@ public class KxPrincipalAutoConfiguration {
 				domain = new DevelopAdminDomain(domain);
 			}
 			var filter = new ServletPrincipalFilter(domain);
+			filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
 			filter.setCookieName(authProps.getCsrfCookie());
 			filter.setHeaderName(authProps.getCsrfHeader());
 			filter.setParameterName(authProps.getCsrfParameter());
@@ -61,6 +62,7 @@ public class KxPrincipalAutoConfiguration {
 				domain = new DevelopAdminDomain(domain);
 			}
 			var filter = new ReactivePrincipalFilter(domain);
+			filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
 			filter.setCookieName(authProps.getCsrfCookie());
 			filter.setHeaderName(authProps.getCsrfHeader());
 			filter.setParameterName(authProps.getCsrfParameter());

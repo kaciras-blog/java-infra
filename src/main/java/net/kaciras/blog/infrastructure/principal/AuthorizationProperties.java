@@ -13,6 +13,7 @@ public final class AuthorizationProperties {
 	private boolean dynamicCsrfCookie;
 
 	private String csrfCookie = "CSRF-Token";
+	private boolean skipSafeRequest = true;
 
 	/** 如果为null，则不验证请求头 */
 	@Nullable

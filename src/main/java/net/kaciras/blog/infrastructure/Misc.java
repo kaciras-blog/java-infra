@@ -110,8 +110,16 @@ public class Misc {
 		throw new NoSuchElementException("iterable has no element.");
 	}
 
-	public static boolean idempotent(HttpServletRequest request) {
+	/**
+	 * 判断一个请求对象是否是不改变状态的安全请求。安全请求的定义见：
+	 * https://tools.ietf.org/html/rfc7231#section-4.2.1
+	 * 注意这里去掉了 TRACE 方法，因为我用不到它，而且它的功能还有些安全隐患。
+	 *
+	 * @param request 请求对象
+	 * @return 如果是安全请求则为true，否则false
+	 */
+	public static boolean isSafeRequest(HttpServletRequest request) {
 		var method = request.getMethod();
-		return "GET".equals(method) || "HEAD".equals(method);
+		return "GET".equals(method) || "HEAD".equals(method) || "OPTIONS".equals(method);
 	}
 }

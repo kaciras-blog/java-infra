@@ -111,4 +111,23 @@ public class ServletPrincipalFilterTest {
 		Assertions.assertEquals(COOKIE_NAME, cookie.getName());
 		Assertions.assertEquals("kaciras.example.com", cookie.getDomain());
 	}
+
+	@Test
+	void skipSafeRequest() throws Exception {
+		filter.setCookieName(COOKIE_NAME);
+		filter.setHeaderName(HEADER_NAME);
+		filter.setSkipSafeRequest(true);
+
+		var request = new MockHttpServletRequest(null, "GET", "/");
+		request.setSession(sessionUser666);
+		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
+
+		var result = FilterChainCapture.doFilter(filter, request);
+		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
+		Assertions.assertEquals(666, principal.getId());
+
+		request.setMethod("POST");
+		result = FilterChainCapture.doFilter(filter, request);
+		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
+	}
 }
