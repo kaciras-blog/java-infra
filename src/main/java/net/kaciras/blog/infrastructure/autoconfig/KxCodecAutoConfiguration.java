@@ -2,7 +2,7 @@ package net.kaciras.blog.infrastructure.autoconfig;
 
 import net.kaciras.blog.infrastructure.codec.ExtendsCodecModule;
 import net.kaciras.blog.infrastructure.codec.ImageReferenceTypeHandler;
-import net.kaciras.blog.infrastructure.codec.IpAddressTypeHandler;
+import net.kaciras.blog.infrastructure.codec.InetAddressTypeHandler;
 import org.mybatis.spring.boot.autoconfigure.ConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -25,7 +25,7 @@ public class KxCodecAutoConfiguration {
 			return config -> {
 				var registry = config.getTypeHandlerRegistry();
 				registry.register(ImageReferenceTypeHandler.class);
-				registry.register(IpAddressTypeHandler.class);
+				registry.register(InetAddressTypeHandler.class);
 			};
 		}
 	}
