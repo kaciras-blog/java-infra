@@ -62,7 +62,7 @@ final class RedisRateLimiterTest {
 	}
 
 	@Test
-	void testAcquire() {
+	void acquire() {
 		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
 
 		Assertions.assertThat(limiter.acquire(KEY, 50)).isZero();
@@ -72,12 +72,17 @@ final class RedisRateLimiterTest {
 	}
 
 	@Test
-	void testRestore() {
+	void restore() {
 		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
 		Assertions.assertThat(limiter.acquire(KEY, 100)).isZero();
 
 		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(50));
 		Assertions.assertThat(limiter.acquire(KEY, 100)).isZero();
 		Assertions.assertThat(limiter.acquire(KEY, 30)).isEqualTo(15);
+	}
+
+	@Test
+	void acquireOverLimit() {
+		Assertions.assertThat(limiter.acquire(KEY, 987654321)).isNegative();
 	}
 }

@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 final class ImageReferenceTest {
 
 	@Test
-	void testParseInternal() {
+	void parseInternal() {
 		var name = "picture.pcx";
 		var parse = ImageReference.parse(name);
 
@@ -21,7 +21,7 @@ final class ImageReferenceTest {
 	}
 
 	@Test
-	void testParseHash() {
+	void parseHash() {
 		var name = "0FC3697B8E7787B53A76738016EB9355D812005CE6CFD354A3D6DBC812345678.png";
 		var parse = ImageReference.parse(name);
 
@@ -30,9 +30,9 @@ final class ImageReferenceTest {
 	}
 
 	@Test
-	void parseInvaildName() {
-		var invaildChar = "../any_system_file.sys";
-		Assertions.assertThatThrownBy(() -> ImageReference.parse(invaildChar))
+	void parseInvalidName() {
+		var invalidChar = "../any_system_file.sys";
+		Assertions.assertThatThrownBy(() -> ImageReference.parse(invalidChar))
 				.isInstanceOf(RequestArgumentException.class);
 	}
 
@@ -40,15 +40,15 @@ final class ImageReferenceTest {
 	void testBytesEncoding() throws Exception {
 		var handler = new ImageReferenceTypeHandler();
 		var name = "picture.pcx";
-		var imageRefrence = ImageReference.parse(name);
+		var imageReference = ImageReference.parse(name);
 
-		var statment = Mockito.mock(PreparedStatement.class);
-		handler.setNonNullParameter(statment, 1, imageRefrence, JdbcType.BINARY);
+		var statement = Mockito.mock(PreparedStatement.class);
+		handler.setNonNullParameter(statement, 1, imageReference, JdbcType.BINARY);
 
 		var bytes = new byte[ImageReference.HASH_SIZE + 1];
 		System.arraycopy(name.getBytes(), 0, bytes, 2, name.length());
 		bytes[1] = (byte) name.length();
-		Mockito.verify(statment).setBytes(1, bytes);
+		Mockito.verify(statement).setBytes(1, bytes);
 	}
 
 	@Test
@@ -61,9 +61,9 @@ final class ImageReferenceTest {
 
 		var resultSet = Mockito.mock(ResultSet.class);
 		Mockito.when(resultSet.getBytes(1)).thenReturn(bytes);
-		var imageRefrence = handler.getNullableResult(resultSet, 1);
+		var imageReference = handler.getNullableResult(resultSet, 1);
 
-		Assertions.assertThat(imageRefrence.getName()).isEqualTo(name);
-		Assertions.assertThat(imageRefrence.getType()).isEqualTo(ImageType.Internal);
+		Assertions.assertThat(imageReference.getName()).isEqualTo(name);
+		Assertions.assertThat(imageReference.getType()).isEqualTo(ImageType.Internal);
 	}
 }
