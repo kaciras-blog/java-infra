@@ -19,9 +19,7 @@ import net.kaciras.blog.infrastructure.exception.RequestArgumentException;
 @Data
 public final class ImageReference {
 
-	/**
-	 * 上传的图片文件名是32字节的摘要
-	 */
+	/** 上传的图片文件名是32字节的摘要 */
 	static final int HASH_SIZE = 32;
 
 	private final String name;
@@ -71,7 +69,7 @@ public final class ImageReference {
 		// 要检查文件名里有没有路径分割符，必须一个个查看
 		var hexChars = 0;
 		for (var ch : plainName.toCharArray()) {
-			if (!CodecUtils.isHexDigit(ch)) {
+			if (CodecUtils.isHexDigit(ch)) {
 				hexChars++;
 			} else if (ch == '/' || ch == '\\') {
 				throw new RequestArgumentException("文件名中存在路径分隔符：" + name);

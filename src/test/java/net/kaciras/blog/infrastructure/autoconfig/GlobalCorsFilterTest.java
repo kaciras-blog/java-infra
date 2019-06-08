@@ -8,7 +8,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import javax.servlet.Filter;
 import java.util.List;
 
-final class CorsFilterTest {
+final class GlobalCorsFilterTest {
 
 	private final CorsProperties config = new CorsProperties();
 

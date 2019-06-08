@@ -41,7 +41,7 @@ if requirement <= currPermits then
 	redis.call("HMSET", KEYS[1], "time", now, "permits", currPermits - requirement)
 else
 	--- 需要等待的时间（时间）= （所需令牌（令牌）- 当前令牌（令牌））/ 速率（令牌/时间）
-	--- 注意：Lua 的浮点数直接返回会被 Redis 截断成整数，所以这里要向上取整
+	--- 注意：Lua 的浮点数直接返回会被 Redis 向下截断成整数导致事件偏小，这里保守起见向上取整
 	timeToWait = math.ceil((requirement - currPermits) / rate)
 end
 

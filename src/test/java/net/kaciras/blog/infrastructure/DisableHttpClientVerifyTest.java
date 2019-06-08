@@ -24,7 +24,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 
-
 class DisableHttpClientVerifyTest {
 
 	private static DisposableServer server;
@@ -38,7 +37,7 @@ class DisableHttpClientVerifyTest {
 		var sslContextBuilder = SslContextBuilder.forServer(cert.certificate(), cert.privateKey());
 
 		var adapter = new ReactorHttpHandlerAdapter((request, response) ->
-				response.writeWith(Mono.just(response.bufferFactory().wrap("Hellow".getBytes())))
+				response.writeWith(Mono.just(response.bufferFactory().wrap("Hello".getBytes())))
 		);
 
 		server = HttpServer.create()
@@ -53,13 +52,13 @@ class DisableHttpClientVerifyTest {
 	}
 
 	@Test
-	void testHttpsURLConnectionFail() throws Exception {
+	void httpsURLConnectionFail() throws Exception {
 		var url = new URL("https://localhost:" + server.port());
 		Assertions.assertThatThrownBy(url::openStream).isInstanceOf(SSLHandshakeException.class);
 	}
 
 	@Test
-	void testHttpsURLConnectionWithDisabled() throws Exception {
+	void httpsURLConnectionWithDisabled() throws Exception {
 		var url = new URL("https://localhost:" + server.port());
 		var conn = ((HttpsURLConnection) url.openConnection());
 
@@ -68,12 +67,12 @@ class DisableHttpClientVerifyTest {
 		conn.setSSLSocketFactory(sslContext.getSocketFactory());
 
 		try (var stream = conn.getInputStream()) {
-			Assertions.assertThat(stream.readAllBytes()).containsExactly("Hellow".getBytes());
+			Assertions.assertThat(stream.readAllBytes()).containsExactly("Hello".getBytes());
 		}
 	}
 
 	@Test
-	void testHttpClientFail() {
+	void httpClientFail() {
 		var request = HttpRequest.newBuilder()
 				.uri(URI.create("https://localhost:" + server.port()))
 				.build();
@@ -82,7 +81,7 @@ class DisableHttpClientVerifyTest {
 	}
 
 	@Test
-	void testHttpClientWithDisabled() throws Exception {
+	void httpClientWithDisabling() throws Exception {
 		var request = HttpRequest.newBuilder()
 				.uri(URI.create("https://localhost:" + server.port()))
 				.build();
@@ -90,6 +89,6 @@ class DisableHttpClientVerifyTest {
 				.sslContext(Misc.createTrustAllSSLContext())
 				.build()
 				.send(request, BodyHandlers.ofString());
-		Assertions.assertThat(res.body()).isEqualTo("Hellow");
+		Assertions.assertThat(res.body()).isEqualTo("Hello");
 	}
 }
