@@ -39,17 +39,16 @@ public class KxGlobalCorsAutoConfiguration {
 			config.setAllowedMethods(all);
 			config.setAllowedOrigins(all);
 			config.setAllowedHeaders(all);
-			config.setExposedHeaders(all);
 		}
 
-		if (properties.getOrigins() != null) {
-			config.setAllowedOrigins(properties.getOrigins());
+		if (properties.getAllowedOrigins() != null) {
+			config.setAllowedOrigins(properties.getAllowedOrigins());
 		}
-		if (properties.getMethods() != null) {
-			config.setAllowedMethods(properties.getMethods());
+		if (properties.getAllowedMethods() != null) {
+			config.setAllowedMethods(properties.getAllowedMethods());
 		}
-		if (properties.getAllowHeaders() != null) {
-			config.setAllowedHeaders(properties.getAllowHeaders());
+		if (properties.getAllowedHeaders() != null) {
+			config.setAllowedHeaders(properties.getAllowedHeaders());
 		}
 		if (properties.getExposedHeaders() != null) {
 			config.setExposedHeaders(properties.getExposedHeaders());
@@ -62,8 +61,9 @@ public class KxGlobalCorsAutoConfiguration {
 
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Configuration
-	class ServletSessionConfiguration {
+	class ServletCorsFilterAutoConfiguration {
 
+		// 因为要设置优先级所以使用了 FilterRegistrationBean 来包装
 		@Bean
 		public FilterRegistrationBean<CorsFilter> corsFilter() {
 			var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
@@ -78,7 +78,7 @@ public class KxGlobalCorsAutoConfiguration {
 
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Configuration
-	class ReactiveSessionConfiguration {
+	class ReactiveCorsFilterAutoConfiguration {
 
 		@Bean
 		public CorsWebFilter corsFilter() {

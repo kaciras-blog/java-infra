@@ -14,11 +14,9 @@ public final class CorsProperties {
 	@Nullable
 	private CorsTemplate template;
 
-	private List<String> origins;
-
-	private List<String> methods;
-
-	private List<String> allowHeaders;
+	private List<String> allowedOrigins;
+	private List<String> allowedMethods;
+	private List<String> allowedHeaders;
 
 	private List<String> exposedHeaders;
 
@@ -33,7 +31,10 @@ public final class CorsProperties {
 		 */
 		Default,
 
-		/** 将CORS配置为允许所有（origin，header，method...），所有的属性都设为"*" */
+		/**
+		 * 将CORS配置为允许所有（Origin，Allowed-Headers，Method...），这些属性都设为"*"
+		 * 注意 Exposed-Headers 不支持通配而必须手动设置
+		 */
 		AllowAll
 	}
 }
