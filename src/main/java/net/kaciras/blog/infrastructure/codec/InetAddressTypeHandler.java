@@ -15,7 +15,7 @@ public final class InetAddressTypeHandler extends BaseTypeHandler<InetAddress> {
 
 	@Override
 	public void setNonNullParameter(PreparedStatement ps, int i, InetAddress address, JdbcType jdbcType) throws SQLException {
-		ps.setBytes(i, CodecUtils.toIPv6Address(address));
+		ps.setBytes(i, CodecUtils.toIPv6Bytes(address));
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class ImageReferenceTest {
+final class ImageReferenceTest {
 
 	@Test
 	void testParseInternal() {

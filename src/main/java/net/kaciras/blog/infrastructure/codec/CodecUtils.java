@@ -115,7 +115,7 @@ public class CodecUtils {
 	 * @param address 地址
 	 * @return 字节数组
 	 */
-	public byte[] toIPv6Address(InetAddress address) {
+	public byte[] toIPv6Bytes(InetAddress address) {
 		if (address instanceof Inet6Address) {
 			return address.getAddress();
 		}
