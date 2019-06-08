@@ -20,7 +20,8 @@ public final class CorsProperties {
 
 	private List<String> exposedHeaders;
 
-	private Long maxAge;
+	/** 设置缓存时间，浏览器通常有自己的限制（Firefox:86400，Chrome/Blink: 600） */
+	private Long maxAge = 86400L;
 
 	public enum CorsTemplate {
 
