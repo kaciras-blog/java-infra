@@ -11,13 +11,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.server.WebFilter;
 
-@EnableConfigurationProperties({AuthorizationProperties.class, DevelopmentProperties.class})
+@EnableConfigurationProperties(AuthorizationProperties.class)
 @Configuration
 @RequiredArgsConstructor
 public class KxPrincipalAutoConfiguration {
 
 	private final AuthorizationProperties authProps;
-	private final DevelopmentProperties devProps;
 	private final SessionCookieProperties sessionProps;
 
 	/**
@@ -29,9 +28,6 @@ public class KxPrincipalAutoConfiguration {
 
 		@Bean
 		public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
-			if (devProps.isAdminPrincipal()) {
-				domain = new DevelopAdminDomain(domain);
-			}
 			var filter = new ServletPrincipalFilter(domain);
 			filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
 			filter.setCookieName(authProps.getCsrfCookie());
@@ -58,9 +54,6 @@ public class KxPrincipalAutoConfiguration {
 
 		@Bean
 		public ReactivePrincipalFilter reactivePrincipalFilter(Domain domain) {
-			if (devProps.isAdminPrincipal()) {
-				domain = new DevelopAdminDomain(domain);
-			}
 			var filter = new ReactivePrincipalFilter(domain);
 			filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
 			filter.setCookieName(authProps.getCsrfCookie());
