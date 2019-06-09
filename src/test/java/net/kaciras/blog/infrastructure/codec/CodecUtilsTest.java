@@ -17,5 +17,17 @@ final class CodecUtilsTest {
 		Assertions.assertThat(bytes).containsExactly(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xFF, 0xFF, 127, 0, 0, 5);
 	}
 
-	// 其他方法直接抄别人的，不测了
+	@Test
+	void indexOfBytes() {
+		var text = "CodecUtilsTest.indexOfBytes";
+		var subText = "sTest.i";
+
+		var i = CodecUtils.indexOfBytes(text.getBytes(), subText.getBytes(), 0);
+		Assertions.assertThat(i).isEqualTo(text.indexOf(subText));
+
+		var k = CodecUtils.indexOfBytes(text.getBytes(), subText.getBytes(), 12);
+		Assertions.assertThat(k).isEqualTo(-1);
+	}
+
+	// CodecUtils 里的其他方法都是抄的，不测了
 }

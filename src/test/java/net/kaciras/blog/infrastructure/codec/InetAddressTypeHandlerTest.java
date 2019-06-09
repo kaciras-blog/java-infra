@@ -41,4 +41,14 @@ final class InetAddressTypeHandlerTest {
 		var addr = HANDLER.getResult(resultSet, 1);
 		Assertions.assertEquals(youtube, addr);
 	}
+
+	@Test
+	void getResultByName() throws Exception {
+		var youtube = InetAddress.getByName("2001:4860:4001:402::15");
+		var resultSet = Mockito.mock(ResultSet.class);
+		Mockito.when(resultSet.getBytes("ip")).thenReturn(youtube.getAddress());
+
+		var addr = HANDLER.getResult(resultSet, "ip");
+		Assertions.assertEquals(youtube, addr);
+	}
 }
