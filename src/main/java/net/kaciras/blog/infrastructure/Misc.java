@@ -26,7 +26,7 @@ public class Misc {
 	//@formatter:on
 
 	/**
-	 * 创建一个SSLContext对象，其已经初始化为接受所有证书。
+	 * 创建一个SSLContext对象，其被初始化为接受所有证书。
 	 *
 	 * @return SSLContext对象
 	 * @throws GeneralSecurityException 如果发生了错误
@@ -53,6 +53,9 @@ public class Misc {
 	/**
 	 * 从Java9开始的模块系统禁止了一些不合法的访问，而很多第三方库仍然依赖这些操作，不合法的
 	 * 访问在程序控制台中将输出几段警告信息，看着就烦，这里给禁止掉。
+	 * <p>
+	 * 具体做法是把 IllegalAccessLogger.logger 提前设置成 null，因为它是 OneShot 机制，只使用
+	 * 一次之后就被设置为 null 避免重复打印。
 	 */
 	public static void disableIllegalAccessWarning() {
 		var javaVersionElements = System.getProperty("java.version").split("\\.");

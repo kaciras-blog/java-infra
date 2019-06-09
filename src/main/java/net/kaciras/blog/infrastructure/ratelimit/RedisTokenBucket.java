@@ -39,13 +39,6 @@ public final class RedisTokenBucket implements RateLimiter {
 		this.script = script;
 	}
 
-	/**
-	 * 获取指定数量的令牌，返回桶内拥有足够令牌所需要等待的时间。
-	 *
-	 * @param id      标识获取者的身份，一般是对方的IP之类的
-	 * @param permits 要获取的令牌数量
-	 * @return 需要等待的时间（秒），0表示成功，小于0表示永远无法完成
-	 */
 	public long acquire(@NonNull String id, int permits) {
 		if (permits == 0) {
 			return 0;

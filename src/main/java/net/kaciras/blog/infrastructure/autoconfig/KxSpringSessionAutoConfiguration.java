@@ -17,6 +17,8 @@ import java.time.Duration;
 
 /**
  * Spring Session 对 Cookie 的序列化没有自动配置支持，所以写了这个类来自动设置。
+ *
+ * 【注意】SpringBoot 2.2 之后新增了 SessionAutoConfiguration 能够代替此类
  */
 @EnableConfigurationProperties(SessionCookieProperties.class)
 @ConditionalOnClass(Session.class)
