@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import java.io.IOException;
 
@@ -31,7 +32,11 @@ final class ImageReferenceJsonCodec {
 
 		@Override
 		public ImageReference deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
-			return ImageReference.parse(p.getText().substring(DIRECTORY.length()));
+			var text = p.getText();
+			if (!text.startsWith(DIRECTORY)) {
+				throw new InvalidFormatException(p, "图片路径错误", text, ImageReference.class);
+			}
+			return ImageReference.parse(text.substring(DIRECTORY.length()));
 		}
 	}
 }
