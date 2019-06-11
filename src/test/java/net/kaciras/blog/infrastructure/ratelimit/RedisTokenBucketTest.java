@@ -13,7 +13,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -22,8 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 // 100000 90000-OK: 1 foo 1 0 360 123456 33 90000 44 234000 5
-@ActiveProfiles("local")
-@SpringBootTest(classes = RedisTokenBucketTest.TestConfiguration.class)
+@SpringBootTest(classes = RedisTokenBucketTest.EmbeddedConfiguration.class)
 final class RedisTokenBucketTest {
 
 	private static final String KEY = "RATE_LIMITER_TEST";
@@ -31,7 +29,7 @@ final class RedisTokenBucketTest {
 	// 使用内嵌的配置，避免加载整个应用
 	@Import(RedisAutoConfiguration.class)
 	@Configuration
-	static class TestConfiguration {
+	static class EmbeddedConfiguration {
 
 		@Bean
 		RedisTemplate<String, Object> testRedisTemplate(RedisConnectionFactory factory) {

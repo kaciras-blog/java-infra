@@ -26,4 +26,4 @@
 
 ### Custom ###
 *.pid
-*-local.yml
+application.yml

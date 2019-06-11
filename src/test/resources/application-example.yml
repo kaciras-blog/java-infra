@@ -1,0 +1,18 @@
+# 运行测试前需要配置一些选项，你需要把该文件改名为 application.yml，并修改最下面需要自定义的部分
+spring:
+
+  main:
+    banner-mode: "off"
+
+  session:
+    store-type: redis
+    timeout: 30m
+    redis:
+      namespace: test
+
+# 以下是要自定义的部分：需要改为你自己的环境
+
+  redis:
+    host: localhost
+    port: 6379
+    password: password

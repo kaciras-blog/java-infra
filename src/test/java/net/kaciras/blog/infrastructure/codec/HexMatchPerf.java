@@ -1,6 +1,5 @@
-package net.kaciras.blog.infrastructure;
+package net.kaciras.blog.infrastructure.codec;
 
-import net.kaciras.blog.infrastructure.codec.CodecUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
@@ -13,10 +12,10 @@ import java.util.regex.Pattern;
 /**
  * 对比几种检查字符串是否是HEX的方式的性能。
  */
-@BenchmarkMode(Mode.Throughput)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Thread)
-public class HexMatch {
+@Fork(1)
+@Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.MILLISECONDS)
+public class HexMatchPerf {
 
 	private static final Pattern REGEX = Pattern.compile("^[0-9a-fA-F]{64}$");
 
@@ -89,10 +88,7 @@ public class HexMatch {
 
 	public static void main(String[] args) throws RunnerException {
 		var opt = new OptionsBuilder()
-				.include(HexMatch.class.getSimpleName())
-				.forks(1)
-				.warmupIterations(5)
-				.measurementIterations(5)
+				.include(HexMatchPerf.class.getSimpleName())
 				.build();
 		var results = new Runner(opt).run();
 	}
