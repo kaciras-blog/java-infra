@@ -1,7 +1,6 @@
 package net.kaciras.blog.infrastructure.ratelimit;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,24 +45,18 @@ final class RedisRateLimiterTest {
 	private RedisTemplate<String, Object> template;
 
 	private Clock clock;
-	private RedisTokenBucket limiter;
 
 	@BeforeEach
 	void setUp() {
 		clock = Mockito.mock(Clock.class);
-		limiter = new RedisTokenBucket(clock, template);
-		limiter.setRate(2);
-		limiter.setBucketSize(100);
-	}
-
-	@AfterEach
-	void clean() {
+		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
 		template.unlink(KEY);
 	}
 
 	@Test
-	void acquire() {
-		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
+	void acquireSingle() {
+		var limiter = new RedisTokenBucket(clock, template);
+		limiter.addBucket(100, 2);
 
 		Assertions.assertThat(limiter.acquire(KEY, 50)).isZero();
 		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
@@ -72,8 +65,10 @@ final class RedisRateLimiterTest {
 	}
 
 	@Test
-	void restore() {
-		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
+	void restoreSingle() {
+		var limiter = new RedisTokenBucket(clock, template);
+		limiter.addBucket(100, 2);
+
 		Assertions.assertThat(limiter.acquire(KEY, 100)).isZero();
 
 		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(50));
@@ -83,6 +78,26 @@ final class RedisRateLimiterTest {
 
 	@Test
 	void acquireOverLimit() {
-		Assertions.assertThat(limiter.acquire(KEY, 987654321)).isNegative();
+		var limiter = new RedisTokenBucket(clock, template);
+		limiter.addBucket(100, 2);
+		limiter.addBucket(200, 2);
+
+		Assertions.assertThat(limiter.acquire(KEY, 150)).isNegative();
+	}
+
+	@Test
+	void acquireMultiple() {
+		var limiter = new RedisTokenBucket(clock, template);
+		limiter.addBucket(40, 4);    // 10  秒内每秒 4 个
+		limiter.addBucket(50, 2);    // 100 秒内每秒 2 个
+		limiter.addBucket(200, 1);    // 200 秒内每秒 1 个
+
+		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
+
+		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(10));
+		Assertions.assertThat(limiter.acquire(KEY, 40)).isEqualTo(5);
+
+		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(15));
+		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
 	}
 }
