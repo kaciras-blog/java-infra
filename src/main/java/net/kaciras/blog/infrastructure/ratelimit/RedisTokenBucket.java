@@ -13,8 +13,6 @@ import java.util.Objects;
 
 /**
  * 令牌桶算法的实现，使用Redis存储相关记录。
- * <p>
- * bucketSize 和 rate 必须大于0，这里没做检查。小于等于0的情况暂时没想到有啥用，以后有需求再看。
  */
 public final class RedisTokenBucket implements RateLimiter {
 
@@ -26,7 +24,11 @@ public final class RedisTokenBucket implements RateLimiter {
 	private final RedisScript<Long> script;
 
 	private Object[] bArgs = new Object[0];
+
+	/** 记录在Redis里的过期时间，该值是由容量和速率来计算的 */
 	private int ttl;
+
+	/** 最小的一个桶的容量 */
 	private int minSize = Integer.MAX_VALUE;
 
 	public RedisTokenBucket(Clock clock, RedisTemplate<String, Object> redisTemplate) {
@@ -50,10 +52,8 @@ public final class RedisTokenBucket implements RateLimiter {
 		minSize = Math.min(minSize, size);
 	}
 
+	// permits 小于等于0的情况没有处理，调用方自己考虑其意义
 	public long acquire(@NonNull String id, int permits) {
-		if (permits == 0) {
-			return 0;
-		}
 		if (permits > minSize) {
 			return -1;
 		}

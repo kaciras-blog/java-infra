@@ -10,12 +10,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Clock;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"UnusedReturnValue", "unchecked"})
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @Fork(1)
-@Measurement(iterations = 5, time = 5)
+@Measurement(iterations = 5, time = 10)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class RedisTokenBucketPerf {
 
 	private ConfigurableApplicationContext context;
@@ -40,10 +42,10 @@ public class RedisTokenBucketPerf {
 		single.addBucket(Integer.MAX_VALUE, 10_0000);
 
 		twenty = new RedisTokenBucket(Clock.systemDefaultZone(), template);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 20; i++) {
 			twenty.addBucket(Integer.MAX_VALUE, 10_0000);
 		}
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 20; i++) {
 			twenty.addBucket(10_0000, 10_0000);
 		}
 
@@ -61,7 +63,7 @@ public class RedisTokenBucketPerf {
 	}
 
 	@Benchmark
-	public long buckets20() {
+	public long buckets40() {
 		return twenty.acquire(randomKey, 100);
 	}
 

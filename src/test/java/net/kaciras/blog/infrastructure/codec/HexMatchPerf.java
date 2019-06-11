@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
  */
 @State(Scope.Thread)
 @Fork(1)
-@Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 5, time = 5)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class HexMatchPerf {
 
 	private static final Pattern REGEX = Pattern.compile("^[0-9a-fA-F]{64}$");
