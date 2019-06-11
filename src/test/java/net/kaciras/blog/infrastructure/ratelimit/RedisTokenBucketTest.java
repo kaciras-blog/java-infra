@@ -3,7 +3,6 @@ package net.kaciras.blog.infrastructure.ratelimit;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.Clock;
 import java.time.Instant;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+// 100000 90000-OK: 1 foo 1 0 360 123456 33 90000 44 234000 5
 @ActiveProfiles("local")
-@SpringBootTest(classes = RedisRateLimiterTest.TestConfiguration.class)
-final class RedisRateLimiterTest {
+@SpringBootTest(classes = RedisTokenBucketTest.TestConfiguration.class)
+final class RedisTokenBucketTest {
 
 	private static final String KEY = "RATE_LIMITER_TEST";
 
@@ -44,41 +47,50 @@ final class RedisRateLimiterTest {
 	@Autowired
 	private RedisTemplate<String, Object> template;
 
-	private Clock clock;
+	private Clock clock = mock(Clock.class);
+	private int timeSecond;
+
+	private RedisTokenBucket limiter;
 
 	@BeforeEach
 	void setUp() {
-		clock = Mockito.mock(Clock.class);
-		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(0));
+		limiter = new RedisTokenBucket(clock, template);
+		when(clock.instant()).thenReturn(Instant.ofEpochSecond(timeSecond));
 		template.unlink(KEY);
+	}
+
+	private void timePass(int second) {
+		timeSecond += second;
+		when(clock.instant()).thenReturn(Instant.ofEpochSecond(timeSecond));
 	}
 
 	@Test
 	void acquireSingle() {
-		var limiter = new RedisTokenBucket(clock, template);
 		limiter.addBucket(100, 2);
 
 		Assertions.assertThat(limiter.acquire(KEY, 50)).isZero();
 		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
-
-		Assertions.assertThat(limiter.acquire(KEY, 40)).isEqualTo(15);
+		Assertions.assertThat(limiter.acquire(KEY, 30)).isEqualTo(10);
 	}
 
 	@Test
 	void restoreSingle() {
-		var limiter = new RedisTokenBucket(clock, template);
 		limiter.addBucket(100, 2);
 
 		Assertions.assertThat(limiter.acquire(KEY, 100)).isZero();
 
-		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(50));
+		timePass(50);
 		Assertions.assertThat(limiter.acquire(KEY, 100)).isZero();
 		Assertions.assertThat(limiter.acquire(KEY, 30)).isEqualTo(15);
 	}
 
 	@Test
-	void acquireOverLimit() {
-		var limiter = new RedisTokenBucket(clock, template);
+	void noBucket() {
+		Assertions.assertThat(limiter.acquire(KEY, 123456)).isZero();
+	}
+
+	@Test
+	void overSize() {
 		limiter.addBucket(100, 2);
 		limiter.addBucket(200, 2);
 
@@ -87,17 +99,16 @@ final class RedisRateLimiterTest {
 
 	@Test
 	void acquireMultiple() {
-		var limiter = new RedisTokenBucket(clock, template);
 		limiter.addBucket(40, 4);    // 10  秒内每秒 4 个
 		limiter.addBucket(50, 2);    // 100 秒内每秒 2 个
-		limiter.addBucket(200, 1);    // 200 秒内每秒 1 个
+		limiter.addBucket(200, 1);   // 200 秒内每秒 1 个
 
 		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
 
-		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(10));
+		timePass(10);
 		Assertions.assertThat(limiter.acquire(KEY, 40)).isEqualTo(5);
 
-		Mockito.when(clock.instant()).thenReturn(Instant.ofEpochSecond(15));
+		timePass(5);
 		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
 	}
 }

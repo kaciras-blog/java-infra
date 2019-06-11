@@ -8,7 +8,8 @@ import org.springframework.lang.NonNull;
 
 import java.time.Clock;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * 令牌桶算法的实现，使用Redis存储相关记录。
@@ -56,13 +57,15 @@ public final class RedisTokenBucket implements RateLimiter {
 		if (permits > minSize) {
 			return -1;
 		}
+		var keys = Collections.singletonList(Objects.requireNonNull(id));
+
 		var args = new Object[3 + bArgs.length];
 		args[0] = permits;
 		args[1] = clock.instant().getEpochSecond();
 		args[2] = ttl;
 		System.arraycopy(bArgs, 0, args, 3, bArgs.length);
 
-		var waitTime = redisTemplate.execute(script, List.of(id), args);
+		var waitTime = redisTemplate.execute(script, keys, args);
 		if (waitTime == null) {
 			throw new RuntimeException("限速脚本返回了空值，ID=" + id);
 		}
