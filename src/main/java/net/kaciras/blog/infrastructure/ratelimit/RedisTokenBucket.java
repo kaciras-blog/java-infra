@@ -17,7 +17,7 @@ import java.util.Objects;
 public final class RedisTokenBucket implements RateLimiter {
 
 	/** 该类仅作为 Java 语言的接口，算法的实现在 Lua 脚本里，由 Redis 执行 */
-	private static final String SCRIPT_FILE = "RateLimiter.lua";
+	private static final String SCRIPT_FILE = "TokenBucket.lua";
 
 	private final Clock clock;
 	private final RedisTemplate<String, Object> redisTemplate;
