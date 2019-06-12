@@ -29,5 +29,17 @@ final class CodecUtilsTest {
 		Assertions.assertThat(k).isEqualTo(-1);
 	}
 
+	@Test
+	void isHexDigit() {
+		var text = "0123456789abcdefABCDEF";
+		text.chars().forEach(c -> Assertions.assertThat(CodecUtils.isHexDigit((char) c)).isTrue());
+
+		var fullWidth  = "０１２３４５６７８９ａｂｃｄｅｆＡＢＣＤＥＦ";
+		fullWidth.chars().forEach(c -> Assertions.assertThat(CodecUtils.isHexDigit((char) c)).isFalse());
+
+		var nonHex = "\r\n~!@@#$^&%*() /: @gG` 测下符号和边界值";
+		nonHex.chars().forEach(c -> Assertions.assertThat(CodecUtils.isHexDigit((char) c)).isFalse());
+	}
+
 	// CodecUtils 里的其他方法都是抄的，不测了
 }
