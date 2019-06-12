@@ -9,7 +9,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Clock;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"UnusedReturnValue", "unchecked"})
@@ -20,12 +19,12 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class RedisTokenBucketPerf {
 
+	private static final String KEY = "tb:perf";
+
 	private ConfigurableApplicationContext context;
 
 	private RedisTokenBucket single;
 	private RedisTokenBucket twenty;
-
-	private String randomKey;
 
 	@Setup
 	public void setUp() {
@@ -37,6 +36,7 @@ public class RedisTokenBucketPerf {
 	@Setup(Level.Iteration)
 	public void setUpIteration() {
 		var template = (RedisTemplate<String, Object>) context.getBean("testRedisTemplate");
+		template.unlink(KEY);
 
 		single = new RedisTokenBucket(Clock.systemDefaultZone(), template);
 		single.addBucket(Integer.MAX_VALUE, 10_0000);
@@ -48,8 +48,6 @@ public class RedisTokenBucketPerf {
 		for (int i = 0; i < 20; i++) {
 			twenty.addBucket(10_0000, 10_0000);
 		}
-
-		randomKey = "pref:" + Integer.toString(new Random().nextInt(), 36);
 	}
 
 	@TearDown
@@ -59,12 +57,12 @@ public class RedisTokenBucketPerf {
 
 	@Benchmark
 	public long buckets1() {
-		return single.acquire(randomKey, 100);
+		return single.acquire(KEY, 100);
 	}
 
 	@Benchmark
 	public long buckets40() {
-		return twenty.acquire(randomKey, 100);
+		return twenty.acquire(KEY, 100);
 	}
 
 	public static void main(String[] args) throws Exception {

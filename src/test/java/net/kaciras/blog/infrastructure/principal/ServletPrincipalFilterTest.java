@@ -1,7 +1,6 @@
-package net.kaciras.blog.infrastructure;
+package net.kaciras.blog.infrastructure.principal;
 
-import net.kaciras.blog.infrastructure.principal.ServletPrincipalFilter;
-import net.kaciras.blog.infrastructure.principal.WebPrincipal;
+import net.kaciras.blog.infrastructure.FilterChainCapture;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

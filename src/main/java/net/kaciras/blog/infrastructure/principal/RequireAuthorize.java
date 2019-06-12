@@ -23,8 +23,9 @@ public @interface RequireAuthorize {
 
 	/**
 	 * 权限检查失败后抛出的异常。
+	 * 异常必须继承 RuntimeException，否则织入时会出现 UndeclaredThrowableException 错误。
 	 *
 	 * @return 异常类型
 	 */
-	Class<? extends Exception> error() default PermissionException.class;
+	Class<? extends RuntimeException> error() default PermissionException.class;
 }

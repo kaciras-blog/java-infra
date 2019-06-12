@@ -8,21 +8,23 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 final class FunctionToolsTest {
 
 	@Test
 	void uncheckedConsumer() {
 		var holder = new AtomicReference<>();
-		UncheckedConsumer<Object> throwing = holder::set;
+		Consumer<Object> setter = (UncheckedConsumer<Object>) holder::set;
 
-		throwing.accept(FunctionToolsTest.class);
+		setter.accept(FunctionToolsTest.class);
 		Assertions.assertThat(holder.get()).isEqualTo(FunctionToolsTest.class);
 	}
 
 	@Test
 	void uncheckedConsumerThrows() {
-		UncheckedConsumer<Object> throwing = (t) -> {
+		Consumer<Object> throwing = (UncheckedConsumer<Object>) (t) -> {
 			throw new IOException();
 		};
 		Assertions.assertThatThrownBy(() -> throwing.accept(null))
@@ -32,13 +34,13 @@ final class FunctionToolsTest {
 
 	@Test
 	void uncheckedFunction() {
-		UncheckedFunction<Integer, Integer> function = (t) -> t * t * t;
-		Assertions.assertThat(function.apply(4)).isEqualTo(4 * 4 * 4);
+		Function<Integer, Integer> cube = (UncheckedFunction<Integer, Integer>) (t) -> t * t * t;
+		Assertions.assertThat(cube.apply(4)).isEqualTo(4 * 4 * 4);
 	}
 
 	@Test
 	void uncheckedFunctionThrows() {
-		UncheckedFunction<Object, Object> throwing = (t) -> {
+		Function<Object, Object> throwing = (UncheckedFunction<Object, Object>) (t) -> {
 			throw new IOException();
 		};
 		Assertions.assertThatThrownBy(() -> throwing.apply(null))

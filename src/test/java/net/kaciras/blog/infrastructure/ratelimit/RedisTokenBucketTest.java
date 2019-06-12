@@ -20,7 +20,6 @@ import java.time.Instant;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-// 100000 90000-OK: 1 foo 1 0 360 123456 33 90000 44 234000 5
 @SpringBootTest(classes = RedisTokenBucketTest.EmbeddedConfiguration.class)
 final class RedisTokenBucketTest {
 
