@@ -51,8 +51,7 @@ public final class AuthorizeAspect {
 	}
 
 	private void check(RequireAuthorize annotation, JoinPoint joinPoint) throws Exception {
-		var p = SecurityContext.getPrincipal();
-		if (p == null || !p.hasPermission(annotation.value())) {
+		if (!SecurityContext.getPrincipal().hasPermission(annotation.value())) {
 			logger.info("Permission check failed for method: " + joinPoint.getSignature());
 			throw annotation.error().getConstructor().newInstance();
 		}

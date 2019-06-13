@@ -57,7 +57,7 @@ class AuthorizeAspectTest {
 
 	@BeforeEach
 	void setUp() {
-		SecurityContext.setPrincipal(null);
+		SecurityContext.setPrincipal(WebPrincipal.ANONYMOUS);
 	}
 
 	@Test
