@@ -1,10 +1,10 @@
 package net.kaciras.blog.infrastructure;
 
 import lombok.experimental.UtilityClass;
+import sun.misc.Unsafe;
 
 import javax.net.ssl.*;
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Field;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
@@ -58,26 +58,17 @@ public class Misc {
 	 * 一次之后就被设置为 null 避免重复打印。
 	 */
 	public static void disableIllegalAccessWarning() {
-		var javaVersionElements = System.getProperty("java.version").split("\\.");
-		if (Integer.parseInt(javaVersionElements[0]) == 1) {
-			return; // 1.8.x_xx or lower
-		}
 		try {
 			var theUnsafe = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
 			theUnsafe.setAccessible(true);
-			var u = theUnsafe.get(null);
+			var u = (Unsafe) theUnsafe.get(null);
 
 			var cls = Class.forName("jdk.internal.module.IllegalAccessLogger");
 			var logger = cls.getDeclaredField("logger");
-
-			var offset = (long) u.getClass()
-					.getMethod("staticFieldOffset", Field.class).invoke(u, logger);
-
-			u.getClass()
-					.getMethod("putObjectVolatile", Object.class, long.class, Object.class)
-					.invoke(u, cls, offset, null);
-		} catch (Exception ignore) {
-			throw new UnsupportedClassVersionError("Can not disable illegal access warning");
+			u.putObjectVolatile(cls, u.staticFieldOffset(logger), null);
+		} catch (ClassNotFoundException ignore) {
+		} catch (Exception e) {
+			throw new Error("An error occurred when disable illegal access warning", e);
 		}
 	}
 
@@ -121,6 +112,7 @@ public class Misc {
 	 * @param request 请求对象
 	 * @return 如果是安全请求则为true，否则false
 	 */
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public static boolean isSafeRequest(HttpServletRequest request) {
 		var method = request.getMethod();
 		return "GET".equals(method) || "HEAD".equals(method) || "OPTIONS".equals(method);
