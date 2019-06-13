@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 /**
- * 令牌桶算法的实现，使用Redis存储相关记录。
+ * 令牌桶算法的实现，使用Redis存储相关记录，该类里可以包含多个令牌桶。
  */
 public final class RedisTokenBucket implements RateLimiter {
 
@@ -52,7 +52,14 @@ public final class RedisTokenBucket implements RateLimiter {
 		minSize = Math.min(minSize, size);
 	}
 
-	// permits 小于等于0的情况没有处理，调用方自己考虑其意义
+	/**
+	 * 遍历所有的令牌桶，从每个桶中都要取走指定数量的令牌。
+	 *
+	 * 当所有令牌桶内都有充足的令牌时返回0，否则返回需要等待的时间。
+	 * 如果多个令牌桶的令牌都不足，则返回等待时间最长的。
+	 *
+	 * permits 小于等于0的情况没有处理，调用方自己考虑其意义
+	 */
 	public long acquire(@NonNull String id, int permits) {
 		if (permits > minSize) {
 			return -1;

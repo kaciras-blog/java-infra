@@ -9,7 +9,10 @@ package net.kaciras.blog.infrastructure.ratelimit;
 public interface RateLimiter {
 
 	/**
-	 * 获取指定数量的令牌，返回桶内拥有足够令牌所需要等待的时间。
+	 * 获取指定数量的令牌，如果无法获取则返回一个时间，表示请求方需要至少等待该时间之后
+	 * 才有可能获取成功；如果获取成功则返回0。
+	 *
+	 * 如果返回了一个负数，表明该请求无论如何都无法通过。
 	 *
 	 * @param id      标识获取者的身份，一般是对方的IP之类的
 	 * @param permits 要获取的令牌数量

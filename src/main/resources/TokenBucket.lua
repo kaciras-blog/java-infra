@@ -2,7 +2,7 @@
 --- 调用方式：EVALSHA (sha1) 1 (key) 所需令牌 当前时间 键超时 [桶容量 速率]...
 ---
 --- 时间的单位由客户端决定，不同的单位将导致精度不同。所有参数都是必需的不能省略。
---- 返回：0 表示通过，大于 0 表示需要等待的时间。
+--- 返回：0 表示通过，大于 0 表示需要等待的时间
 ---
 --- 为啥需要传当前时间？因为Redis为了安全禁止访问os模块，也就无法在脚本内获取时间；并且由
 --- 客户端控制时间的话就能对时间做Mock，测试更方便
@@ -10,7 +10,7 @@
 --- 如果所需令牌数大于桶容量，则返回值无意义，这留给客户端去检查
 ---
 --- Redis 对 Lua 脚本的说明见：https://redis.io/commands/eval
---- 经测试，该脚本执行速度非常快，详情见 test/java/resources/RateLimiterBenchmark.txt
+--- 经测试，该脚本执行速度非常快，详情见 test/java/resources/TokenBucketBenchmark.txt
 ---
 local requirement = tonumber(ARGV[1])
 local now = tonumber(ARGV[2])
@@ -45,7 +45,8 @@ local function acquire(i)
 	end
 
 	--- 需要等待的时间（时间）= （所需令牌（令牌）- 当前令牌（令牌））/ 速率（令牌/时间）
-	--- 注意：Lua 的浮点数直接返回会被 Redis 向下截断成整数导致事件偏小，这里保守起见向上取整
+	--- 【注意1】Lua 的浮点数直接返回会被 Redis 向下截断成整数导致事件偏小，这里保守起见向上取整
+	--- 【注意2】Lua 除0返回 inf，Redis 会将 inf 转换为 -9223372036854775808
 	return math.ceil((requirement - currPermits) / rate)
 end
 
