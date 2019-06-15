@@ -56,6 +56,8 @@ public class Misc {
 	 * <p>
 	 * 具体做法是把 IllegalAccessLogger.logger 提前设置成 null，因为它是 OneShot 机制，只使用
 	 * 一次之后就被设置为 null 避免重复打印。
+	 * <p>
+	 * 该修改过程本身就属于非法访问，为了不触发警告，必须用 Unsafe 里的方法来修改而不能用反射。
 	 */
 	public static void disableIllegalAccessWarning() {
 		try {
