@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import net.kaciras.blog.infrastructure.principal.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.server.WebFilter;
 
 @EnableConfigurationProperties(AuthorizationProperties.class)
 @Configuration
@@ -19,56 +16,22 @@ public class KxPrincipalAutoConfiguration {
 	private final AuthorizationProperties authProps;
 	private final SessionCookieProperties sessionProps;
 
-	/**
-	 * Servlet 环境下的配置，将启用基于 Servlet 技术栈的组件。
-	 */
-	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@Configuration
-	protected class MvcPrincipalConfiguration {
-
-		@Bean
-		public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
-			var filter = new ServletPrincipalFilter(domain);
-			filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
-			filter.setCookieName(authProps.getCsrfCookie());
-			filter.setHeaderName(authProps.getCsrfHeader());
-			filter.setParameterName(authProps.getCsrfParameter());
-			filter.setDomain(sessionProps.getDomain());
-			filter.setDynamicToken(authProps.isDynamicCsrfCookie());
-			return filter;
-		}
-
-		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
-		@Bean
-		public ServletSecurityContextFilter securityContextFilter() {
-			return new ServletSecurityContextFilter();
-		}
+	@Bean
+	public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
+		var filter = new ServletPrincipalFilter(domain);
+		filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
+		filter.setCookieName(authProps.getCsrfCookie());
+		filter.setHeaderName(authProps.getCsrfHeader());
+		filter.setParameterName(authProps.getCsrfParameter());
+		filter.setDomain(sessionProps.getDomain());
+		filter.setDynamicToken(authProps.isDynamicCsrfCookie());
+		return filter;
 	}
 
-	/**
-	 * Spring Webflux 环境下的配置，将启用基于 Spring Webflux 技术栈的组件。
-	 */
-	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@Configuration
-	protected class WebFluxPrincipalConfiguration {
-
-		@Bean
-		public ReactivePrincipalFilter reactivePrincipalFilter(Domain domain) {
-			var filter = new ReactivePrincipalFilter(domain);
-			filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
-			filter.setCookieName(authProps.getCsrfCookie());
-			filter.setHeaderName(authProps.getCsrfHeader());
-			filter.setParameterName(authProps.getCsrfParameter());
-			filter.setDomain(sessionProps.getDomain());
-			filter.setDynamicToken(authProps.isDynamicCsrfCookie());
-			return filter;
-		}
-
-		@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
-		@Bean
-		WebFilter securityContextFilter() {
-			return new ReactiveSecurityContextFilter();
-		}
+	@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
+	@Bean
+	public ServletSecurityContextFilter securityContextFilter() {
+		return new ServletSecurityContextFilter();
 	}
 
 	/**

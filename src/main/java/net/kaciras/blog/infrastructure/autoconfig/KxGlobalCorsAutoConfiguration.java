@@ -2,14 +2,12 @@ package net.kaciras.blog.infrastructure.autoconfig;
 
 import lombok.RequiredArgsConstructor;
 import net.kaciras.blog.infrastructure.autoconfig.CorsProperties.CorsTemplate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
@@ -59,32 +57,15 @@ public class KxGlobalCorsAutoConfiguration {
 		return config;
 	}
 
-	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@Configuration
-	class ServletCorsFilterAutoConfiguration {
+	// 因为要设置优先级所以使用了 FilterRegistrationBean 来包装
+	@Bean
+	public FilterRegistrationBean<CorsFilter> corsFilter() {
+		var source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", getCorsConfig());
 
-		// 因为要设置优先级所以使用了 FilterRegistrationBean 来包装
-		@Bean
-		public FilterRegistrationBean<CorsFilter> corsFilter() {
-			var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-			source.registerCorsConfiguration("/**", getCorsConfig());
-
-			var registration = new FilterRegistrationBean<CorsFilter>();
-			registration.setOrder(FILTER_ORDER);
-			registration.setFilter(new CorsFilter(source));
-			return registration;
-		}
-	}
-
-	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@Configuration
-	class ReactiveCorsFilterAutoConfiguration {
-
-		@Bean
-		public CorsWebFilter corsFilter() {
-			var source = new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();
-			source.registerCorsConfiguration("/**", getCorsConfig());
-			return new CorsWebFilter(source);
-		}
+		var registration = new FilterRegistrationBean<CorsFilter>();
+		registration.setOrder(FILTER_ORDER);
+		registration.setFilter(new CorsFilter(source));
+		return registration;
 	}
 }

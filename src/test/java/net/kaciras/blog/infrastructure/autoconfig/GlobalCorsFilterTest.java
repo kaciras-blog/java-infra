@@ -13,8 +13,7 @@ final class GlobalCorsFilterTest {
 	private final CorsProperties config = new CorsProperties();
 
 	private Filter createFilter() {
-		var autoConfiguration = new KxGlobalCorsAutoConfiguration(config);
-		return autoConfiguration.new ServletCorsFilterAutoConfiguration().corsFilter().getFilter();
+		return new KxGlobalCorsAutoConfiguration(config).corsFilter().getFilter();
 	}
 
 	@Test
