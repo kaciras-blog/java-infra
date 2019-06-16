@@ -39,7 +39,7 @@ public class Misc {
 
 	/**
 	 * 屏蔽 HttpsURLConnection 和 HttpClient(Java11) 默认的证书检查。
-	 * 该方法直接修改全局设置，可能会产生副作用，使用须谨慎。
+	 * 【警告】该方法直接修改全局设置，可能会产生副作用，使用须谨慎。
 	 *
 	 * @throws GeneralSecurityException 如果发生了错误
 	 */

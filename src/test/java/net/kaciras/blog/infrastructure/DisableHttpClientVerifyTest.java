@@ -85,10 +85,11 @@ class DisableHttpClientVerifyTest {
 		var request = HttpRequest.newBuilder()
 				.uri(URI.create("https://localhost:" + server.port()))
 				.build();
-		var res = HttpClient.newBuilder()
+		var response = HttpClient.newBuilder()
 				.sslContext(Misc.createTrustAllSSLContext())
 				.build()
 				.send(request, BodyHandlers.ofString());
-		Assertions.assertThat(res.body()).isEqualTo("Hello");
+
+		Assertions.assertThat(response.body()).isEqualTo("Hello");
 	}
 }

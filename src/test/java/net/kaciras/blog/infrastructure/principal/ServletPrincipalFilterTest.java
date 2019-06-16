@@ -11,7 +11,7 @@ import org.springframework.mock.web.MockHttpSession;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
-public class ServletPrincipalFilterTest {
+final class ServletPrincipalFilterTest {
 
 	private static final String COOKIE_NAME = "CSRF-Token";
 	private static final String HEADER_NAME = "X-CSRF-Token";
