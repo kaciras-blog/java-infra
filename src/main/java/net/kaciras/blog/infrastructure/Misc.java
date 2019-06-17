@@ -117,6 +117,14 @@ public class Misc {
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public static boolean isSafeRequest(HttpServletRequest request) {
 		var method = request.getMethod();
-		return "GET".equals(method) || "HEAD".equals(method) || "OPTIONS".equals(method);
+		if (method != null) {
+			switch (method) {
+				case "HEAD":
+				case "GET":
+				case "OPTIONS":
+					return true;
+			}
+		}
+		return false;
 	}
 }
