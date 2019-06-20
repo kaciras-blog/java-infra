@@ -48,6 +48,12 @@ public class CodecUtils {
 		return decodeHex(new byte[text.length() >> 1], 0, text);
 	}
 
+	/**
+	 * 检查一个字符是否是合法的Hex字符。
+	 *
+	 * @param ch 字符
+	 * @return 如果是返回true，否则false
+	 */
 	public boolean isHexDigit(char ch) {
 		return ch >= '0' && ch <= '9' || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
 	}

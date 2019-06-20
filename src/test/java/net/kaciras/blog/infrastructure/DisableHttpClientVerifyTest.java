@@ -24,7 +24,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 
-class DisableHttpClientVerifyTest {
+final class DisableHttpClientVerifyTest {
 
 	private static DisposableServer server;
 
@@ -47,7 +47,7 @@ class DisableHttpClientVerifyTest {
 	}
 
 	@AfterAll
-	static void closeServer() {
+	static void close() {
 		server.disposeNow();
 	}
 

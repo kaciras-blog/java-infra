@@ -12,7 +12,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 /**
  * Spring Session 对 Cookie 的序列化没有自动配置支持，所以写了这个类来自动设置。
  * <p>
- * 【注意】SpringBoot 2.2 之后新增了 SessionAutoConfiguration 能够代替此类
+ * 【注意】因为 SessionAutoConfiguration 不支持 Webflux 以及 setSameSite 属性所以才搞了这个类。
  */
 @EnableConfigurationProperties(SessionCookieProperties.class)
 @ConditionalOnClass(Session.class)
