@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.autoconfig;
+package net.kaciras.blog.infrastructure.autoconfigure;
 
 import lombok.Getter;
 import lombok.Setter;

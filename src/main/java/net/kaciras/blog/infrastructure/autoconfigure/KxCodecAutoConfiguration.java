@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.autoconfig;
+package net.kaciras.blog.infrastructure.autoconfigure;
 
 import net.kaciras.blog.infrastructure.codec.ExtendsCodecModule;
 import net.kaciras.blog.infrastructure.codec.ImageReferenceTypeHandler;

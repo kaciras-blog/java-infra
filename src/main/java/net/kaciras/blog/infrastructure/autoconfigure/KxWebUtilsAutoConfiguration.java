@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.autoconfig;
+package net.kaciras.blog.infrastructure.autoconfigure;
 
 import lombok.RequiredArgsConstructor;
 import net.kaciras.blog.infrastructure.exception.WebBusinessException;

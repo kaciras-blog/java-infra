@@ -1,7 +1,7 @@
-package net.kaciras.blog.infrastructure.autoconfig;
+package net.kaciras.blog.infrastructure.autoconfigure;
 
 import lombok.RequiredArgsConstructor;
-import net.kaciras.blog.infrastructure.autoconfig.CorsProperties.CorsTemplate;
+import net.kaciras.blog.infrastructure.autoconfigure.CorsProperties.CorsTemplate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

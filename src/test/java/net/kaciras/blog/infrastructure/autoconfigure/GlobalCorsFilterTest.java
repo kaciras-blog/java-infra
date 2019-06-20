@@ -1,4 +1,4 @@
-package net.kaciras.blog.infrastructure.autoconfig;
+package net.kaciras.blog.infrastructure.autoconfigure;
 
 import net.kaciras.blog.infrastructure.FilterChainCapture;
 import org.junit.jupiter.api.Assertions;
