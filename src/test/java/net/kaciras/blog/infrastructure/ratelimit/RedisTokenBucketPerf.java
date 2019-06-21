@@ -33,9 +33,7 @@ public class RedisTokenBucketPerf {
 
 	@Setup
 	public void setUp() {
-		context = new SpringApplicationBuilder()
-				.sources(RedisTokenBucketTest.EmbeddedConfiguration.class)
-				.web(WebApplicationType.NONE).run();
+		context = new SpringApplicationBuilder(TestRedisConfiguration.class).web(WebApplicationType.NONE).run();
 	}
 
 	@Setup(Level.Iteration)
