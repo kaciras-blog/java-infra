@@ -67,4 +67,15 @@ final class RedisBlockingLimiterTest {
 		Assertions.assertThat((int) waitTime).isCloseTo(banTime, offset(3));
 		verify(inner, times(1)).acquire(any(), anyInt());
 	}
+
+	@Test
+	void innerReturnsNegative() {
+		when(inner.acquire(any(), anyInt())).thenReturn(-1L);
+
+		var waitTime = limiter.acquire(KEY, 1);
+		Assertions.assertThat(waitTime).isNegative();
+
+		when(inner.acquire(any(), anyInt())).thenReturn(0L);
+		Assertions.assertThat(limiter.acquire(KEY, 1)).isZero();
+	}
 }

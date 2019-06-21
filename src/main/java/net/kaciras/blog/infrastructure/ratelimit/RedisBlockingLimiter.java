@@ -19,8 +19,9 @@ public final class RedisBlockingLimiter implements RateLimiter {
 	private boolean refreshOnReject;
 
 	/*
-	 * 这里不再使用“异步化”机制，因为并非所有的限流算法都耗时较大，对于个别需要的算法可以在其内部
-	 * 自己实现，或是做个装饰器类。
+	 * 【更新】之前版本使用了异步化机制，将对内层限流器的调用和设置封禁记录这两操作放在其他线程中，
+	 * 可以减少请求的执行时间。后来移除了，因为并非所有的限流算法都耗时较大，对于个别需要的算法可
+	 * 以在其内部自己实现，或是做个异步装饰器类。
 	 */
 	@Override
 	public long acquire(@NonNull String id, int permits) {
@@ -37,8 +38,9 @@ public final class RedisBlockingLimiter implements RateLimiter {
 			return timeToLive;
 		}
 
-		if (inner.acquire(id, permits) <= 0) {
-			return 0;
+		var waitTime = inner.acquire(id, permits);
+		if (waitTime <= 0) {
+			return waitTime;
 		}
 		redis.opsForValue().set(blockKey, "", banTime);
 		return banTime.toSeconds();
