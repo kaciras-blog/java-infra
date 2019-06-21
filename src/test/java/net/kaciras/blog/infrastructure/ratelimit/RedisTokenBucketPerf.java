@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class RedisTokenBucketPerf {
 
-	private static final String KEY = "tb:perf";
+	private static final String NAMESPACE = "TokenBucket:";
+	private static final String KEY = "Benchmark";
 
 	private ConfigurableApplicationContext context;
 
@@ -42,10 +43,10 @@ public class RedisTokenBucketPerf {
 		var template = (RedisTemplate<String, Object>) context.getBean("testRedisTemplate");
 		template.unlink(KEY);
 
-		single = new RedisTokenBucket(Clock.systemDefaultZone(), template);
+		single = new RedisTokenBucket(NAMESPACE, template, Clock.systemDefaultZone());
 		single.addBucket(Integer.MAX_VALUE, 10_0000);
 
-		twenty = new RedisTokenBucket(Clock.systemDefaultZone(), template);
+		twenty = new RedisTokenBucket(NAMESPACE, template, Clock.systemDefaultZone());
 		for (int i = 0; i < 20; i++) {
 			twenty.addBucket(Integer.MAX_VALUE, 10_0000);
 		}

@@ -23,7 +23,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = RedisTokenBucketTest.EmbeddedConfiguration.class)
 final class RedisTokenBucketTest {
 
-	private static final String KEY = "RATE_LIMITER_TEST";
+	private static final String KEY = "TEST";
+	private static final String NAMESPACE = "RATE_LIMIT:";
 
 	// 使用内嵌的配置，避免加载整个应用
 	@Import(RedisAutoConfiguration.class)
@@ -51,9 +52,9 @@ final class RedisTokenBucketTest {
 
 	@BeforeEach
 	void setUp() {
-		limiter = new RedisTokenBucket(clock, template);
+		limiter = new RedisTokenBucket(NAMESPACE, template, clock);
+		template.unlink(NAMESPACE + KEY);
 		when(clock.instant()).thenReturn(Instant.ofEpochSecond(timeSecond));
-		template.unlink(KEY);
 	}
 
 	private void timePass(int second) {
