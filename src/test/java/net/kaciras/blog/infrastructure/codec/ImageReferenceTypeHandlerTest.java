@@ -6,39 +6,46 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import static org.mockito.Mockito.when;
 
-final class ImageReferenceTypeHandlerTest {
+final class ImageReferenceTypeHandlerTest extends AbstractTypeHandlerTest {
 
 	private static final TypeHandler<ImageReference> HANDLER = new ImageReferenceTypeHandler();
 
-	@Test
-	void testBytesEncoding() throws Exception {
-		var name = "picture.pcx";
-		var imageReference = ImageReference.parse(name);
+	private static final String NAME = "picture.png";
+	private static final byte[] DATA;
 
-		var statement = Mockito.mock(PreparedStatement.class);
-		HANDLER.setParameter(statement, 1, imageReference, JdbcType.BINARY);
-
-		var bytes = new byte[ImageReference.HASH_SIZE + 1];
-		System.arraycopy(name.getBytes(), 0, bytes, 2, name.length());
-		bytes[1] = (byte) name.length();
-		Mockito.verify(statement).setBytes(1, bytes);
+	static {
+		DATA = new byte[ImageReference.HASH_SIZE + 1];
+		System.arraycopy(NAME.getBytes(), 0, DATA, 2, NAME.length());
+		DATA[1] = (byte) NAME.length();
 	}
 
 	@Test
-	void testBytesDecoding() throws Exception {
-		var name = "picture.pcx";
-		var bytes = new byte[ImageReference.HASH_SIZE + 1];
-		System.arraycopy(name.getBytes(), 0, bytes, 2, name.length());
-		bytes[1] = (byte) name.length();
+	void setParameter() throws Exception {
+		HANDLER.setParameter(preparedStatement, 1, ImageReference.parse(NAME), JdbcType.BINARY);
+		Mockito.verify(preparedStatement).setBytes(1, DATA);
+	}
 
-		var resultSet = Mockito.mock(ResultSet.class);
-		Mockito.when(resultSet.getBytes(1)).thenReturn(bytes);
-		var imageReference = HANDLER.getResult(resultSet, 1);
+	// (ResultSet|CallableStatement) 的 getXXX 没法抽象，只能一个个写
+	@Test
+	void getResultFromResultSetByName() throws Exception {
+		when(resultSet.getBytes("column")).thenReturn(DATA);
+		Assertions.assertThat(HANDLER.getResult(resultSet, "column"))
+				.isEqualTo(ImageReference.parse(NAME));
+	}
 
-		Assertions.assertThat(imageReference.getName()).isEqualTo(name);
-		Assertions.assertThat(imageReference.getType()).isEqualTo(ImageType.Internal);
+	@Test
+	void getResultFromResultSetByPosition() throws Exception {
+		when(resultSet.getBytes(1)).thenReturn(DATA);
+		Assertions.assertThat(HANDLER.getResult(resultSet, 1))
+				.isEqualTo(ImageReference.parse(NAME));
+	}
+
+	@Test
+	void getResultFromCallableStatement() throws Exception {
+		when(callableStatement.getBytes(1)).thenReturn(DATA);
+		Assertions.assertThat(HANDLER.getResult(callableStatement, 1))
+				.isEqualTo(ImageReference.parse(NAME));
 	}
 }

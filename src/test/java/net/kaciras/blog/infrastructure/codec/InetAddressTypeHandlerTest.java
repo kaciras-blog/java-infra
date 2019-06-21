@@ -1,40 +1,50 @@
 package net.kaciras.blog.infrastructure.codec;
 
-import org.apache.ibatis.executor.result.ResultMapException;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.net.InetAddress;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-final class InetAddressTypeHandlerTest {
+final class InetAddressTypeHandlerTest extends AbstractTypeHandlerTest {
 
 	private static final TypeHandler<InetAddress> HANDLER = new InetAddressTypeHandler();
 
-	private static final byte[] IP_BYTES_6789 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 66, 77, 88, 99};
+	private static final byte[] MAPPING_IPV4_DATA = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 66, 77, 88, 99};
+
+	/** InetAddress.getByName 抛异常，不能把字段设为静态的，而且还得在构造方法上声明异常 */
+	private final InetAddress IPV4_ADDRESS = InetAddress.getByName("66.77.88.99");
+
+	InetAddressTypeHandlerTest() throws Exception {}
 
 	@Test
 	void setParameter() throws Exception {
-		var ps = mock(PreparedStatement.class);
-		HANDLER.setParameter(ps, 1, InetAddress.getByName("66.77.88.99"), JdbcType.BINARY);
-		Mockito.verify(ps).setBytes(1, IP_BYTES_6789);
+		HANDLER.setParameter(preparedStatement, 1, InetAddress.getByName("66.77.88.99"), JdbcType.BINARY);
+		Mockito.verify(preparedStatement).setBytes(1, MAPPING_IPV4_DATA);
 	}
 
 	@Test
-	void getIpv4() throws Exception {
-		var resultSet = mock(ResultSet.class);
-		when(resultSet.getBytes(1)).thenReturn(IP_BYTES_6789);
+	void getResultFromResultSetByName() throws Exception {
+		when(resultSet.getBytes("column")).thenReturn(MAPPING_IPV4_DATA);
+		Assertions.assertThat(HANDLER.getResult(resultSet, "column")).isEqualTo(IPV4_ADDRESS);
+	}
 
-		var addr = HANDLER.getResult(resultSet, 1);
-		Assertions.assertEquals(InetAddress.getByName("66.77.88.99"), addr);
+	@Test
+	void getResultFromResultSetByPosition() throws Exception {
+		when(resultSet.getBytes(1)).thenReturn(MAPPING_IPV4_DATA);
+		Assertions.assertThat(HANDLER.getResult(resultSet, 1)).isEqualTo(IPV4_ADDRESS);
+	}
+
+	@Test
+	void getResultFromCallableStatement() throws Exception {
+		when(callableStatement.getBytes(1)).thenReturn(MAPPING_IPV4_DATA);
+		Assertions.assertThat(HANDLER.getResult(callableStatement, 1)).isEqualTo(IPV4_ADDRESS);
 	}
 
 	@Test
@@ -44,34 +54,6 @@ final class InetAddressTypeHandlerTest {
 		when(resultSet.getBytes(1)).thenReturn(youtube.getAddress());
 
 		var addr = HANDLER.getResult(resultSet, 1);
-		Assertions.assertEquals(youtube, addr);
-	}
-
-	@Test
-	void getResultByName() throws Exception {
-		var youtube = InetAddress.getByName("2001:4860:4001:402::15");
-		var resultSet = mock(ResultSet.class);
-		when(resultSet.getBytes("ip")).thenReturn(youtube.getAddress());
-
-		var addr = HANDLER.getResult(resultSet, "ip");
-		Assertions.assertEquals(youtube, addr);
-	}
-
-	@Test
-	void getResultFromCallable() throws Exception {
-		var youtube = InetAddress.getByName("2001:4860:4001:402::15");
-		var stat = mock(CallableStatement.class);
-		when(stat.getBytes(5)).thenReturn(youtube.getAddress());
-
-		var addr = HANDLER.getResult(stat, 5);
-		Assertions.assertEquals(youtube, addr);
-	}
-
-	@Test
-	void invalidData() throws Exception {
-		var stat = mock(CallableStatement.class);
-		when(stat.getBytes(5)).thenReturn(new byte[]{1, 2, 3, 4, 5, 6});
-
-		Assertions.assertThrows(ResultMapException.class, () -> HANDLER.getResult(stat, 5));
+		Assertions.assertThat(addr).isEqualTo(youtube);
 	}
 }
