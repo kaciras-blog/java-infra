@@ -34,12 +34,17 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
 
-		<!-- 两个WEB框架的依赖 -->
+		<!-- 可选：Spring 的两个 web 框架 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -50,29 +55,24 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<optional>true</optional>
+		</dependency>
 
-		<!-- Session -->
+		<!-- 可选：Spring Session 支持 -->
 		<dependency>
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-data-redis</artifactId>
 			<optional>true</optional>
 		</dependency>
 
-		<!-- 数据库驱动 -->
-		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
-		</dependency>
+		<!-- 可选：Mybatis 支持 -->
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>2.0.1</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aspects</artifactId>
 			<optional>true</optional>
 		</dependency>
 
@@ -92,12 +92,6 @@
 		<dependency>
 			<groupId>io.lettuce</groupId>
 			<artifactId>lettuce-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<optional>true</optional>
 		</dependency>
 
@@ -136,7 +130,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skip>true</skip>
+					<excludes>
+						<!-- 排除 JMH 生成的文件 -->
+						<exclude>**/generated/*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
