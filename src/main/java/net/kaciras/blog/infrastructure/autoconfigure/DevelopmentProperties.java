@@ -9,9 +9,11 @@ import java.time.Duration;
 @ConfigurationProperties("kaciras.development")
 @Getter
 @Setter
-public class DevelopmentProperties {
+public final class DevelopmentProperties {
 
 	private boolean adminPrincipal;
 
 	private Duration httpDelay;
+
+	private boolean debugErrorMessage;
 }
