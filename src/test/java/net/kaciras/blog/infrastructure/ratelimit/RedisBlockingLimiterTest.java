@@ -1,6 +1,5 @@
 package net.kaciras.blog.infrastructure.ratelimit;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Duration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -41,7 +41,7 @@ final class RedisBlockingLimiterTest {
 		var waitTime = limiter.acquire(KEY, 123);
 
 		verify(inner).acquire(KEY, 123);
-		Assertions.assertThat(waitTime).isZero();
+		assertThat(waitTime).isZero();
 	}
 
 	@Test
@@ -50,7 +50,7 @@ final class RedisBlockingLimiterTest {
 		limiter.acquire(KEY, 123);
 
 		var waitTime = limiter.acquire(KEY, 456);
-		Assertions.assertThat(waitTime).isZero();
+		assertThat(waitTime).isZero();
 		verify(inner, times(2)).acquire(any(), anyInt());
 	}
 
@@ -61,10 +61,10 @@ final class RedisBlockingLimiterTest {
 		when(inner.acquire(any(), anyInt())).thenReturn(100L);
 
 		var waitTime = limiter.acquire(KEY, 456);
-		Assertions.assertThat(waitTime).isEqualTo(banTime);
+		assertThat(waitTime).isEqualTo(banTime);
 
 		waitTime = limiter.acquire(KEY, 1);
-		Assertions.assertThat((int) waitTime).isCloseTo(banTime, offset(3));
+		assertThat((int) waitTime).isCloseTo(banTime, offset(3));
 		verify(inner, times(1)).acquire(any(), anyInt());
 	}
 
@@ -73,9 +73,9 @@ final class RedisBlockingLimiterTest {
 		when(inner.acquire(any(), anyInt())).thenReturn(-1L);
 
 		var waitTime = limiter.acquire(KEY, 1);
-		Assertions.assertThat(waitTime).isNegative();
+		assertThat(waitTime).isNegative();
 
 		when(inner.acquire(any(), anyInt())).thenReturn(0L);
-		Assertions.assertThat(limiter.acquire(KEY, 1)).isZero();
+		assertThat(limiter.acquire(KEY, 1)).isZero();
 	}
 }

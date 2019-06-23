@@ -2,13 +2,13 @@ package net.kaciras.blog.infrastructure.codec;
 
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.net.InetAddress;
 import java.sql.ResultSet;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,19 +32,19 @@ final class InetAddressTypeHandlerTest extends AbstractTypeHandlerTest {
 	@Test
 	void getResultFromResultSetByName() throws Exception {
 		when(resultSet.getBytes("column")).thenReturn(MAPPING_IPV4_DATA);
-		Assertions.assertThat(HANDLER.getResult(resultSet, "column")).isEqualTo(IPV4_ADDRESS);
+		assertThat(HANDLER.getResult(resultSet, "column")).isEqualTo(IPV4_ADDRESS);
 	}
 
 	@Test
 	void getResultFromResultSetByPosition() throws Exception {
 		when(resultSet.getBytes(1)).thenReturn(MAPPING_IPV4_DATA);
-		Assertions.assertThat(HANDLER.getResult(resultSet, 1)).isEqualTo(IPV4_ADDRESS);
+		assertThat(HANDLER.getResult(resultSet, 1)).isEqualTo(IPV4_ADDRESS);
 	}
 
 	@Test
 	void getResultFromCallableStatement() throws Exception {
 		when(callableStatement.getBytes(1)).thenReturn(MAPPING_IPV4_DATA);
-		Assertions.assertThat(HANDLER.getResult(callableStatement, 1)).isEqualTo(IPV4_ADDRESS);
+		assertThat(HANDLER.getResult(callableStatement, 1)).isEqualTo(IPV4_ADDRESS);
 	}
 
 	@Test
@@ -54,6 +54,6 @@ final class InetAddressTypeHandlerTest extends AbstractTypeHandlerTest {
 		when(resultSet.getBytes(1)).thenReturn(youtube.getAddress());
 
 		var addr = HANDLER.getResult(resultSet, 1);
-		Assertions.assertThat(addr).isEqualTo(youtube);
+		assertThat(addr).isEqualTo(youtube);
 	}
 }

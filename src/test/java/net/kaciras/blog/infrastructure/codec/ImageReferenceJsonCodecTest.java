@@ -8,6 +8,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 final class ImageReferenceJsonCodecTest {
 
 	private ObjectReader reader;
@@ -25,7 +27,7 @@ final class ImageReferenceJsonCodecTest {
 	void serialize() throws Exception {
 		var image = ImageReference.parse("测试图片.webp");
 		var json = writer.writeValueAsString(image);
-		Assertions.assertThat(json).isEqualTo("\"/image/测试图片.webp\"");
+		assertThat(json).isEqualTo("\"/image/测试图片.webp\"");
 	}
 
 	@Test
@@ -34,8 +36,8 @@ final class ImageReferenceJsonCodecTest {
 		var json = "\"/image/" + name + "\"";
 		ImageReference image = reader.readValue(json);
 
-		Assertions.assertThat(image.getType()).isEqualTo(ImageType.PNG);
-		Assertions.assertThat(image.toString()).isEqualTo(name);
+		assertThat(image.getType()).isEqualTo(ImageType.PNG);
+		assertThat(image.toString()).isEqualTo(name);
 	}
 
 	@Test

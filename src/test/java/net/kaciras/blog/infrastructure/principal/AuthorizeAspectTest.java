@@ -2,7 +2,6 @@ package net.kaciras.blog.infrastructure.principal;
 
 import net.kaciras.blog.infrastructure.exception.DataTooBigException;
 import net.kaciras.blog.infrastructure.exception.PermissionException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(classes = AuthorizeAspectTest.EmbeddedConfiguration.class)
 class AuthorizeAspectTest {
@@ -62,8 +63,7 @@ class AuthorizeAspectTest {
 
 	@Test
 	void interceptMethod() {
-		Assertions.assertThatThrownBy(() -> methodAopBean.requireAuth())
-				.isInstanceOf(PermissionException.class);
+		assertThatThrownBy(() -> methodAopBean.requireAuth()).isInstanceOf(PermissionException.class);
 
 		SecurityContext.setPrincipal(new WebPrincipal(WebPrincipal.ADMIN_ID));
 		methodAopBean.requireAuth();
@@ -71,8 +71,7 @@ class AuthorizeAspectTest {
 
 	@Test
 	void interceptClass() {
-		Assertions.assertThatThrownBy(() -> classAopBean.requireAuth())
-				.isInstanceOf(PermissionException.class);
+		assertThatThrownBy(() -> classAopBean.requireAuth()).isInstanceOf(PermissionException.class);
 
 		SecurityContext.setPrincipal(new WebPrincipal(WebPrincipal.ADMIN_ID));
 		classAopBean.requireAuth();
@@ -80,7 +79,6 @@ class AuthorizeAspectTest {
 
 	@Test
 	void customException() {
-		Assertions.assertThatThrownBy(() -> classAopBean.customException())
-				.isInstanceOf(DataTooBigException.class);
+		assertThatThrownBy(() -> classAopBean.customException()).isInstanceOf(DataTooBigException.class);
 	}
 }

@@ -4,6 +4,8 @@ import net.kaciras.blog.infrastructure.exception.RequestArgumentException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 final class ImageReferenceTest {
 
 	@Test
@@ -11,8 +13,8 @@ final class ImageReferenceTest {
 		var name = "0FC3697B8E7787B53A76738016EB9355D812005CE6CFD354A3D6DBC812345678.png";
 		var parse = ImageReference.parse(name);
 
-		Assertions.assertThat(parse.getType()).isEqualTo(ImageType.PNG);
-		Assertions.assertThat(parse.toString()).isEqualTo(name);
+		assertThat(parse.getType()).isEqualTo(ImageType.PNG);
+		assertThat(parse.toString()).isEqualTo(name);
 	}
 
 	@Test
@@ -20,8 +22,8 @@ final class ImageReferenceTest {
 		var name = "picture.pcx";
 		var parse = ImageReference.parse(name);
 
-		Assertions.assertThat(parse.getType()).isEqualTo(ImageType.Internal);
-		Assertions.assertThat(parse.toString()).isEqualTo(name);
+		assertThat(parse.getType()).isEqualTo(ImageType.Internal);
+		assertThat(parse.toString()).isEqualTo(name);
 	}
 
 	@Test
@@ -36,7 +38,7 @@ final class ImageReferenceTest {
 		var imageA = new ImageReference("test.webp", ImageType.Internal);
 		var imageB = ImageReference.parse("test.webp");
 
-		Assertions.assertThat(imageA).isEqualTo(imageB);
-		Assertions.assertThat(imageA.hashCode()).isEqualTo(imageB.hashCode());
+		assertThat(imageA).isEqualTo(imageB);
+		assertThat(imageA.hashCode()).isEqualTo(imageB.hashCode());
 	}
 }

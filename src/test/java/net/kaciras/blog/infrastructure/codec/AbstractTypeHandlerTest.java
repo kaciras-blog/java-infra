@@ -14,10 +14,11 @@ abstract class AbstractTypeHandlerTest {
 
 	abstract void setParameter() throws Exception;
 
+	// (ResultSet|CallableStatement) 的 getXXX 没法抽象，只能一个个写
+
 	abstract void getResultFromResultSetByName() throws Exception;
 
 	abstract void getResultFromResultSetByPosition() throws Exception;
 
 	abstract void getResultFromCallableStatement() throws Exception;
-
 }

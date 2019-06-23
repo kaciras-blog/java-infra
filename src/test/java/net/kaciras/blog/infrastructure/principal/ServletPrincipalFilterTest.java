@@ -1,7 +1,6 @@
 package net.kaciras.blog.infrastructure.principal;
 
 import net.kaciras.blog.infrastructure.FilterChainCapture;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockCookie;
@@ -10,6 +9,8 @@ import org.springframework.mock.web.MockHttpSession;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class ServletPrincipalFilterTest {
 
@@ -30,7 +31,7 @@ final class ServletPrincipalFilterTest {
 	@Test
 	void noCredit() throws Exception {
 		var result = FilterChainCapture.doFilter(filter, new MockHttpServletRequest());
-		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
+		assertThat(result.outRequest.getUserPrincipal()).isEqualTo(WebPrincipal.ANONYMOUS);
 	}
 
 	@Test
@@ -46,7 +47,7 @@ final class ServletPrincipalFilterTest {
 		var result = FilterChainCapture.doFilter(filter, request);
 
 		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
-		Assertions.assertEquals(666, principal.getId());
+		assertThat(principal.getId()).isEqualTo(666);
 	}
 
 	@Test
@@ -60,7 +61,7 @@ final class ServletPrincipalFilterTest {
 		request.addHeader(HEADER_NAME, "invalid");
 
 		var result = FilterChainCapture.doFilter(filter, request);
-		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
+		assertThat(result.outRequest.getUserPrincipal()).isEqualTo(WebPrincipal.ANONYMOUS);
 	}
 
 	@Test
@@ -76,7 +77,7 @@ final class ServletPrincipalFilterTest {
 		var result = FilterChainCapture.doFilter(filter, request);
 
 		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
-		Assertions.assertEquals(666, principal.getId());
+		assertThat(principal.getId()).isEqualTo(666);
 	}
 
 	@Test
@@ -89,7 +90,7 @@ final class ServletPrincipalFilterTest {
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 
 		var result = FilterChainCapture.doFilter(filter, request);
-		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
+		assertThat(result.outRequest.getUserPrincipal()).isEqualTo(WebPrincipal.ANONYMOUS);
 	}
 
 	@Test
@@ -107,8 +108,8 @@ final class ServletPrincipalFilterTest {
 		var result = FilterChainCapture.doFilter(filter, request);
 
 		var cookie = MockCookie.parse(result.inResponse.getHeader("Set-Cookie"));
-		Assertions.assertEquals(COOKIE_NAME, cookie.getName());
-		Assertions.assertEquals("kaciras.example.com", cookie.getDomain());
+		assertThat(cookie.getName()).isEqualTo(COOKIE_NAME);
+		assertThat(cookie.getDomain()).isEqualTo("kaciras.example.com");
 	}
 
 	@Test
@@ -123,10 +124,10 @@ final class ServletPrincipalFilterTest {
 
 		var result = FilterChainCapture.doFilter(filter, request);
 		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
-		Assertions.assertEquals(666, principal.getId());
+		assertThat(principal.getId()).isEqualTo(666);
 
 		request.setMethod("POST");
 		result = FilterChainCapture.doFilter(filter, request);
-		Assertions.assertEquals(WebPrincipal.ANONYMOUS, result.outRequest.getUserPrincipal());
+		assertThat(result.outRequest.getUserPrincipal()).isEqualTo(WebPrincipal.ANONYMOUS);
 	}
 }

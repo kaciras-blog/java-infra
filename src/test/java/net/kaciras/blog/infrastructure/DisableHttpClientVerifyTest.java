@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,9 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 final class DisableHttpClientVerifyTest {
 
@@ -54,7 +56,7 @@ final class DisableHttpClientVerifyTest {
 	@Test
 	void httpsURLConnectionFail() throws Exception {
 		var url = new URL("https://localhost:" + server.port());
-		Assertions.assertThatThrownBy(url::openStream).isInstanceOf(SSLHandshakeException.class);
+		assertThatThrownBy(url::openStream).isInstanceOf(SSLHandshakeException.class);
 	}
 
 	@Test
@@ -67,7 +69,7 @@ final class DisableHttpClientVerifyTest {
 		conn.setSSLSocketFactory(sslContext.getSocketFactory());
 
 		try (var stream = conn.getInputStream()) {
-			Assertions.assertThat(stream.readAllBytes()).containsExactly("Hello".getBytes());
+			assertThat(stream.readAllBytes()).containsExactly("Hello".getBytes());
 		}
 	}
 
@@ -76,7 +78,7 @@ final class DisableHttpClientVerifyTest {
 		var request = HttpRequest.newBuilder()
 				.uri(URI.create("https://localhost:" + server.port()))
 				.build();
-		Assertions.assertThatThrownBy(() -> HttpClient.newHttpClient().send(request, BodyHandlers.ofString()))
+		assertThatThrownBy(() -> HttpClient.newHttpClient().send(request, BodyHandlers.ofString()))
 				.isInstanceOf(IOException.class);
 	}
 
@@ -90,6 +92,6 @@ final class DisableHttpClientVerifyTest {
 				.build()
 				.send(request, BodyHandlers.ofString());
 
-		Assertions.assertThat(response.body()).isEqualTo("Hello");
+		assertThat(response.body()).isEqualTo("Hello");
 	}
 }

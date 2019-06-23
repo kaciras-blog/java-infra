@@ -2,10 +2,10 @@ package net.kaciras.blog.infrastructure.codec;
 
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 final class ImageReferenceTypeHandlerTest extends AbstractTypeHandlerTest {
@@ -21,31 +21,34 @@ final class ImageReferenceTypeHandlerTest extends AbstractTypeHandlerTest {
 		DATA[1] = (byte) NAME.length();
 	}
 
+	@Override
 	@Test
 	void setParameter() throws Exception {
 		HANDLER.setParameter(preparedStatement, 1, ImageReference.parse(NAME), JdbcType.BINARY);
 		Mockito.verify(preparedStatement).setBytes(1, DATA);
 	}
 
-	// (ResultSet|CallableStatement) 的 getXXX 没法抽象，只能一个个写
+	@Override
 	@Test
 	void getResultFromResultSetByName() throws Exception {
 		when(resultSet.getBytes("column")).thenReturn(DATA);
-		Assertions.assertThat(HANDLER.getResult(resultSet, "column"))
+		assertThat(HANDLER.getResult(resultSet, "column"))
 				.isEqualTo(ImageReference.parse(NAME));
 	}
 
+	@Override
 	@Test
 	void getResultFromResultSetByPosition() throws Exception {
 		when(resultSet.getBytes(1)).thenReturn(DATA);
-		Assertions.assertThat(HANDLER.getResult(resultSet, 1))
+		assertThat(HANDLER.getResult(resultSet, 1))
 				.isEqualTo(ImageReference.parse(NAME));
 	}
 
+	@Override
 	@Test
 	void getResultFromCallableStatement() throws Exception {
 		when(callableStatement.getBytes(1)).thenReturn(DATA);
-		Assertions.assertThat(HANDLER.getResult(callableStatement, 1))
+		assertThat(HANDLER.getResult(callableStatement, 1))
 				.isEqualTo(ImageReference.parse(NAME));
 	}
 }

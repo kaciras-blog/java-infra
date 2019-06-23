@@ -1,6 +1,5 @@
 package net.kaciras.blog.infrastructure.ratelimit;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.time.Clock;
 import java.time.Instant;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,25 +43,25 @@ final class RedisTokenBucketTest {
 	void acquireSingle() {
 		limiter.addBucket(100, 2);
 
-		Assertions.assertThat(limiter.acquire(KEY, 50)).isZero();
-		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
-		Assertions.assertThat(limiter.acquire(KEY, 30)).isEqualTo(10);
+		assertThat(limiter.acquire(KEY, 50)).isZero();
+		assertThat(limiter.acquire(KEY, 40)).isZero();
+		assertThat(limiter.acquire(KEY, 30)).isEqualTo(10);
 	}
 
 	@Test
 	void restoreSingle() {
 		limiter.addBucket(100, 2);
 
-		Assertions.assertThat(limiter.acquire(KEY, 100)).isZero();
+		assertThat(limiter.acquire(KEY, 100)).isZero();
 
 		timePass(50);
-		Assertions.assertThat(limiter.acquire(KEY, 100)).isZero();
-		Assertions.assertThat(limiter.acquire(KEY, 30)).isEqualTo(15);
+		assertThat(limiter.acquire(KEY, 100)).isZero();
+		assertThat(limiter.acquire(KEY, 30)).isEqualTo(15);
 	}
 
 	@Test
 	void noBucket() {
-		Assertions.assertThat(limiter.acquire(KEY, 123456)).isZero();
+		assertThat(limiter.acquire(KEY, 123456)).isZero();
 	}
 
 	@Test
@@ -69,7 +69,7 @@ final class RedisTokenBucketTest {
 		limiter.addBucket(100, 2);
 		limiter.addBucket(200, 2);
 
-		Assertions.assertThat(limiter.acquire(KEY, 150)).isNegative();
+		assertThat(limiter.acquire(KEY, 150)).isNegative();
 	}
 
 	@Test
@@ -78,12 +78,12 @@ final class RedisTokenBucketTest {
 		limiter.addBucket(50, 2);    // 100 秒内每秒 2 个
 		limiter.addBucket(200, 1);   // 200 秒内每秒 1 个
 
-		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
+		assertThat(limiter.acquire(KEY, 40)).isZero();
 
 		timePass(10);
-		Assertions.assertThat(limiter.acquire(KEY, 40)).isEqualTo(5);
+		assertThat(limiter.acquire(KEY, 40)).isEqualTo(5);
 
 		timePass(5);
-		Assertions.assertThat(limiter.acquire(KEY, 40)).isZero();
+		assertThat(limiter.acquire(KEY, 40)).isZero();
 	}
 }

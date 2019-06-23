@@ -14,6 +14,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * 测量 RedisTokenBucket 的性能，其 acquire 方法包括三个方面的开销：JAVA层逻辑、通信开销、Redis脚本执行时间。
  * 如果单独衡量 TokenBucket.lua 脚本的性能，请使用 redis-benchmark 来测，结果见 resource/TokenBucketBenchmark.txt
+ *
+ * Benchmark                       Mode  Cnt    Score    Error  Units
+ * RedisTokenBucketPerf.buckets1   avgt    5  308.407 ± 46.905  us/op
+ * RedisTokenBucketPerf.buckets40  avgt    5  469.614 ±  6.682  us/op
  */
 @SuppressWarnings({"UnusedReturnValue", "unchecked"})
 @State(Scope.Benchmark)
@@ -29,7 +33,7 @@ public class RedisTokenBucketPerf {
 	private ConfigurableApplicationContext context;
 
 	private RedisTokenBucket single;
-	private RedisTokenBucket twenty;
+	private RedisTokenBucket forty;
 
 	@Setup
 	public void setUp() {
@@ -44,12 +48,12 @@ public class RedisTokenBucketPerf {
 		single = new RedisTokenBucket(NAMESPACE, template, Clock.systemDefaultZone());
 		single.addBucket(Integer.MAX_VALUE, 10_0000);
 
-		twenty = new RedisTokenBucket(NAMESPACE, template, Clock.systemDefaultZone());
+		forty = new RedisTokenBucket(NAMESPACE, template, Clock.systemDefaultZone());
 		for (int i = 0; i < 20; i++) {
-			twenty.addBucket(Integer.MAX_VALUE, 10_0000);
+			forty.addBucket(Integer.MAX_VALUE, 10_0000);
 		}
 		for (int i = 0; i < 20; i++) {
-			twenty.addBucket(10_0000, 10_0000);
+			forty.addBucket(10_0000, 10_0000);
 		}
 	}
 
@@ -67,7 +71,7 @@ public class RedisTokenBucketPerf {
 
 	@Benchmark
 	public long buckets40() {
-		return twenty.acquire(KEY, 100);
+		return forty.acquire(KEY, 100);
 	}
 
 	public static void main(String[] args) throws Exception {

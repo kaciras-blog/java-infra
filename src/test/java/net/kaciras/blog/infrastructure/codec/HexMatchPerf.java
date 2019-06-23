@@ -12,6 +12,22 @@ import java.util.regex.Pattern;
 
 /**
  * 对比几种检查字符串是否是HEX的方式的性能。
+ *
+ * f1894c00ba-default-非英文字符:
+ * Benchmark                Mode    Cnt   Score   Error   Units
+ * HexMatchPerf.bitSet      thrpt    5   9.068 ± 0.147  ops/us
+ * HexMatchPerf.bySwitch    thrpt    5  10.783 ± 0.908  ops/us
+ * HexMatchPerf.clr         thrpt    5   7.194 ± 0.563  ops/us
+ * HexMatchPerf.ifRange     thrpt    5   9.684 ± 1.026  ops/us
+ * HexMatchPerf.regexp      thrpt    5   5.826 ± 0.024  ops/us
+ *
+ * 0de735be2d228599d4a48fe37f7cdc45b6134296a9bd59959590f7cefffeaf96:
+ * Benchmark                Mode    Cnt   Score   Error   Units
+ * HexMatchPerf.bitSet      thrpt    5   2.977 ± 0.135  ops/us
+ * HexMatchPerf.bySwitch    thrpt    5   2.275 ± 0.018  ops/us
+ * HexMatchPerf.clr         thrpt    5   3.610 ± 0.317  ops/us
+ * HexMatchPerf.ifRange     thrpt    5   4.166 ± 0.267  ops/us
+ * HexMatchPerf.regexp      thrpt    5   1.917 ± 0.007  ops/us
  */
 @State(Scope.Thread)
 @Fork(1)
@@ -19,7 +35,7 @@ import java.util.regex.Pattern;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class HexMatchPerf {
 
-	private static final Pattern REGEX = Pattern.compile("^[0-9a-fA-F]{64}$");
+	private static final Pattern REGEX = Pattern.compile("^[0-9a-fA-F]+$");
 	private static final BitSet BIT_SET = new BitSet();
 
 	static {
@@ -56,9 +72,8 @@ public class HexMatchPerf {
 			case 'E':
 			case 'F':
 				return true;
-			default:
-				return false;
 		}
+		return false;
 	}
 
 	@Benchmark
