@@ -23,7 +23,7 @@ import java.util.Set;
 @ResponseBody
 public final class ExceptionResolver {
 
-	private static final String DEFAULT_MESSAGE = "请求参数或内容不合法";
+	static final String DEFAULT_MESSAGE = "请求参数或内容不合法";
 
 	private static final Set<Class<?>> ARGUMENT_EXCEPTIONS = Set.of(
 			MethodArgumentNotValidException.class,

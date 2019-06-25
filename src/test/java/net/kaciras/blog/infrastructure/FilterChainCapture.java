@@ -1,6 +1,7 @@
 package net.kaciras.blog.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.Filter;
@@ -20,6 +21,10 @@ public final class FilterChainCapture implements FilterChain {
 	// 传递给本过滤链的请求和响应参数 chain.doFilter(outRequest, outResponse)
 	public HttpServletRequest outRequest;
 	public HttpServletResponse outResponse;
+
+	public static FilterChainCapture doFilter(Filter filter) throws Exception {
+		return doFilter(filter, new MockHttpServletRequest());
+	}
 
 	public static FilterChainCapture doFilter(Filter filter, HttpServletRequest request) throws Exception {
 		var capture = new FilterChainCapture();

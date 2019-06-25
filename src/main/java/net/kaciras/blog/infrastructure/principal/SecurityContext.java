@@ -1,12 +1,9 @@
 package net.kaciras.blog.infrastructure.principal;
 
-import lombok.experimental.UtilityClass;
 import net.kaciras.blog.infrastructure.exception.PermissionException;
-import org.springframework.lang.NonNull;
 
 import java.util.Objects;
 
-@UtilityClass
 public final class SecurityContext {
 
 	private static final ThreadLocal<WebPrincipal> threadLocal = new ThreadLocal<>();
@@ -15,7 +12,6 @@ public final class SecurityContext {
 		threadLocal.set(principal);
 	}
 
-	@NonNull
 	public static WebPrincipal getPrincipal() {
 		return Objects.requireNonNull(threadLocal.get(), "你需要添加 SecurityContextFilter 后才能使用 SecurityContext");
 	}

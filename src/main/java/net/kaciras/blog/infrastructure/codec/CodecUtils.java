@@ -1,14 +1,11 @@
 package net.kaciras.blog.infrastructure.codec;
 
-import lombok.experimental.UtilityClass;
-
 import java.net.Inet6Address;
 import java.net.InetAddress;
 
-@UtilityClass
-public class CodecUtils {
+public final class CodecUtils {
 
-	private final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+	private static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 			'a', 'b', 'c', 'd', 'e', 'f'};
 
 	/**
@@ -19,7 +16,7 @@ public class CodecUtils {
 	 * @param length length of part.
 	 * @return hex string.
 	 */
-	public String encodeHex(byte[] bytes, int offset, int length) {
+	public static String encodeHex(byte[] bytes, int offset, int length) {
 		var out = new char[length << 1];
 		for (int i = offset, j = 0; i < offset + length; i++) {
 			out[j++] = DIGITS[(0xF0 & bytes[i]) >>> 4];
@@ -34,7 +31,7 @@ public class CodecUtils {
 	 * @param bytes bytes to be encode.
 	 * @return hex string.
 	 */
-	public String encodeHex(byte[] bytes) {
+	public static String encodeHex(byte[] bytes) {
 		return encodeHex(bytes, 0, bytes.length);
 	}
 
@@ -44,18 +41,8 @@ public class CodecUtils {
 	 * @param text hex string.
 	 * @return bytes.
 	 */
-	public byte[] decodeHex(String text) {
+	public static byte[] decodeHex(String text) {
 		return decodeHex(new byte[text.length() >> 1], 0, text);
-	}
-
-	/**
-	 * 检查一个字符是否是合法的Hex字符。
-	 *
-	 * @param ch 字符
-	 * @return 如果是返回true，否则false
-	 */
-	public boolean isHexDigit(char ch) {
-		return ch >= '0' && ch <= '9' || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
 	}
 
 	/**
@@ -66,7 +53,7 @@ public class CodecUtils {
 	 * @param text   hex string.
 	 * @return the <code>target</code>
 	 */
-	public byte[] decodeHex(byte[] target, int offset, String text) {
+	public static byte[] decodeHex(byte[] target, int offset, String text) {
 		var data = text.toCharArray();
 
 		if ((data.length & 1) != 0) {
@@ -82,12 +69,22 @@ public class CodecUtils {
 		return target;
 	}
 
-	private int toDigit(char ch, int index) {
+	private static int toDigit(char ch, int index) {
 		var digit = Character.digit(ch, 16);
 		if (digit == -1) {
 			throw new IllegalArgumentException("char at index " + index + " is not a hex digit: " + ch);
 		}
 		return digit;
+	}
+
+	/**
+	 * 检查一个字符是否是合法的Hex字符。
+	 *
+	 * @param ch 字符
+	 * @return 如果是返回true，否则false
+	 */
+	public static boolean isHexDigit(char ch) {
+		return ch >= '0' && ch <= '9' || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
 	}
 
 	/**
@@ -98,9 +95,9 @@ public class CodecUtils {
 	 * @param part  subarray.
 	 * @param start the index from which to start the search.
 	 * @return the index of the first occurrence of the subarray in the
-	 * 			byte array, or {@code -1} if the character does not occur.
+	 * byte array, or {@code -1} if the character does not occur.
 	 */
-	public int indexOfBytes(byte[] bytes, byte[] part, int start) {
+	public static int indexOfBytes(byte[] bytes, byte[] part, int start) {
 		var len = bytes.length - part.length + 1;
 		for (var i = start; i < len; ++i) {
 			var found = true;
@@ -121,7 +118,7 @@ public class CodecUtils {
 	 * @param address 地址
 	 * @return 字节数组
 	 */
-	public byte[] toIPv6Bytes(InetAddress address) {
+	public static byte[] toIPv6Bytes(InetAddress address) {
 		if (address instanceof Inet6Address) {
 			return address.getAddress();
 		}
@@ -135,7 +132,7 @@ public class CodecUtils {
 	 * @return IPv4-mapped IPv6 Address bytes
 	 * @see <a href="https://tools.ietf.org/html/rfc3493#section-3.7">IPv4-mapped addresses</a>
 	 */
-	private byte[] mappingToIPv6(byte[] ipv4) {
+	private static byte[] mappingToIPv6(byte[] ipv4) {
 		var ipv6 = new byte[16];
 		ipv6[10] = ipv6[11] = (byte) 0xFF;
 		System.arraycopy(ipv4, 0, ipv6, 12, 4);

@@ -1,6 +1,5 @@
 package net.kaciras.blog.infrastructure;
 
-import lombok.experimental.UtilityClass;
 import sun.misc.Unsafe;
 
 import javax.net.ssl.*;
@@ -10,8 +9,11 @@ import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.NoSuchElementException;
 
-@UtilityClass
-public class Misc {
+/*
+ * 我不喜欢用 lombok 的 @UtilityClass，它生成的构造方法内部抛异常纯属多余，正常人都不会去创建工具类
+ * 的实例，同时它自动添加 static 和 final 会混淆Java的语法。
+ */
+public final class Misc {
 
 	//@formatter:off
 	private static final class TrustAllManager extends X509ExtendedTrustManager {

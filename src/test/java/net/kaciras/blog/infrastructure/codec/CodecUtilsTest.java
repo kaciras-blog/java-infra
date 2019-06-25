@@ -4,8 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 final class CodecUtilsTest {
 
@@ -35,11 +38,60 @@ final class CodecUtilsTest {
 		var text = "0123456789abcdefABCDEF";
 		text.chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isTrue());
 
-		var fullWidth  = "０１２３４５６７８９ａｂｃｄｅｆＡＢＣＤＥＦ";
+		var fullWidth = "０１２３４５６７８９ａｂｃｄｅｆＡＢＣＤＥＦ";
 		fullWidth.chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isFalse());
 
 		var nonHex = "\r\n~!@@#$^&%*() /: @gG` 测下符号和边界值";
 		nonHex.chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isFalse());
+	}
+
+	@Test
+	void decodeHexBadText() {
+		assertThatThrownBy(() -> CodecUtils.decodeHex("A")).isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> CodecUtils.decodeHex("T0")).isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> CodecUtils.decodeHex("0T")).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void decodeHexEmpty() {
+		assertThat(CodecUtils.decodeHex("")).isEmpty();
+
+		var buffer = new byte[0];
+		var rv = CodecUtils.decodeHex(buffer, 0, "");
+
+		assertThat(rv).isEmpty();
+		assertThat(rv).isSameAs(buffer);
+	}
+
+	@Test
+	void encodeDecodeHexCharArrayRandom() {
+		var random = new Random();
+
+		for (int i = 5; i > 0; i--) {
+			var data = new byte[random.nextInt(10000) + 1];
+			random.nextBytes(data);
+
+			var encodedChars = CodecUtils.encodeHex(data);
+			byte[] decodedBytes = CodecUtils.decodeHex(encodedChars);
+			assertThat(decodedBytes).containsExactly(data);
+		}
+	}
+
+	@Test
+	void encodeHexHelloWorld() {
+		var helloWorld = "Hello World".getBytes();
+		assertThat(CodecUtils.encodeHex(helloWorld)).isEqualTo("48656c6c6f20576f726c64");
+
+		var unicode = "测试字符串".getBytes(StandardCharsets.UTF_8);
+		assertThat(CodecUtils.encodeHex(unicode)).isEqualTo("e6b58be8af95e5ad97e7aca6e4b8b2");
+	}
+
+	@Test
+	void encodeHexEmpty() {
+		assertThat(CodecUtils.encodeHex(new byte[0])).isEqualTo("");
+
+		var helloWorld = "Hello World".getBytes();
+		assertThat(CodecUtils.encodeHex(helloWorld, 7, 0)).isEqualTo("");
 	}
 
 	// CodecUtils 里的其他方法都是抄的，不测了
