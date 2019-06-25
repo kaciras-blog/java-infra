@@ -16,7 +16,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.data.Offset.offset;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -75,12 +74,26 @@ final class RedisBlockingLimiterTest {
 	void acquireFailed() {
 		when(inner.acquire(any(), anyInt())).thenReturn(100L);
 
-		var waitTime = limiter.acquire(KEY, 456);
+		var waitTime = limiter.acquire(KEY, 1);
 		assertThat(waitTime).isEqualTo(DEFAULT_BLOCK_TIME);
 
+		when(clock.instant()).thenReturn(Instant.ofEpochSecond(20));
 		waitTime = limiter.acquire(KEY, 1);
-		assertThat((int) waitTime).isCloseTo(DEFAULT_BLOCK_TIME, offset(3));
+		assertThat(waitTime).isEqualTo(DEFAULT_BLOCK_TIME - 20);
+
 		verify(inner, times(1)).acquire(any(), anyInt());
+	}
+
+	@Test
+	void refreshOnReject() {
+		limiter.setRefreshOnReject(true);
+		when(inner.acquire(any(), anyInt())).thenReturn(100L);
+		limiter.acquire(KEY, 1);
+
+		when(clock.instant()).thenReturn(Instant.ofEpochSecond(20));
+		var waitTime = limiter.acquire(KEY, 1);
+
+		assertThat(waitTime).isEqualTo(DEFAULT_BLOCK_TIME);
 	}
 
 	@Test

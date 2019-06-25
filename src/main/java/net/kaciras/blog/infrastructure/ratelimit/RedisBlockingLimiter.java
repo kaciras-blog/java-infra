@@ -80,6 +80,7 @@ public final class RedisBlockingLimiter implements RateLimiter {
 			if (waitTime > 0) {
 				if (refreshOnReject) {
 					record.beginTime = now;
+					waitTime = bTime;
 					connection.setEx(blockKey, bTime, record.serialize());
 				}
 				return waitTime;
