@@ -1,11 +1,13 @@
 package net.kaciras.blog.infrastructure.autoconfigure;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 
 @ConfigurationProperties("kaciras.authorization")
-@Data
+@Getter
+@Setter
 public final class AuthorizationProperties {
 
 	private boolean securityContext;
@@ -13,6 +15,7 @@ public final class AuthorizationProperties {
 	private boolean dynamicCsrfCookie;
 
 	private String csrfCookie = "CSRF-Token";
+
 	private boolean skipSafeRequest = true;
 
 	/** 如果为null，则不验证请求头 */

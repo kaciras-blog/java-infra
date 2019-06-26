@@ -52,7 +52,7 @@ public final class RedisBlockingLimiter implements RateLimiter {
 	 * @param blockTimes 封禁时间列表
 	 * @throws IllegalArgumentException 如果参数不满足上述要求
 	 */
-	public void setBlockTimes(@NonNull List<Duration> blockTimes) {
+	public void setBlockTimes(List<Duration> blockTimes) {
 		var max = Duration.ZERO;
 		for (var time : blockTimes) {
 			if (time.compareTo(max) < 0) {
