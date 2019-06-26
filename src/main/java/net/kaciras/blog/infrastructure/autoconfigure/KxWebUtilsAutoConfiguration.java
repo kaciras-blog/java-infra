@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.kaciras.blog.infrastructure.exception.ExceptionResolver;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http2.Http2Protocol;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,12 +34,17 @@ public class KxWebUtilsAutoConfiguration {
 	@ConditionalOnProperty(name = "server.http-port")
 	@ConditionalOnClass(TomcatServletWebServerFactory.class)
 	@Bean
-	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> addedHttpPort(@Value("${server.http-port}") int port) {
+	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> httpPortCustomizer(@Value("${server.http-port}") int port) {
 		return factory -> {
 			var connector = new Connector();
 			connector.setPort(port);
-			((AbstractProtocol) connector.getProtocolHandler())
-					.setMaxThreads(serverProperties.getTomcat().getMaxThreads());
+
+			var protocolHandler = (AbstractProtocol) connector.getProtocolHandler();
+			protocolHandler.setMaxThreads(serverProperties.getTomcat().getMaxThreads());
+
+			if (serverProperties.getHttp2().isEnabled()) {
+				connector.addUpgradeProtocol(new Http2Protocol());
+			}
 			factory.addAdditionalTomcatConnectors(connector);
 		};
 	}
