@@ -62,7 +62,7 @@ final class KxWebUtilsAutoConfigurationTest {
 
 	@Test
 	void tomcatHttp11() {
-		var runner = contextRunner.withPropertyValues("server.http-port=54321");
+		var runner = contextRunner.withPropertyValues("server.extra-http-port=54321");
 		runWithServer(runner, () -> {
 			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
 			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -74,7 +74,7 @@ final class KxWebUtilsAutoConfigurationTest {
 
 	@Test
 	void tomcatHttp2() {
-		var runner = contextRunner.withPropertyValues("server.http-port=54321", "server.http2.enabled=true");
+		var runner = contextRunner.withPropertyValues("server.extra-http-port=54321", "server.http2.enabled=true");
 		runWithServer(runner, () -> {
 			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
 			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());

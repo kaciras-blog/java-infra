@@ -27,14 +27,16 @@ public class KxWebUtilsAutoConfiguration {
 	 * 使Http服务器支持双端口连接，例如同时监听80和443，额外的端口由选项server.http-port指定。
 	 * 但这会导致多一个Connector，消耗更多的资源。
 	 *
+	 * 【注意】Firefox 不准备支持 h2c 所以没法在浏览器上用 HTTP/2
+	 *
 	 * @param port HTTP连接端口
 	 * @return 配置器
-	 * @since 1.6
 	 */
-	@ConditionalOnProperty(name = "server.http-port")
+	@ConditionalOnProperty(name = "server.extra-http-port")
 	@ConditionalOnClass(TomcatServletWebServerFactory.class)
 	@Bean
-	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> httpPortCustomizer(@Value("${server.http-port}") int port) {
+	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> httpPortCustomizer(
+			@Value("${server.extra-http-port}") int port) {
 		return factory -> {
 			var connector = new Connector();
 			connector.setPort(port);
