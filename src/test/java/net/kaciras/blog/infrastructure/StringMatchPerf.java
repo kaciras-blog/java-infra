@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class StringMatchPerf {
 
-	private static final String S0 = "FunctionToolsTest";
+	private static final String S0 = "UncheckedFunctionsTest";
 	private static final String S1 = "MultipleEquals";
 	private static final String S2 = "GET";
 	private static final String S3 = "OPTIONS";
