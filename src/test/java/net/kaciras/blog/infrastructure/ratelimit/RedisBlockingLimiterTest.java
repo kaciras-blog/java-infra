@@ -112,8 +112,10 @@ final class RedisBlockingLimiterTest {
 
 	@Test
 	void setBlockTimes() {
-		assertThatThrownBy(() -> limiter.setBlockTimes(List.of(Duration.ofSeconds(-5))))
-				.isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> limiter.setBlockTimes(null)).isInstanceOf(NullPointerException.class);
+
+		var invalid1 = List.of(Duration.ofSeconds(-5));
+		assertThatThrownBy(() -> limiter.setBlockTimes(invalid1)).isInstanceOf(IllegalArgumentException.class);
 
 		var invalid2 = List.of(Duration.ofSeconds(30), Duration.ofSeconds(10));
 		assertThatThrownBy(() -> limiter.setBlockTimes(invalid2)).isInstanceOf(IllegalArgumentException.class);

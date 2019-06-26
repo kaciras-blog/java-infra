@@ -16,6 +16,13 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * RateLimiter的装饰类，可以增强被包装的限流器，在其拒绝时延长等待时间，并提供一些额外功能：
+ *   1.封禁延长：在该类的封禁时间内再次访问，则重置封禁时间，防止不断访问测试解封。
+ *   2.多级封禁：解封之后还有观察期，如果在此期间又触发了内部限流器的拒绝，则再次封禁的时间可以更长。
+ *
+ * 该类不会改变最大访问速率，因为它取决于内部的限流器。但它可以治那些完全不懂得限速的自动访问软件。
+ */
 @RequiredArgsConstructor
 public final class RedisBlockingLimiter implements RateLimiter {
 
@@ -24,13 +31,23 @@ public final class RedisBlockingLimiter implements RateLimiter {
 	private final RedisConnectionFactory redisFactory;
 	private final Clock clock;
 
+	/**
+	 * 封禁时间列表，索引从小到大封禁等级依次递增，当观察期内再次触发内层限流器拒绝时将使用高一级的封禁时间。
+	 * 观察期时长为下一级的封禁时长，例如本次封禁时长为 blockTimes.get(1)，则观察期就是 blockTimes.get(2)，
+	 * 观察期内再次封禁的时间长为 blockTimes.get(2)，此时观察期也升级至 blockTimes.get(3)。
+	 *
+	 * 如果该列表为空，则本限流器无作用，仅代理到内层。
+	 * 如果封禁时长已达到该列表的末尾，则无观察期，也不会再升级。
+	 * 如果无观察期或在观察期内没有再触发内层拒绝，则等级重置，下次再封禁从第一级开始。
+	 */
 	private List<Duration> blockTimes = Collections.emptyList();
 
+	/** 是否启用封禁延长 */
 	@Setter
 	private boolean refreshOnReject;
 
 	/**
-	 * 设置封禁时间列表，列表中从前到后的等级逐渐升高，后面的时间必须大于前面的，所有时间都不能为负。
+	 * 设置封禁时间列表，列表中从前到后的等级逐渐升高，后面的时长必须大于前面的，所有时间都不能为负。
 	 *
 	 * @param blockTimes 封禁时间列表
 	 * @throws IllegalArgumentException 如果参数不满足上述要求
@@ -43,7 +60,7 @@ public final class RedisBlockingLimiter implements RateLimiter {
 			}
 			max = time;
 		}
-		this.blockTimes = blockTimes;
+		this.blockTimes = List.copyOf(blockTimes);
 	}
 
 	/*
@@ -69,7 +86,9 @@ public final class RedisBlockingLimiter implements RateLimiter {
 	}
 
 	private long doAcquire(RedisConnection connection, String id, int permits) {
+		// 仍然用的是32位秒数，最大2038年，本代码肯定用不到那么久
 		var now = (int) clock.instant().getEpochSecond();
+
 		var blockKey = (namespace + id).getBytes(StandardCharsets.UTF_8);
 		var record = deserialize(connection.get(blockKey));
 
@@ -108,25 +127,23 @@ public final class RedisBlockingLimiter implements RateLimiter {
 		return new BlockingRecord(buffer.getInt(), buffer.getInt());
 	}
 
-	// 仍然用的是32位秒数，最大2038年，本代码肯定用不到那么久
 	@AllArgsConstructor
 	private final class BlockingRecord {
 
 		private int level;
 		private int beginTime;
 
-		private void increaseLevel(int now) {
-			level = Math.min(level + 1, blockTimes.size() - 1);
-			beginTime = now;
-		}
-
 		private long getBlockingTime() {
 			return blockTimes.get(level).toSeconds();
 		}
 
 		private long getObservationPeriod() {
-			var index = Math.min(level + 1, blockTimes.size() - 1);
-			return blockTimes.get(index).toSeconds();
+			return blockTimes.get(Math.min(level + 1, blockTimes.size() - 1)).toSeconds();
+		}
+
+		private void increaseLevel(int now) {
+			beginTime = now;
+			level = Math.min(level + 1, blockTimes.size() - 1);
 		}
 
 		private byte[] serialize() {

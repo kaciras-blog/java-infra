@@ -93,6 +93,4 @@ final class CodecUtilsTest {
 		var helloWorld = "Hello World".getBytes();
 		assertThat(CodecUtils.encodeHex(helloWorld, 7, 0)).isEqualTo("");
 	}
-
-	// CodecUtils 里的其他方法都是抄的，不测了
 }
