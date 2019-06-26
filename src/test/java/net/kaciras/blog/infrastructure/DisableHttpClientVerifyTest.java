@@ -15,10 +15,10 @@ import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.server.HttpServer;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
@@ -29,11 +29,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 final class DisableHttpClientVerifyTest {
 
 	private static DisposableServer server;
+	private static URI serverUri;
 
 	@BeforeAll
 	static void startServer() throws Exception {
-		((Logger) LoggerFactory.getLogger("reactor")).setLevel(Level.ERROR);
-		((Logger) LoggerFactory.getLogger("io.netty")).setLevel(Level.ERROR);
+		((Logger) LoggerFactory.getLogger("reactor")).setLevel(Level.OFF);
+		((Logger) LoggerFactory.getLogger("io.netty")).setLevel(Level.OFF);
 
 		var cert = new SelfSignedCertificate();
 		var sslContextBuilder = SslContextBuilder.forServer(cert.certificate(), cert.privateKey());
@@ -46,23 +47,23 @@ final class DisableHttpClientVerifyTest {
 				.protocol(HttpProtocol.HTTP11, HttpProtocol.H2)
 				.secure(sslContextSpec -> sslContextSpec.sslContext(sslContextBuilder))
 				.handle(adapter).bindNow();
+
+		serverUri = URI.create("https://localhost:" + server.port());
 	}
 
 	@AfterAll
-	static void close() {
+	static void closeServer() {
 		server.disposeNow();
 	}
 
 	@Test
 	void httpsURLConnectionFail() throws Exception {
-		var url = new URL("https://localhost:" + server.port());
-		assertThatThrownBy(url::openStream).isInstanceOf(SSLHandshakeException.class);
+		assertThatThrownBy(serverUri.toURL()::openStream).isInstanceOf(SSLHandshakeException.class);
 	}
 
 	@Test
 	void httpsURLConnectionWithDisabled() throws Exception {
-		var url = new URL("https://localhost:" + server.port());
-		var conn = ((HttpsURLConnection) url.openConnection());
+		var conn = ((HttpsURLConnection) serverUri.toURL().openConnection());
 
 		var sslContext = Misc.createTrustAllSSLContext();
 		conn.setHostnameVerifier((host, session) -> true);
@@ -75,23 +76,40 @@ final class DisableHttpClientVerifyTest {
 
 	@Test
 	void httpClientFail() {
-		var request = HttpRequest.newBuilder()
-				.uri(URI.create("https://localhost:" + server.port()))
-				.build();
+		var request = HttpRequest.newBuilder().uri(serverUri).build();
 		assertThatThrownBy(() -> HttpClient.newHttpClient().send(request, BodyHandlers.ofString()))
 				.isInstanceOf(IOException.class);
 	}
 
 	@Test
 	void httpClientWithDisabling() throws Exception {
-		var request = HttpRequest.newBuilder()
-				.uri(URI.create("https://localhost:" + server.port()))
-				.build();
+		var request = HttpRequest.newBuilder().uri(serverUri).build();
 		var response = HttpClient.newBuilder()
 				.sslContext(Misc.createTrustAllSSLContext())
 				.build()
 				.send(request, BodyHandlers.ofString());
 
 		assertThat(response.body()).isEqualTo("Hello");
+	}
+
+	@Test
+	void disableGlobal() throws Exception {
+		var oldContext = SSLContext.getDefault();
+		var oldSocketFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
+		var oldVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
+
+		Misc.disableHttpClientCertificateVerify();
+
+		try (var input = serverUri.toURL().openStream()) {
+			assertThat(new String(input.readAllBytes())).isEqualTo("Hello");
+		}
+
+		var request = HttpRequest.newBuilder().uri(serverUri).build();
+		var r2 = HttpClient.newHttpClient().send(request, BodyHandlers.ofString());
+		assertThat(r2.body()).isEqualTo("Hello");
+
+		SSLContext.setDefault(oldContext);
+		HttpsURLConnection.setDefaultSSLSocketFactory(oldSocketFactory);
+		HttpsURLConnection.setDefaultHostnameVerifier(oldVerifier);
 	}
 }
