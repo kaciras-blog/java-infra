@@ -22,6 +22,13 @@ final class CodecUtilsTest {
 	}
 
 	@Test
+	void toIPv6BytesV6() throws Exception {
+		var addr = InetAddress.getByName("9876:5432::10FF");
+		var bytes = CodecUtils.toIPv6Bytes(addr);
+		assertThat(bytes).containsExactly(0x98, 0x76, 0x54, 0x32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x10, 0xFF);
+	}
+
+	@Test
 	void indexOfBytes() {
 		var text = "CodecUtilsTest.indexOfBytes";
 		var subText = "sTest.i";

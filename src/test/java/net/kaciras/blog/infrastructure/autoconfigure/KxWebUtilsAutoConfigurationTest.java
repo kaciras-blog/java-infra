@@ -12,13 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import static net.kaciras.blog.infrastructure.TestHelper.getLANAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // 本测试会启动真实的Tomcat服务器而不是Mock
@@ -85,20 +84,5 @@ final class KxWebUtilsAutoConfigurationTest {
 			assertThat(resp.body()).isEqualTo("Hello");
 			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_2);
 		});
-	}
-
-	private InetAddress getLANAddress() throws Exception {
-		var interfaces = NetworkInterface.getNetworkInterfaces();
-		while (interfaces.hasMoreElements()) {
-			var cur = interfaces.nextElement();
-			if (cur.isLoopback() || !cur.isUp()) {
-				continue;
-			}
-			var addrList = cur.getInterfaceAddresses();
-			if(!addrList.isEmpty()) {
-				return addrList.get(0).getAddress();
-			}
-		}
-		return InetAddress.getLocalHost();
 	}
 }
