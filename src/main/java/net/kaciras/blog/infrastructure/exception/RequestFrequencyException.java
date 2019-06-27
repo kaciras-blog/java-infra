@@ -8,14 +8,6 @@ public class RequestFrequencyException extends WebBusinessException {
 		super(message);
 	}
 
-	public RequestFrequencyException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public RequestFrequencyException(Throwable cause) {
-		this("操作频率过高，请稍后再试", cause);
-	}
-
 	@Override
 	public int statusCode() {
 		return 429;

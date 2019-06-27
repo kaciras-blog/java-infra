@@ -8,14 +8,6 @@ public class DataTooBigException extends WebBusinessException {
 		super(message);
 	}
 
-	public DataTooBigException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public DataTooBigException(Throwable cause) {
-		this("请求所带的数据过长", cause);
-	}
-
 	@Override
 	public int statusCode() {
 		return 413;

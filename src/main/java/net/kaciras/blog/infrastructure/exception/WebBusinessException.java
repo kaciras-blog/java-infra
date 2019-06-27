@@ -18,8 +18,4 @@ public abstract class WebBusinessException extends RuntimeException {
 	WebBusinessException(String message) {
 		super(message);
 	}
-
-	WebBusinessException(String message, Throwable cause) {
-		super(message, cause);
-	}
 }

@@ -9,14 +9,6 @@ public class ResourceStateException extends WebBusinessException {
 		this("资源的状态不允许执行请求的操作");
 	}
 
-	public ResourceStateException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public ResourceStateException(Throwable cause) {
-		this("资源的状态不允许执行请求的操作", cause);
-	}
-
 	public ResourceStateException(String message) { super(message); }
 
 	@Override
