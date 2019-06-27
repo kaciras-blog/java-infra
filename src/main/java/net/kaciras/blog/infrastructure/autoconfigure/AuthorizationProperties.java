@@ -25,4 +25,6 @@ public final class AuthorizationProperties {
 	/** 如果为null，则不验证请求参数 */
 	@Nullable
 	private String csrfParameter;
+
+	private boolean adminPrincipal;
 }

@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -76,11 +78,27 @@ final class KxWebUtilsAutoConfigurationTest {
 	void tomcatHttp2() {
 		var runner = contextRunner.withPropertyValues("server.extra-http-port=54321", "server.http2.enabled=true");
 		runWithServer(runner, () -> {
-			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
+			var uri = "http:/" + getLANAddress() + ":54321";
+			var request = HttpRequest.newBuilder(URI.create(uri)).build();
 			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
 			assertThat(resp.body()).isEqualTo("Hello");
 			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_2);
 		});
+	}
+
+	private InetAddress getLANAddress() throws Exception {
+		var interfaces = NetworkInterface.getNetworkInterfaces();
+		while (interfaces.hasMoreElements()) {
+			var cur = interfaces.nextElement();
+			if (cur.isLoopback() || !cur.isUp()) {
+				continue;
+			}
+			var addrList = cur.getInterfaceAddresses();
+			if(!addrList.isEmpty()) {
+				return addrList.get(0).getAddress();
+			}
+		}
+		return InetAddress.getLocalHost();
 	}
 }

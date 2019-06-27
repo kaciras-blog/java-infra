@@ -1,8 +1,10 @@
 package net.kaciras.blog.infrastructure.autoconfigure;
 
 import lombok.RequiredArgsConstructor;
-import net.kaciras.blog.infrastructure.principal.*;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import net.kaciras.blog.infrastructure.principal.AuthorizeAspect;
+import net.kaciras.blog.infrastructure.principal.RequireAuthorize;
+import net.kaciras.blog.infrastructure.principal.ServletPrincipalFilter;
+import net.kaciras.blog.infrastructure.principal.ServletSecurityContextFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +19,8 @@ public class KxPrincipalAutoConfiguration {
 	private final SessionCookieProperties sessionProps;
 
 	@Bean
-	public ServletPrincipalFilter servletPrincipalFilter(Domain domain) {
-		var filter = new ServletPrincipalFilter(domain);
+	public ServletPrincipalFilter servletPrincipalFilter() {
+		var filter = new ServletPrincipalFilter(authProps.isAdminPrincipal());
 		filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
 		filter.setCookieName(authProps.getCsrfCookie());
 		filter.setHeaderName(authProps.getCsrfHeader());
@@ -46,14 +48,8 @@ public class KxPrincipalAutoConfiguration {
 		return new AuthorizeAspect();
 	}
 
-	/**
-	 * 适配没有注册全局 Domain 的情况。
-	 *
-	 * @return 一个Domain，原样返回 Principal
+	/*
+	 * 【更新】移除Domain接口，当初的设想是通过AOP自动切换领域，但是方法的调用错综复杂，而且
+	 * 目前用不到纯属累赘。考虑到代码也没多少，直接删了完事。
 	 */
-	@Bean
-	@ConditionalOnMissingBean(Domain.class)
-	public Domain globalDomain() {
-		return principal -> principal;
-	}
 }

@@ -11,8 +11,6 @@ import java.time.Duration;
 @Setter
 public final class DevelopmentProperties {
 
-	private boolean adminPrincipal;
-
 	private Duration httpDelay;
 
 	private boolean debugErrorMessage;

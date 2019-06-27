@@ -23,7 +23,7 @@ final class ServletPrincipalFilterTest {
 
 	@BeforeEach
 	void setUp() {
-		filter = new ServletPrincipalFilter(v -> v);
+		filter = new ServletPrincipalFilter(false);
 		sessionUser666 = new MockHttpSession();
 		sessionUser666.setAttribute("UserId", 666);
 	}

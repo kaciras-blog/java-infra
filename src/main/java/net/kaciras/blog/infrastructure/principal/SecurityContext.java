@@ -16,10 +16,6 @@ public final class SecurityContext {
 		return Objects.requireNonNull(threadLocal.get(), "你需要添加 SecurityContextFilter 后才能使用 SecurityContext");
 	}
 
-	public static void enter(Domain domain) {
-		threadLocal.set(domain.enter(threadLocal.get()));
-	}
-
 /* ==================================== Helper Methods ==================================== */
 
 	public static int getUserId() {

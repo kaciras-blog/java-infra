@@ -1,7 +1,6 @@
 package net.kaciras.blog.infrastructure.autoconfigure;
 
 import net.kaciras.blog.infrastructure.FilterChainCapture;
-import net.kaciras.blog.infrastructure.principal.Domain;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -15,14 +14,6 @@ final class DevelopmentAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DevelopmentAutoConfiguration.class));
-
-	@Test
-	void defaults() {
-		contextRunner.run(context -> {
-			assertThat(context).doesNotHaveBean(Domain.class);
-			assertThat(context).doesNotHaveBean(Filter.class);
-		});
-	}
 
 	@Test
 	void delayFilter() {

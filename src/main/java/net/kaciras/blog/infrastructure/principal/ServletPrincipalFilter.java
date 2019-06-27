@@ -21,7 +21,7 @@ import java.util.UUID;
 @Setter
 public final class ServletPrincipalFilter extends HttpFilter {
 
-	private final Domain globalDomain;
+	private final boolean debugAdmin;
 
 	private String domain;
 	private boolean dynamicToken;
@@ -63,14 +63,12 @@ public final class ServletPrincipalFilter extends HttpFilter {
 
 		@Override
 		public Principal getUserPrincipal() {
-			return globalDomain.enter(doGetPrincipal());
-		}
-
-		// system principal?
-		private WebPrincipal doGetPrincipal() {
+			if (debugAdmin) {
+				return new WebPrincipal(WebPrincipal.ADMIN_ID);
+			}
 			var userId = Optional.ofNullable(getSession()).map(session -> session.getAttribute("UserId"));
 
-			if(!skipSafeRequest || !Misc.isSafeRequest(this)) {
+			if (!skipSafeRequest || !Misc.isSafeRequest(this)) {
 				userId = userId.filter((__) -> checkCSRF());
 			}
 
