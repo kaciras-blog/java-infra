@@ -26,7 +26,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 	private String domain;
 	private boolean dynamicToken;
 
-	private boolean skipSafeRequest;
+	private boolean skipSafe;
 
 	private String cookieName;
 	private String headerName;
@@ -68,7 +68,7 @@ public final class ServletPrincipalFilter extends HttpFilter {
 			}
 			var userId = Optional.ofNullable(getSession()).map(session -> session.getAttribute("UserId"));
 
-			if (!skipSafeRequest || !Misc.isSafeRequest(this)) {
+			if (!(skipSafe && Misc.isSafeRequest(this))) {
 				userId = userId.filter((__) -> checkCSRF());
 			}
 

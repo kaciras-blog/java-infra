@@ -116,7 +116,7 @@ final class ServletPrincipalFilterTest {
 	void skipSafeRequest() throws Exception {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setHeaderName(HEADER_NAME);
-		filter.setSkipSafeRequest(true);
+		filter.setSkipSafe(true);
 
 		var request = new MockHttpServletRequest(null, "GET", "/");
 		request.setSession(sessionUser666);
@@ -129,5 +129,15 @@ final class ServletPrincipalFilterTest {
 		request.setMethod("POST");
 		result = FilterChainCapture.doFilter(filter, request);
 		assertThat(result.outRequest.getUserPrincipal()).isEqualTo(WebPrincipal.ANONYMOUS);
+	}
+
+	@Test
+	void debugAdmin() throws Exception {
+		filter = new ServletPrincipalFilter(true);
+		filter.setCookieName(COOKIE_NAME);
+
+		var result = FilterChainCapture.doFilter(filter, new MockHttpServletRequest());
+		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
+		assertThat(principal.isAdminister()).isTrue();
 	}
 }

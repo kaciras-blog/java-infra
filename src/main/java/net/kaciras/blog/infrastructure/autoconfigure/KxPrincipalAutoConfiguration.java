@@ -21,7 +21,7 @@ public class KxPrincipalAutoConfiguration {
 	@Bean
 	public ServletPrincipalFilter servletPrincipalFilter() {
 		var filter = new ServletPrincipalFilter(authProps.isAdminPrincipal());
-		filter.setSkipSafeRequest(authProps.isSkipSafeRequest());
+		filter.setSkipSafe(authProps.isSkipSafe());
 		filter.setCookieName(authProps.getCsrfCookie());
 		filter.setHeaderName(authProps.getCsrfHeader());
 		filter.setParameterName(authProps.getCsrfParameter());
