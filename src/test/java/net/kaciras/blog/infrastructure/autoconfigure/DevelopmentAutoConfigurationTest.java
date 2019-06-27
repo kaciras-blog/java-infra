@@ -28,12 +28,15 @@ final class DevelopmentAutoConfigurationTest {
 	void delayFilter() {
 		contextRunner.withPropertyValues("kaciras.development.httpDelay=100ms").run(context -> {
 			var delayFilter = context.getBean(Filter.class);
+
+			// warm up
+			FilterChainCapture.doFilter((req, res, chain) -> {});
+
 			var begin = System.currentTimeMillis();
-
 			var capture = FilterChainCapture.doFilter(delayFilter);
+			var end = System.currentTimeMillis();
 
-			// 精度这么差？
-			assertThat(System.currentTimeMillis() - begin).isCloseTo(100, Offset.offset(50L));
+			assertThat(end - begin).isCloseTo(100, Offset.offset(20L));
 			assertThat(capture.outRequest).isNotNull();
 		});
 	}

@@ -1,26 +1,20 @@
 package net.kaciras.blog.infrastructure;
 
-import net.kaciras.blog.infrastructure.exception.*;
+import net.kaciras.blog.infrastructure.exception.ExceptionResolver;
+import net.kaciras.blog.infrastructure.exception.WebBusinessException;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static net.kaciras.blog.infrastructure.TestHelper.getSubClassesInPackage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 final class ExceptionResolverTest {
 
-	private static final Collection<Class<? extends WebBusinessException>> EXCEPTIONS = List.of(
-			DataTooBigException.class,
-			LegallyProhibitedException.class,
-			PermissionException.class,
-			RequestArgumentException.class,
-			RequestFrequencyException.class,
-			ResourceDeletedException.class,
-			ResourceNotFoundException.class,
-			ResourceStateException.class
-	);
+	@SuppressWarnings("unchecked")
+	private static final List<Class<? extends WebBusinessException>> EXCEPTIONS =
+			getSubClassesInPackage(WebBusinessException.class, "net.kaciras.blog.infrastructure.exception");
 
 	@SuppressWarnings("ConstantConditions")
 	@Test
