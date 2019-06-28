@@ -21,12 +21,14 @@ public class KxPrincipalAutoConfiguration {
 	@Bean
 	public ServletPrincipalFilter servletPrincipalFilter() {
 		var filter = new ServletPrincipalFilter(authProps.isAdminPrincipal());
-		filter.setSkipSafe(authProps.isSkipSafe());
-		filter.setCookieName(authProps.getCsrfCookie());
-		filter.setHeaderName(authProps.getCsrfHeader());
-		filter.setParameterName(authProps.getCsrfParameter());
 		filter.setDomain(sessionProps.getDomain());
-		filter.setDynamicToken(authProps.isDynamicCsrfCookie());
+
+		var csrfConfig = authProps.getCsrf();
+		filter.setSkipSafe(csrfConfig.isSkipSafe());
+		filter.setDynamicToken(csrfConfig.isDynamicCookie());
+		filter.setCookieName(csrfConfig.getCookieName());
+		filter.setHeaderName(csrfConfig.getHeaderName());
+		filter.setParameterName(csrfConfig.getParameterName());
 		return filter;
 	}
 

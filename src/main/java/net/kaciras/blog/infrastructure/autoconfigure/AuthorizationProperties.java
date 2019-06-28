@@ -12,19 +12,29 @@ public final class AuthorizationProperties {
 
 	private boolean securityContext;
 
-	private boolean dynamicCsrfCookie;
-
-	private String csrfCookie = "CSRF-Token";
-
-	private boolean skipSafe = true;
-
-	/** 如果为null，则不验证请求头 */
-	@Nullable
-	private String csrfHeader = "X-CSRF-Token";
-
-	/** 如果为null，则不验证请求参数 */
-	@Nullable
-	private String csrfParameter;
-
+	/** 所有用户的身份都设为管理员，在调试时有用. */
 	private boolean adminPrincipal;
+
+	private CSRFProperties csrf;
+
+	@Getter
+	@Setter
+	public static final class CSRFProperties {
+
+		private boolean dynamicCookie;
+
+		/** 在Cookie中存储CSRF Token，如果为null则不启用CSRF检查. */
+		private String cookieName = "CSRF-Token";
+
+		/** 在处理HTTP安全请求时不做CSRF相关的检查. */
+		private boolean skipSafe = true;
+
+		/** 鉴定用户身份时要求检查该请求头的值与CSRF Cookie的值相等. */
+		@Nullable
+		private String headerName = "X-CSRF-Token";
+
+		/** 鉴定用户身份时要求检查该请求参数的值与CSRF Cookie的值相等. */
+		@Nullable
+		private String parameterName;
+	}
 }
