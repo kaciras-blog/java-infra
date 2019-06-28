@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -19,6 +20,7 @@ import java.net.http.HttpResponse;
 
 import static net.kaciras.blog.infrastructure.TestHelper.getLANAddress;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 // 本测试会启动真实的Tomcat服务器而不是Mock
 final class KxWebUtilsAutoConfigurationTest {
@@ -63,7 +65,7 @@ final class KxWebUtilsAutoConfigurationTest {
 
 	@Test
 	void tomcatHttp11() {
-		var runner = contextRunner.withPropertyValues("server.extra-http-port=54321");
+		var runner = contextRunner.withPropertyValues("server.additional-connector.port=54321");
 		runWithServer(runner, () -> {
 			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
 			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -75,7 +77,10 @@ final class KxWebUtilsAutoConfigurationTest {
 
 	@Test
 	void tomcatHttp2() {
-		var runner = contextRunner.withPropertyValues("server.extra-http-port=54321", "server.http2.enabled=true");
+		var runner = contextRunner.withPropertyValues(
+				"server.additional-connector.port=54321",
+				"server.http2.enabled=true"
+		);
 		runWithServer(runner, () -> {
 			var uri = "http:/" + getLANAddress() + ":54321";
 			var request = HttpRequest.newBuilder(URI.create(uri)).build();
@@ -83,6 +88,22 @@ final class KxWebUtilsAutoConfigurationTest {
 
 			assertThat(resp.body()).isEqualTo("Hello");
 			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_2);
+		});
+	}
+
+	@Test
+	void bindAddress() throws Exception {
+		var lan = getLANAddress();
+		var runner = contextRunner.withPropertyValues(
+				"server.additional-connector.port=54321",
+				"server.additional-connector.address=" + lan.toString().substring(1)
+		);
+		runWithServer(runner, () -> {
+			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
+			var client =  HttpClient.newHttpClient();
+
+			assertThatThrownBy(() -> client.send(request, HttpResponse.BodyHandlers.ofString()))
+					.isInstanceOf(ConnectException.class);
 		});
 	}
 }
