@@ -15,7 +15,7 @@ public final class AuthorizationProperties {
 	/** 所有用户的身份都设为管理员，在调试时有用. */
 	private boolean adminPrincipal;
 
-	private CSRFProperties csrf;
+	private CSRFProperties csrf = new CSRFProperties();
 
 	@Getter
 	@Setter

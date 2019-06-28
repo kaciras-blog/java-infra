@@ -2,8 +2,6 @@ package net.kaciras.blog.infrastructure.principal;
 
 import net.kaciras.blog.infrastructure.exception.PermissionException;
 
-import java.util.Objects;
-
 /**
  * 把用户身份保存在线程本地变量里，方便随时获取，跟 Spring Security 里差不多的东西。
  * 除此之外，还带有一些便捷方法。
@@ -16,8 +14,9 @@ public final class SecurityContext {
 		threadLocal.set(principal);
 	}
 
+	/** 需要添加 SecurityContextFilter 后才能使用 SecurityContext */
 	public static WebPrincipal getPrincipal() {
-		return Objects.requireNonNull(threadLocal.get(), "你需要添加 SecurityContextFilter 后才能使用 SecurityContext");
+		return threadLocal.get();
 	}
 
 /* ==================================== Helper Methods ==================================== */

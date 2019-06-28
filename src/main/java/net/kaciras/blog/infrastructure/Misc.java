@@ -116,7 +116,6 @@ public final class Misc {
 	 * @param request 请求对象
 	 * @return 如果是安全请求则为true，否则false
 	 */
-	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public static boolean isSafeRequest(HttpServletRequest request) {
 		var method = request.getMethod();
 		if (method != null) {

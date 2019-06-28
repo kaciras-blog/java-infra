@@ -15,10 +15,6 @@ public class WebPrincipal implements Principal {
 
 	private final int id;
 
-	public boolean isLogged() {
-		return id > 1;
-	}
-
 	public boolean isSystem() {
 		return id == SYSTEM_ID;
 	}
@@ -43,10 +39,6 @@ public class WebPrincipal implements Principal {
 		return isAdminister() || isSystem();
 	}
 
-	public WebPrincipal exitDomain() {
-		return this;
-	}
-
 	@Override
 	public String getName() {
 		switch (id) {
@@ -55,6 +47,6 @@ public class WebPrincipal implements Principal {
 			case 1:
 				return "System";
 		}
-		return "Logged:" + id;
+		return "Login:" + id;
 	}
 }
