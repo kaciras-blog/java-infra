@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,9 +44,10 @@ final class KxWebUtilsAutoConfigurationTest {
 			assertThat(context).hasBean("httpPortCustomizer");
 
 			var factory = context.getBean(TomcatServletWebServerFactory.class);
-			var server = factory.getWebServer(ctx ->
+			var server = (TomcatWebServer) factory.getWebServer(ctx ->
 					ctx.addServlet("test", new TestServlet()).addMapping("/"));
 
+			server.getTomcat().setSilent(true);
 			server.start();
 			try {
 				test.runThrows();
