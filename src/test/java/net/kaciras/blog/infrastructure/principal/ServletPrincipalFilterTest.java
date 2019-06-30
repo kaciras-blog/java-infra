@@ -8,7 +8,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,13 +18,15 @@ final class ServletPrincipalFilterTest {
 	private static final String PARAMETER_NAME = "csrf";
 
 	private ServletPrincipalFilter filter;
-	private HttpSession sessionUser666;
+
+	private MockHttpServletRequest request = new MockHttpServletRequest();
 
 	@BeforeEach
 	void setUp() {
 		filter = new ServletPrincipalFilter(false);
-		sessionUser666 = new MockHttpSession();
-		sessionUser666.setAttribute("UserId", 666);
+		var session = new MockHttpSession();
+		session.setAttribute("UserId", 666);
+		request.setSession(session);
 	}
 
 	@Test
@@ -38,9 +39,6 @@ final class ServletPrincipalFilterTest {
 	void validHeader() throws Exception {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setHeaderName(HEADER_NAME);
-
-		var request = new MockHttpServletRequest();
-		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 		request.addHeader(HEADER_NAME, "FOOBAR");
 
@@ -54,9 +52,6 @@ final class ServletPrincipalFilterTest {
 	void invalidHeader() throws Exception {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setHeaderName(HEADER_NAME);
-
-		var request = new MockHttpServletRequest();
-		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 		request.addHeader(HEADER_NAME, "invalid");
 
@@ -68,9 +63,6 @@ final class ServletPrincipalFilterTest {
 	void validParameter() throws Exception {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setParameterName(PARAMETER_NAME);
-
-		var request = new MockHttpServletRequest();
-		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 		request.addParameter(PARAMETER_NAME, "FOOBAR");
 
@@ -84,9 +76,6 @@ final class ServletPrincipalFilterTest {
 	void invalidParameter() throws Exception {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setParameterName(PARAMETER_NAME);
-
-		var request = new MockHttpServletRequest();
-		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 
 		var result = FilterChainCapture.doFilter(filter, request);
@@ -99,9 +88,7 @@ final class ServletPrincipalFilterTest {
 		filter.setDomain("kaciras.example.com");
 		filter.setDynamicToken(true);
 
-		var request = new MockHttpServletRequest();
 		request.setMethod("POST");
-		request.setSession(sessionUser666);
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 		request.addHeader(HEADER_NAME, "FOOBAR");
 
@@ -118,8 +105,7 @@ final class ServletPrincipalFilterTest {
 		filter.setHeaderName(HEADER_NAME);
 		filter.setSkipSafe(true);
 
-		var request = new MockHttpServletRequest(null, "GET", "/");
-		request.setSession(sessionUser666);
+		request.setMethod("GET");
 		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
 
 		var result = FilterChainCapture.doFilter(filter, request);

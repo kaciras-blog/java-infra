@@ -10,7 +10,6 @@
 --- 如果所需令牌数大于桶容量，则返回值无意义，这留给客户端去检查
 ---
 --- Redis 对 Lua 脚本的说明见：https://redis.io/commands/eval
---- 经测试，该脚本执行速度非常快，详情见 test/java/resources/TokenBucketBenchmark.txt
 ---
 local requirement = tonumber(ARGV[1])
 local now = tonumber(ARGV[2])

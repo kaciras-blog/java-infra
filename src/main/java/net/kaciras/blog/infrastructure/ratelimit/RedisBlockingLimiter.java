@@ -85,7 +85,15 @@ public final class RedisBlockingLimiter implements RateLimiter {
 		}
 	}
 
+	/*
+	 * 关于记录的一致性：
+	 * 这里的流程是 读取 -> 判断 -> 修改，存在与多线程 intValue++ 类似的异步问题。
+	 * 麻烦的是 inner.acquire 不能撤销或是做两段提交，整个流程无法重试，也就意味着没法做CAS。
+	 * 
+	 * 目前因为没什么访问量不要紧，所以没有解决此问题。
+	 */
 	private long doAcquire(RedisConnection connection, String id, int permits) {
+		
 		// 仍然用的是32位秒数，最大2038年，本代码肯定用不到那么久
 		var now = (int) clock.instant().getEpochSecond();
 

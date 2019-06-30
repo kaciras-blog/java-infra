@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class StringMatchPerf {
 
+	// Switch 里不能用数组，必须一个个声明
 	private static final String S0 = "UncheckedFunctionsTest";
 	private static final String S1 = "MultipleEquals";
 	private static final String S2 = "GET";
