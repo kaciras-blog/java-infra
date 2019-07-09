@@ -42,11 +42,11 @@ public class WebPrincipal implements Principal {
 	@Override
 	public String getName() {
 		switch (id) {
-			case 0:
+			case ANONYMOUS_ID:
 				return "Anonymous";
-			case 1:
+			case SYSTEM_ID:
 				return "System";
 		}
-		return "Login:" + id;
+		return "StandardUser:" + id;
 	}
 }
