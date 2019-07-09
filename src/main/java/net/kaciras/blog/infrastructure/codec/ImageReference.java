@@ -13,7 +13,7 @@ import net.kaciras.blog.infrastructure.exception.RequestArgumentException;
  * 此类仅表示文件名，而不包含文件所在的目录、服务器等，这些信息由前端序列化时
  * 处理 {@link ImageReferenceJsonCodec.Serializer Serializer}，{@link ImageReferenceJsonCodec.Deserializer Deserializer}
  *
- * TODO: 实际使用中，发现没有必要区分图片的扩展名，在下一版得重构一下
+ * 【更新】如果要保存原图的话，扩展名是必须要有的，不同格式的副本在前端处理。
  *
  * @author Kaciras
  */

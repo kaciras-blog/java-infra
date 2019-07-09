@@ -73,6 +73,7 @@ public final class RedisTokenBucket implements RateLimiter {
 	 * <p>
 	 * 当所有令牌桶内都有充足的令牌时返回0，否则返回需要等待的时间。
 	 * 如果多个令牌桶的令牌都不足，则返回等待时间最长的。
+	 * 只要返回非零值，则所有令牌桶都不会被修改，本次请求不造成任何影响。
 	 * <p>
 	 * permits 小于等于0的情况没有处理，调用方自己考虑其意义
 	 */
