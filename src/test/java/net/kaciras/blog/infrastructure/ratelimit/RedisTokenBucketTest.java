@@ -10,6 +10,7 @@ import java.time.Clock;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -85,5 +86,12 @@ final class RedisTokenBucketTest {
 
 		timePass(5);
 		assertThat(limiter.acquire(KEY, 40)).isZero();
+	}
+
+	@Test
+	void invalidBucket() {
+		assertThatThrownBy(() -> limiter.addBucket(-5, 3)).isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> limiter.addBucket(10, 0)).isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> limiter.addBucket(10, -1)).isInstanceOf(IllegalArgumentException.class);
 	}
 }

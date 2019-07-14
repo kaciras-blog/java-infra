@@ -13,6 +13,8 @@ import java.util.Objects;
 
 /**
  * 令牌桶算法的实现，使用Redis存储相关记录，该类里可以包含多个令牌桶。
+ * <p>
+ * TODO: Spring Data Redis 里的 ScriptExecutor 跟 RedisTemplate 绑死了，很难直接基于 Connection 实现
  */
 public final class RedisTokenBucket implements RateLimiter {
 

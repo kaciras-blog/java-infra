@@ -1,10 +1,9 @@
 package net.kaciras.blog.infrastructure.codec;
 
-import net.kaciras.blog.infrastructure.exception.RequestArgumentException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 final class ImageReferenceTest {
 
@@ -28,9 +27,13 @@ final class ImageReferenceTest {
 
 	@Test
 	void parseInvalidName() {
-		var invalidChar = "../any_system_file.sys";
-		Assertions.assertThatThrownBy(() -> ImageReference.parse(invalidChar))
-				.isInstanceOf(RequestArgumentException.class);
+		assertThatThrownBy(() -> ImageReference.parse("../any_system_file.sys"))
+				.isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> ImageReference.parse(""))
+				.isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> ImageReference.parse("toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooolong"))
+				.isInstanceOf(IllegalArgumentException.class);
+
 	}
 
 	@Test

@@ -36,7 +36,11 @@ final class ImageReferenceJsonCodec {
 			if (!text.startsWith(DIRECTORY)) {
 				throw new InvalidFormatException(p, "图片路径错误", text, ImageReference.class);
 			}
-			return ImageReference.parse(text.substring(DIRECTORY.length()));
+			try {
+				return ImageReference.parse(text.substring(DIRECTORY.length()));
+			} catch (IllegalArgumentException e) {
+				throw new InvalidFormatException(p, "无效的图片引用", text, ImageReference.class);
+			}
 		}
 	}
 }

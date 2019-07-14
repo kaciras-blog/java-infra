@@ -2,17 +2,16 @@ package net.kaciras.blog.infrastructure.codec;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.kaciras.blog.infrastructure.exception.RequestArgumentException;
 
 /**
  * 表示一个图片文件的引用，该类是不可变的。
- *
+ * <p>
  * 该类也是连接前端、服务器和数据库的桥梁。向前端序列化时将被转换为图片文件的URL，在数据库中能够以更紧凑的
  * 格式来存储{@link ImageReferenceTypeHandler ImageReferenceTypeHandler}。
  * <p>
  * 此类仅表示文件名，而不包含文件所在的目录、服务器等，这些信息由前端序列化时
  * 处理 {@link ImageReferenceJsonCodec.Serializer Serializer}，{@link ImageReferenceJsonCodec.Deserializer Deserializer}
- *
+ * <p>
  * 【更新】如果要保存原图的话，扩展名是必须要有的，不同格式的副本在前端处理。
  *
  * @author Kaciras
@@ -43,16 +42,13 @@ public final class ImageReference {
 	 * @return ImageReference
 	 */
 	public static ImageReference parse(String name) {
-		if (name == null || name.isEmpty()) {
-			throw new RequestArgumentException("无效的图片文件名");
+		if (name.isEmpty()) {
+			throw new IllegalArgumentException("无效的图片文件名");
 		}
-
 		var reference = parseHex(name);
 		if (reference != null) {
 			return reference;
 		}
-
-		// 不是以Hash命名的文件，直接以原始文件名创建
 		return new ImageReference(name, ImageType.Internal);
 	}
 
@@ -61,20 +57,23 @@ public final class ImageReference {
 	 *
 	 * @param name 文件名
 	 * @return 图片引用，或者null
-	 * @throws RequestArgumentException 如果文件名中出现非法字符
+	 * @throws IllegalArgumentException 如果文件名中出现非法字符
 	 */
 	private static ImageReference parseHex(String name) {
 		var dot = name.lastIndexOf('.');
-		var plainName = name.substring(0, dot);
+		if (dot == -1) {
+			throw new IllegalArgumentException("图片引用必须有扩展名");
+		}
 		var ext = name.substring(dot + 1);
+		var baseName = name.substring(0, dot);
 
 		// 要检查文件名里有没有路径分割符，必须一个个查看
 		var hexChars = 0;
-		for (var ch : plainName.toCharArray()) {
+		for (var ch : baseName.toCharArray()) {
 			if (CodecUtils.isHexDigit(ch)) {
 				hexChars++;
 			} else if (ch == '/' || ch == '\\') {
-				throw new RequestArgumentException("文件名中存在路径分隔符：" + name);
+				throw new IllegalArgumentException("文件名中存在路径分隔符：" + name);
 			}
 		}
 
@@ -83,7 +82,7 @@ public final class ImageReference {
 		}
 
 		try {
-			return new ImageReference(plainName, ImageType.valueOf(ext.toUpperCase()));
+			return new ImageReference(baseName, ImageType.valueOf(ext.toUpperCase()));
 		} catch (IllegalArgumentException e) {
 			return null; // 不支持的格式认为是非HASH文件名？
 		}
