@@ -33,17 +33,19 @@ public final class ServletPrincipalFilter extends HttpFilter {
 	private String parameterName;
 
 	@Override
-	protected void doFilter(HttpServletRequest request,
+	protected void doFilter(HttpServletRequest rawRequest,
 							HttpServletResponse response,
 							FilterChain chain) throws IOException, ServletException {
 
-		request = new PrincipalRequestWrapper(request);
+		var request = new PrincipalRequestWrapper(rawRequest);
 		chain.doFilter(request, response);
 
 		// TODO: 用户登录后的初始Token是否也能搞到这里
-		var userId = request.getSession(true).getAttribute("UserId");
-		if (userId != null && dynamicToken && !Misc.isSafeRequest(request)) {
-			changeCsrfCookie(request, response);
+		if (dynamicToken) {
+			Optional.ofNullable(request.getSession(false))
+					.map(session -> session.getAttribute("UserId"))
+					.filter(__ -> !Misc.isSafeRequest(request))
+					.ifPresent(__ -> changeCsrfCookie(request, response));
 		}
 	}
 
@@ -66,7 +68,10 @@ public final class ServletPrincipalFilter extends HttpFilter {
 			if (debugAdmin) {
 				return new WebPrincipal(WebPrincipal.ADMIN_ID);
 			}
-			var userId = Optional.ofNullable(getSession()).map(session -> session.getAttribute("UserId"));
+
+			// 会话不一定存在，比如内部调用，如果没有就创建则会产生大量无用的会话，故create参数设为false
+			var userId = Optional.ofNullable(getSession(false))
+					.map(session -> session.getAttribute("UserId"));
 
 			if (!(skipSafe && Misc.isSafeRequest(this))) {
 				userId = userId.filter((__) -> checkCSRF());

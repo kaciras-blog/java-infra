@@ -21,17 +21,24 @@ final class ServletPrincipalFilterTest {
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
+	/**
+	 * 默认的请求和过滤器实例，大部分测试都是用它们。
+	 * 请求带有Session，其中UserId=666，过滤器不开启debugAdmin。
+	 */
 	@BeforeEach
 	void setUp() {
 		filter = new ServletPrincipalFilter(false);
 		var session = new MockHttpSession();
-		session.setAttribute("UserId", 666);
 		request.setSession(session);
+		session.setAttribute("UserId", 666);
 	}
 
+	// 【更新】增加不创建 Session 的断言
 	@Test
 	void noCredit() throws Exception {
 		var result = FilterChainCapture.doFilter(filter, new MockHttpServletRequest());
+
+		assertThat(result.outRequest.getSession(false)).isNull();
 		assertThat(result.outRequest.getUserPrincipal()).isEqualTo(WebPrincipal.ANONYMOUS);
 	}
 
