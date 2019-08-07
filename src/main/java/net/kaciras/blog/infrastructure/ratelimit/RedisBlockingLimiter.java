@@ -18,9 +18,9 @@ import java.util.List;
 
 /**
  * RateLimiter的装饰类，可以增强被包装的限流器，在其拒绝时延长等待时间，并提供一些额外功能：
- *   1.封禁延长：在该类的封禁时间内再次访问，则重置封禁时间，防止不断访问测试解封。
- *   2.多级封禁：解封之后还有观察期，如果在此期间又触发了内部限流器的拒绝，则再次封禁的时间可以更长。
- *
+ * 1.封禁延长：在该类的封禁时间内再次访问，则重置封禁时间，防止不断访问测试解封。
+ * 2.多级封禁：解封之后还有观察期，如果在此期间又触发了内部限流器的拒绝，则再次封禁的时间可以更长。
+ * <p>
  * 该类不会改变最大访问速率，因为它取决于内部的限流器。但它可以治那些完全不懂得限速的自动访问软件。
  */
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public final class RedisBlockingLimiter implements RateLimiter {
 	 * 封禁时间列表，索引从小到大封禁等级依次递增，当观察期内再次触发内层限流器拒绝时将使用高一级的封禁时间。
 	 * 观察期时长为下一级的封禁时长，例如本次封禁时长为 blockTimes.get(1)，则观察期就是 blockTimes.get(2)，
 	 * 观察期内再次封禁的时间长为 blockTimes.get(2)，此时观察期也升级至 blockTimes.get(3)。
-	 *
+	 * <p>
 	 * 如果该列表为空，则本限流器无作用，仅代理到内层。
 	 * 如果封禁时长已达到该列表的末尾，则无观察期，也不会再升级。
 	 * 如果无观察期或在观察期内没有再触发内层拒绝，则等级重置，下次再封禁从第一级开始。
@@ -81,7 +81,7 @@ public final class RedisBlockingLimiter implements RateLimiter {
 		try {
 			return doAcquire(connection, id, permits);
 		} finally {
-			RedisConnectionUtils.releaseConnection(connection, redisFactory);
+			RedisConnectionUtils.releaseConnection(connection, redisFactory, false);
 		}
 	}
 
@@ -89,11 +89,11 @@ public final class RedisBlockingLimiter implements RateLimiter {
 	 * 关于记录的一致性：
 	 * 这里的流程是 读取 -> 判断 -> 修改，存在与多线程 intValue++ 类似的异步问题。
 	 * 麻烦的是 inner.acquire 不能撤销或是做两段提交，整个流程无法重试，也就意味着没法做CAS。
-	 * 
+	 *
 	 * 目前因为没什么访问量不要紧，所以没有解决此问题。
 	 */
 	private long doAcquire(RedisConnection connection, String id, int permits) {
-		
+
 		// 仍然用的是32位秒数，最大2038年，本代码肯定用不到那么久
 		var now = (int) clock.instant().getEpochSecond();
 
