@@ -1,33 +1,62 @@
 package net.kaciras.blog.infrastructure.codec;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-/**
- * A jackson module include serializers/deserializers in package.
- */
-public final class ExtendsCodecModule extends Module {
+import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-	@Override
-	public String getModuleName() {
-		return "KacirasBlogInfrastructureCodec";
+public final class ExtendsCodecModule extends SimpleModule {
+
+	@FunctionalInterface
+	public interface SerializerFunction<T> {
+		void apply(T t, JsonGenerator g) throws IOException;
 	}
 
-	@Override
-	public Version version() {
-		return new Version(1, 0, 0, "", null, null);
+	@FunctionalInterface
+	public interface DeserializerFunction<R> {
+		R apply(JsonParser p) throws IOException;
 	}
+
+	public <T> void addSerializer(Class<T> clazz, SerializerFunction<T> serializeFunction) {
+		var serializer = new JsonSerializer<T>() {
+			@Override
+			public void serialize(T value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+				serializeFunction.apply(value, gen);
+			}
+		};
+		addSerializer(clazz, serializer);
+	}
+
+	public <T> void addDeserializer(Class<T> clazz, DeserializerFunction<T> deserializeFunction) {
+		var deserializer = new JsonDeserializer<T>() {
+			@Override
+			public T deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+				return deserializeFunction.apply(parser);
+			}
+		};
+		addDeserializer(clazz, deserializer);
+	}
+
+	// ================ 上面的代码抄自 https://gist.github.com/jeremychone/a7e06b8baffef88a8816 ================
 
 	@Override
 	public void setupModule(SetupContext context) {
-		var serializers = new SimpleSerializers();
-		serializers.addSerializer(ImageReference.class, new ImageReferenceJsonCodec.Serializer());
-		context.addSerializers(serializers);
+		addSerializer(ImageReference.class, new ImageReferenceJsonCodec.Serializer());
+		addDeserializer(ImageReference.class, new ImageReferenceJsonCodec.Deserializer());
 
-		var deserializers = new SimpleDeserializers();
-		deserializers.addDeserializer(ImageReference.class, new ImageReferenceJsonCodec.Deserializer());
-		context.addDeserializers(deserializers);
+		addSerializer(LocalDateTime.class, (value, gen) ->
+				gen.writeNumber(value.toInstant(ZoneOffset.UTC).toEpochMilli()));
+		addDeserializer(LocalDateTime.class, parser ->
+				Instant.ofEpochMilli(parser.getLongValue()).atOffset(ZoneOffset.UTC).toLocalDateTime());
+
+		super.setupModule(context);
 	}
 }
