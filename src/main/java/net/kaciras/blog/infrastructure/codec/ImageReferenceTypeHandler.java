@@ -3,6 +3,7 @@ package net.kaciras.blog.infrastructure.codec;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 
@@ -26,31 +27,31 @@ public final class ImageReferenceTypeHandler extends BaseTypeHandler<ImageRefere
 	 * +------------------+--------+
 	 * 剩余则是文件名是文件的hash值的情况，该情况下内容为hash值。
 	 * <p>
-	 * 该编码输出固定长度的字节数组，其长度为文件Hash字节长度 + 1；ImageType.Internal类型的
-	 * 文件名不能超出这个长度，不足的话尾部填0。
+	 * 该编码输出固定长度的字节数组，其长度为文件Hash字节长度 + 1（33）；
+	 * ImageType.Internal类型的文件名不能超出这个长度，不足的话尾部填0。
 	 *
-	 * @param reference ImageReference对象
+	 * @param image ImageReference对象
 	 * @return 编码后的数据
 	 */
-	private byte[] encode(ImageReference reference) {
-		var bytes = new byte[HASH_SIZE + 1];
-		bytes[0] = (byte) reference.getType().ordinal();
+	private byte[] encode(ImageReference image) {
+		var buffer = ByteBuffer.allocate(HASH_SIZE + 1)
+				.put((byte) image.getType().ordinal());
 
-		if (reference.getType() == ImageType.Internal) {
-			var nameBytes = reference.getName().getBytes(StandardCharsets.UTF_8);
-			if (nameBytes.length > HASH_SIZE - 1) {
-				throw new IllegalArgumentException("预置图片文件名不能超过" + (HASH_SIZE - 4) + "字节");
-			}
-			bytes[1] = (byte) nameBytes.length;
-			System.arraycopy(nameBytes, 0, bytes, 2, nameBytes.length);
-		} else {
-			var hash = CodecUtils.decodeHex(reference.getName());
+		if (image.getType() != ImageType.Internal) {
+			var hash = CodecUtils.decodeHex(image.getName());
 			if (hash.length != HASH_SIZE) {
-				throw new IllegalArgumentException("无效的图片Hash值");
+				throw new IllegalArgumentException("图片名的Hash长度必须为32字节");
 			}
-			System.arraycopy(hash, 0, bytes, 1, hash.length);
+			buffer.put(hash);
+		} else {
+			var nameBytes = image.getName().getBytes(StandardCharsets.UTF_8);
+			if (nameBytes.length > HASH_SIZE - 1) {
+				throw new IllegalArgumentException("预置图片文件名不能超过31字节");
+			}
+			buffer.put((byte) nameBytes.length).put(nameBytes);
 		}
-		return bytes;
+
+		return buffer.array();
 	}
 
 	private ImageReference decode(byte[] bytes) throws SQLDataException {
