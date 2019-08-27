@@ -47,7 +47,7 @@ public class HexMatchPerf {
 	@Param({"f1894c00ba-default-非英文字符", "0de735be2d228599d4a48fe37f7cdc45b6134296a9bd59959590f7cefffeaf96"})
 	private String text;
 
-	private boolean doBySwitch(char character) {
+	private boolean checkBySwitch(char character) {
 		switch (character) {
 			case '0':
 			case '1':
@@ -86,7 +86,7 @@ public class HexMatchPerf {
 	@Benchmark
 	public void bySwitch(Blackhole blackhole) {
 		for (var c : text.toCharArray()) {
-			blackhole.consume(doBySwitch(c));
+			blackhole.consume(checkBySwitch(c));
 		}
 	}
 
@@ -110,9 +110,9 @@ public class HexMatchPerf {
 	}
 
 	public static void main(String[] args) throws RunnerException {
-		var opt = new OptionsBuilder()
+		var options = new OptionsBuilder()
 				.include(HexMatchPerf.class.getSimpleName())
 				.build();
-		var results = new Runner(opt).run();
+		new Runner(options).run();
 	}
 }

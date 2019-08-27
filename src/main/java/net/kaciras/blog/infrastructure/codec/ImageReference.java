@@ -77,7 +77,7 @@ public final class ImageReference {
 			}
 		}
 
-		if (hexChars != ImageReference.HASH_SIZE << 1) {
+		if (hexChars != HASH_SIZE << 1) {
 			return null;
 		}
 

@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
  * Benchmark                        Mode  Cnt    Score    Error   Units
  * StringMatchPerf.hashSet         thrpt    5  168.980 ±  9.778  ops/us
  * StringMatchPerf.immutableSet    thrpt    5   66.351 ±  0.529  ops/us
- * StringMatchPerf.multipleEquals  thrpt    5   66.577 ±  0.360  ops/us
- * StringMatchPerf.regex           thrpt    5    9.505 ±  0.085  ops/us
+ * StringMatchPerf.equals          thrpt    5   66.577 ±  0.360  ops/us
+ * StringMatchPerf.regexp          thrpt    5    9.505 ±  0.085  ops/us
  * StringMatchPerf.switchCase      thrpt    5  221.765 ± 41.768  ops/us
  */
 @State(Scope.Thread)
@@ -45,23 +45,14 @@ public class StringMatchPerf {
 
 	private static final Pattern regex = Pattern.compile(
 			new StringJoiner("|", "^(", ")$")
-					.add(S0)
-					.add(S1)
-					.add(S2)
-					.add(S3)
-					.add(S4)
-					.add(S5)
-					.add(S6)
-					.add(S7)
-					.add(S8)
-					.add(S9)
+					.add(S0).add(S1).add(S2).add(S3).add(S4).add(S5).add(S6).add(S7).add(S8).add(S9)
 					.toString()
 	);
 
 	private String string = S7;
 
 	@Benchmark
-	public boolean multipleEquals() {
+	public boolean equals() {
 		//@formatter:off
 		return     S0.equals(string)
 				|| S1.equals(string)
@@ -107,14 +98,14 @@ public class StringMatchPerf {
 	}
 
 	@Benchmark
-	public boolean regex() {
+	public boolean regexp() {
 		return string != null && regex.matcher(string).find();
 	}
 
 	public static void main(String[] args) throws Exception {
-		var opt = new OptionsBuilder()
+		var options = new OptionsBuilder()
 				.include(StringMatchPerf.class.getSimpleName())
 				.build();
-		var results = new Runner(opt).run();
+		new Runner(options).run();
 	}
 }

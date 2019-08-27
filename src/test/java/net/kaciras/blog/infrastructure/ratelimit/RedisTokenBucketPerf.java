@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
  * 如果单独衡量 TokenBucket.lua 脚本的性能，请使用 redis-benchmark 来测，结果见 resource/TokenBucketBenchmark.txt
  *
  * Benchmark                       Mode  Cnt    Score    Error  Units
- * RedisTokenBucketPerf.buckets1   avgt    5  308.407 ± 46.905  us/op
- * RedisTokenBucketPerf.buckets40  avgt    5  469.614 ±  6.682  us/op
+ * RedisTokenBucketPerf.buckets1   avgt    5  319.992 ±  7.507  us/op
+ * RedisTokenBucketPerf.buckets40  avgt    5  461.470 ± 19.464  us/op
  */
 @SuppressWarnings({"UnusedReturnValue", "unchecked"})
 @State(Scope.Benchmark)
@@ -50,10 +50,10 @@ public class RedisTokenBucketPerf {
 
 		forty = new RedisTokenBucket(NAMESPACE, template, Clock.systemDefaultZone());
 		for (int i = 0; i < 20; i++) {
-			forty.addBucket(Integer.MAX_VALUE, 10_0000);
+			forty.addBucket(10_0000, 10_0000);
 		}
 		for (int i = 0; i < 20; i++) {
-			forty.addBucket(10_0000, 10_0000);
+			forty.addBucket(Integer.MAX_VALUE, 10_0000);
 		}
 	}
 
@@ -75,9 +75,9 @@ public class RedisTokenBucketPerf {
 	}
 
 	public static void main(String[] args) throws Exception {
-		var opt = new OptionsBuilder()
+		var options = new OptionsBuilder()
 				.include(RedisTokenBucketPerf.class.getSimpleName())
 				.build();
-		var results = new Runner(opt).run();
+		new Runner(options).run();
 	}
 }
