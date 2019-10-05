@@ -16,7 +16,8 @@ import java.io.IOException;
  */
 final class ImageReferenceJsonCodec {
 
-	private static final String DIRECTORY = "/image/"; // 图片直接存储在前端服务器上
+	private static final String STATIC_IMAGES = "/static/img/";
+	private static final String IMAGE_SERVER = "/image/";
 
 	static final class Serializer extends JsonSerializer<ImageReference> {
 
@@ -24,7 +25,8 @@ final class ImageReferenceJsonCodec {
 		public void serialize(ImageReference value,
 							  JsonGenerator gen,
 							  SerializerProvider serializers) throws IOException {
-			gen.writeString(DIRECTORY + value.toString());
+			var directory = value.getType() == ImageType.Internal ? STATIC_IMAGES : IMAGE_SERVER;
+			gen.writeString(directory + value.toString());
 		}
 	}
 
@@ -33,11 +35,14 @@ final class ImageReferenceJsonCodec {
 		@Override
 		public ImageReference deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
 			var text = p.getText();
-			if (!text.startsWith(DIRECTORY)) {
-				throw new InvalidFormatException(p, "图片路径错误", text, ImageReference.class);
-			}
 			try {
-				return ImageReference.parse(text.substring(DIRECTORY.length()));
+				if (text.startsWith(IMAGE_SERVER)) {
+					return ImageReference.parse(text.substring(IMAGE_SERVER.length()));
+				}
+				if (text.startsWith(STATIC_IMAGES)) {
+					return ImageReference.parse(text.substring(STATIC_IMAGES.length()));
+				}
+				throw new InvalidFormatException(p, "图片路径错误", text, ImageReference.class);
 			} catch (IllegalArgumentException e) {
 				throw new InvalidFormatException(p, "无效的图片引用", text, ImageReference.class);
 			}

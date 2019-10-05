@@ -24,14 +24,31 @@ final class ImageReferenceJsonCodecTest {
 	}
 
 	@Test
-	void serialize() throws Exception {
+	void serializeStaticResource() throws Exception {
 		var image = ImageReference.parse("测试图片.webp");
 		var json = writer.writeValueAsString(image);
-		assertThat(json).isEqualTo("\"/image/测试图片.webp\"");
+		assertThat(json).isEqualTo("\"/static/img/测试图片.webp\"");
 	}
 
 	@Test
-	void deserialize() throws Exception {
+	void serializeImageServer() throws Exception {
+		var image = ImageReference.parse("0FC3697B8E7787B53A76738016EB9355D812005CE6CFD354A3D6DBC812345678.png");
+		var json = writer.writeValueAsString(image);
+		assertThat(json).isEqualTo("\"/image/0FC3697B8E7787B53A76738016EB9355D812005CE6CFD354A3D6DBC812345678.png\"");
+	}
+
+	@Test
+	void deserializeStaticResource() throws Exception {
+		var name = "测试图片.webp";
+		var json = "\"/static/img/" + name + "\"";
+		ImageReference image = reader.readValue(json);
+
+		assertThat(image.getType()).isEqualTo(ImageType.Internal);
+		assertThat(image.toString()).isEqualTo(name);
+	}
+
+	@Test
+	void deserializeImageServer() throws Exception {
 		var name = "0FC3697B8E7787B53A76738016EB9355D812005CE6CFD354A3D6DBC812345678.png";
 		var json = "\"/image/" + name + "\"";
 		ImageReference image = reader.readValue(json);
