@@ -1,1 +1,1 @@
-Automatic-Module-Name: net.kaciras.blog.infrastructure
+Automatic-Module-Name: net.kaciras.blog.infra

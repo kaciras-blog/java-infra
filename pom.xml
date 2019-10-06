@@ -6,8 +6,8 @@
 	<description>Kaciras Blog V10 Infrastructure</description>
 
 	<groupId>net.kaciras.blog</groupId>
-	<artifactId>Infrastructure</artifactId>
-	<version>1.14</version>
+	<artifactId>infra</artifactId>
+	<version>1.0</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
