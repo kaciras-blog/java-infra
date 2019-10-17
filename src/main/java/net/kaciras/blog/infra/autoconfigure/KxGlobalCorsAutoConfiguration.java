@@ -17,7 +17,7 @@ import java.util.List;
  * 该类将检查 kaciras.cors 空间下的配置。
  */
 @EnableConfigurationProperties(CorsProperties.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 public class KxGlobalCorsAutoConfiguration {
 

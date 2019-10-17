@@ -11,7 +11,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 
 // 使用专用的配置，避免加载整个应用
 @Import(RedisAutoConfiguration.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class TestRedisConfiguration {
 
 	@Bean

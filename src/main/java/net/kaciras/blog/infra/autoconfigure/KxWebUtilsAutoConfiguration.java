@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 		AdditionalConnectorProperties.class,
 })
 @RequiredArgsConstructor
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class KxWebUtilsAutoConfiguration {
 
 	private final DevelopmentProperties developmentProperties;

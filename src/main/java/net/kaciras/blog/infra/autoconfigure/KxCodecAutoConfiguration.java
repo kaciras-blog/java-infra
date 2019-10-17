@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Configuration;
  * 自动注册与 net.kaciras.blog.infrastructure.codec 包下的类相关的基础设施，
  * 包括Jackson的序列号模块、mybatis的TypeHandler。
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class KxCodecAutoConfiguration {
 
 	@ConditionalOnClass(ConfigurationCustomizer.class)
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MybatisConfiguration {
 
 		@Bean
@@ -31,7 +31,7 @@ public class KxCodecAutoConfiguration {
 	}
 
 	@ConditionalOnClass(Jackson2ObjectMapperBuilderCustomizer.class)
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JacksonConfiguration {
 
 		@SuppressWarnings("unchecked")

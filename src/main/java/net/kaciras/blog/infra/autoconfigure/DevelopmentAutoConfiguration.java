@@ -15,7 +15,7 @@ import javax.servlet.Filter;
 @RequiredArgsConstructor
 @ConditionalOnClass
 @EnableConfigurationProperties(DevelopmentProperties.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class DevelopmentAutoConfiguration {
 
 	private final DevelopmentProperties properties;

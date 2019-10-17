@@ -31,7 +31,7 @@ class AuthorizeAspectTest {
 	}
 
 	@EnableAspectJAutoProxy(proxyTargetClass = true)
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EmbeddedConfiguration {
 
 		@Bean

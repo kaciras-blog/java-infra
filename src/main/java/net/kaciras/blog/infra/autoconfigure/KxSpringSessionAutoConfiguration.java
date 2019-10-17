@@ -17,7 +17,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
  */
 @EnableConfigurationProperties(SessionCookieProperties.class)
 @ConditionalOnClass(Session.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class KxSpringSessionAutoConfiguration {
 
 	@ConditionalOnMissingBean(CookieSerializer.class)
