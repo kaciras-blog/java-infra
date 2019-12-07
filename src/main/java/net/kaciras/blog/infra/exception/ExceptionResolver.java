@@ -34,7 +34,7 @@ public final class ExceptionResolver {
 	private final boolean debug;
 
 	@ExceptionHandler
-	public ResponseEntity handle(Exception ex) throws Exception {
+	public ResponseEntity<Object> handle(Exception ex) throws Exception {
 		/* 自己定义的异常 */
 		if (ex instanceof WebBusinessException) {
 			return ResponseEntity
