@@ -6,7 +6,6 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -26,7 +25,6 @@ import java.net.http.HttpResponse.BodyHandlers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Disabled("升到 SpringBoot 2.2 就挂了，但被测的API跟Spring无关")
 final class DisableHttpClientVerifyTest {
 
 	private static DisposableServer server;
