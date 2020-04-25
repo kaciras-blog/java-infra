@@ -25,4 +25,4 @@
 /.nb-gradle/
 
 ### Custom ###
-application.yml
+/application.yml
