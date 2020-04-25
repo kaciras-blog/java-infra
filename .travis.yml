@@ -1,5 +1,4 @@
 language: java
-sudo: false
 
 git:
   depth: false
@@ -14,7 +13,7 @@ jdk:
   - openjdk14
 
 services:
-  - redis-server
+  - redis
 
 env:
   - spring.profiles.active=EXAMPLE
