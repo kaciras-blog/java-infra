@@ -1,4 +1,4 @@
-# 运行测试前需要配置一些选项，你需要把该文件改名为 application.yml，并修改最下面需要自定义的部分
+# 测试需要配置一些选项，可以把该文件改名为 application.yml，或者在启动时指定配置文件
 spring:
 
   main:
@@ -10,8 +10,7 @@ spring:
     redis:
       namespace: test
 
-# 以下是要自定义的部分：需要改为你自己的环境，默认值可用于CI
-
+  # 可能需要改为你自己的环境，默认值可用于CI
   redis:
     host: localhost
     port: 6379
