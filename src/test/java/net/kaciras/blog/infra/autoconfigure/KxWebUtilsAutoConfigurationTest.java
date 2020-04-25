@@ -13,14 +13,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 // 本测试会启动真实的Tomcat服务器而不是Mock
 final class KxWebUtilsAutoConfigurationTest {
@@ -88,21 +86,6 @@ final class KxWebUtilsAutoConfigurationTest {
 
 			assertThat(resp.body()).isEqualTo("Hello");
 			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_2);
-		});
-	}
-
-	@Test
-	void bindAddress() {
-		var runner = contextRunner.withPropertyValues(
-				"server.additional-connector.port=54321",
-				"server.additional-connector.address=localhost"
-		);
-		runWithServer(runner, () -> {
-			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
-			var client = HttpClient.newHttpClient();
-
-			assertThatThrownBy(() -> client.send(request, HttpResponse.BodyHandlers.ofString()))
-					.isInstanceOf(ConnectException.class);
 		});
 	}
 }

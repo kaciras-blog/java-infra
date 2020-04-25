@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-final class GlobalCorsFilterTest {
+final class KxGlobalCorsAutoConfigurationTest {
 
 	private final CorsProperties config = new CorsProperties();
 
@@ -18,23 +18,47 @@ final class GlobalCorsFilterTest {
 	}
 
 	@Test
-	void nonCors() throws Exception {
-		var request = new MockHttpServletRequest();
-		var result = FilterChainCapture.doFilter(createFilter(), request);
-		assertThat(result.outRequest).isSameAs(request);
-	}
-
-	@Test
-	void simpleRequest() throws Exception {
-		config.setTemplate(CorsProperties.CorsTemplate.AllowAll);
+	void defaults() throws Exception {
+		config.setTemplate(CorsProperties.CorsTemplate.Default);
 
 		var request = new MockHttpServletRequest();
 		request.setMethod("GET");
 		request.addHeader("Origin", "https://example.com");
 
 		var result = FilterChainCapture.doFilter(createFilter(), request);
+
 		assertThat(result.outRequest).isSameAs(request);
 		assertThat(result.inResponse.getHeader("Access-Control-Allow-Origin")).isEqualTo("https://example.com");
+		assertThat(result.inResponse.getHeader("Access-Control-Allow-Credentials")).isEqualTo("true");
+	}
+
+	@Test
+	void allowedMethods() throws Exception {
+		config.setTemplate(CorsProperties.CorsTemplate.Default);
+		config.setAllowedMethods(List.of("POST"));
+
+		var request = new MockHttpServletRequest();
+		request.setMethod("GET");
+		request.addHeader("Origin", "https://example.com");
+
+		var result = FilterChainCapture.doFilter(createFilter(), request);
+		assertThat(result.outRequest).isNull();
+		assertThat(result.inResponse.getStatus()).isEqualTo(403);
+	}
+
+	@Test
+	void exposedHeaders() throws Exception {
+		config.setTemplate(CorsProperties.CorsTemplate.Default);
+		config.setExposedHeaders(List.of("X-Custom"));
+
+		var request = new MockHttpServletRequest();
+		request.setMethod("GET");
+		request.addHeader("Origin", "https://example.com");
+
+		var result = FilterChainCapture.doFilter(createFilter(), request);
+
+		assertThat(result.outRequest).isSameAs(request);
+		assertThat(result.inResponse.getHeader("Access-Control-Expose-Headers")).containsOnlyOnce("X-Custom");
 	}
 
 	// https://www.w3.org/TR/cors/#resource-preflight-requests
@@ -56,14 +80,30 @@ final class GlobalCorsFilterTest {
 	}
 
 	@Test
-	void invalidPreFlight() throws Exception {
+	void preFlightWithInvalidOrigin() throws Exception {
 		config.setTemplate(CorsProperties.CorsTemplate.AllowAll);
-		config.setAllowedOrigins(List.of("https://example.com"));
+		config.setAllowedOrigins(List.of("https://abc.com"));
 
 		var request = new MockHttpServletRequest();
 		request.setMethod("OPTIONS");
-		request.addHeader("Origin", "https://invalid.com");
+		request.addHeader("Origin", "https://example.com");
 		request.addHeader("Access-Control-Request-Method", "POST");
+
+		var result = FilterChainCapture.doFilter(createFilter(), request);
+		assertThat(result.outRequest).isNull();
+		assertThat(result.inResponse.getStatus()).isEqualTo(403);
+	}
+
+	@Test
+	void preFlightWithInvalidHeader() throws Exception {
+		config.setTemplate(CorsProperties.CorsTemplate.AllowAll);
+		config.setAllowedHeaders(List.of("X-Custom"));
+
+		var request = new MockHttpServletRequest();
+		request.setMethod("OPTIONS");
+		request.addHeader("Origin", "https://example.com");
+		request.addHeader("Access-Control-Request-Method", "POST");
+		request.addHeader("Access-Control-Request-Headers", "X-Disallow");
 
 		var result = FilterChainCapture.doFilter(createFilter(), request);
 		assertThat(result.outRequest).isNull();
