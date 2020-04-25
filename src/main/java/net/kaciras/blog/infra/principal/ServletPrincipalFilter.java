@@ -84,7 +84,9 @@ public final class ServletPrincipalFilter extends HttpFilter {
 			if (cookieName == null) {
 				return true;
 			}
-			var nullable = Optional.ofNullable(WebUtils.getCookie(this, cookieName)).map(Cookie::getValue);
+			var nullable = Optional
+					.ofNullable(WebUtils.getCookie(this, cookieName))
+					.map(Cookie::getValue);
 
 			if (headerName != null) {
 				nullable = nullable.filter(token -> token.equals(getHeader(headerName)));

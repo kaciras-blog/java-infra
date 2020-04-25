@@ -21,4 +21,14 @@ final class WebPrincipalTest {
 
 		assertThat(Set.of(u123, u45, admin, anonymous)).size().isEqualTo(4);
 	}
+
+	@Test
+	void system() {
+		var principal = new WebPrincipal(WebPrincipal.SYSTEM_ID);
+
+		assertThat(principal.isSystem()).isTrue();
+		assertThat(principal.isAdminister()).isFalse();
+		assertThat(principal.getName()).isEqualTo("System");
+		assertThat(principal.hasPermission("Any")).isTrue();
+	}
 }

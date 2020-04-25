@@ -59,7 +59,12 @@ final class ImageReferenceJsonCodecTest {
 
 	@Test
 	void deserializeInvalid() {
-		var json = "\"https://www.example.com/image/666.jpg\"";
-		Assertions.assertThatThrownBy(() -> reader.readValue(json)).isInstanceOf(JsonProcessingException.class);
+		var invalidPrefix = "\"https://www.example.com/image/666.jpg\"";
+		Assertions.assertThatThrownBy(() -> reader.readValue(invalidPrefix))
+				.isInstanceOf(JsonProcessingException.class);
+
+		var invalidName = "\"/image/file\"";
+		Assertions.assertThatThrownBy(() -> reader.readValue(invalidName))
+				.isInstanceOf(JsonProcessingException.class);
 	}
 }

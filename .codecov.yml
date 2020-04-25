@@ -1,0 +1,3 @@
+# 不包含逻辑的异常Class就不测试了
+ignore:
+  - src\main\java\net\kaciras\blog\infra\exception\*Exception.java

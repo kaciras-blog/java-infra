@@ -43,6 +43,16 @@ final class ServletPrincipalFilterTest {
 	}
 
 	@Test
+	void disableCSRFCheck() throws Exception {
+		filter.setCookieName(null);
+
+		var result = FilterChainCapture.doFilter(filter, request);
+
+		var principal = (WebPrincipal) result.outRequest.getUserPrincipal();
+		assertThat(principal.getId()).isEqualTo(666);
+	}
+
+	@Test
 	void validHeader() throws Exception {
 		filter.setCookieName(COOKIE_NAME);
 		filter.setHeaderName(HEADER_NAME);
