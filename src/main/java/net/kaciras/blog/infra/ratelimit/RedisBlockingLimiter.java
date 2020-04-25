@@ -123,6 +123,7 @@ public final class RedisBlockingLimiter implements RateLimiter {
 		} else {
 			record.increaseLevel(now);
 		}
+
 		connection.setEx(blockKey, record.getObservationPeriod(), record.serialize());
 		return record.getBlockingTime();
 	}

@@ -26,6 +26,7 @@ final class WebPrincipalTest {
 	void system() {
 		var principal = new WebPrincipal(WebPrincipal.SYSTEM_ID);
 
+		assertThat(principal.getId()).isEqualTo(WebPrincipal.SYSTEM_ID);
 		assertThat(principal.isSystem()).isTrue();
 		assertThat(principal.isAdminister()).isFalse();
 		assertThat(principal.getName()).isEqualTo("System");
