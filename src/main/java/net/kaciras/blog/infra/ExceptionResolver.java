@@ -1,6 +1,7 @@
-package net.kaciras.blog.infra.exception;
+package net.kaciras.blog.infra;
 
 import lombok.RequiredArgsConstructor;
+import net.kaciras.blog.infra.exception.WebBusinessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;

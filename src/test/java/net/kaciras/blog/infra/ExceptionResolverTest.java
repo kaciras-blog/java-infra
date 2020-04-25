@@ -1,6 +1,5 @@
 package net.kaciras.blog.infra;
 
-import net.kaciras.blog.infra.exception.ExceptionResolver;
 import net.kaciras.blog.infra.exception.WebBusinessException;
 import org.junit.jupiter.api.Test;
 

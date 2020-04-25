@@ -1,7 +1,7 @@
 package net.kaciras.blog.infra.autoconfigure;
 
 import lombok.RequiredArgsConstructor;
-import net.kaciras.blog.infra.exception.ExceptionResolver;
+import net.kaciras.blog.infra.ExceptionResolver;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.http2.Http2Protocol;

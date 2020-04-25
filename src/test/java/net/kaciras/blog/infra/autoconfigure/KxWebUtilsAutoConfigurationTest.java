@@ -1,6 +1,6 @@
 package net.kaciras.blog.infra.autoconfigure;
 
-import net.kaciras.blog.infra.exception.ExceptionResolver;
+import net.kaciras.blog.infra.ExceptionResolver;
 import net.kaciras.blog.infra.func.UncheckedRunnable;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
