@@ -30,6 +30,9 @@ final class ImageReferenceTest {
 		assertThatThrownBy(() -> ImageReference.parse("../any_system_file.sys"))
 				.isInstanceOf(IllegalArgumentException.class);
 
+		assertThatThrownBy(() -> ImageReference.parse("..\\any_system_file.sys"))
+				.isInstanceOf(IllegalArgumentException.class);
+
 		assertThatThrownBy(() -> ImageReference.parse(""))
 				.isInstanceOf(IllegalArgumentException.class);
 

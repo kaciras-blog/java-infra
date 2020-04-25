@@ -91,6 +91,12 @@ final class ImageReferenceTypeHandlerTest extends AbstractTypeHandlerTest {
 	}
 
 	@Test
+	void getResultNull() throws Exception {
+		when(resultSet.getBytes(1)).thenReturn(null);
+		assertThat(HANDLER.getResult(resultSet, 1)).isNull();
+	}
+
+	@Test
 	void hexName() throws SQLException {
 		when(resultSet.getBytes(1)).thenReturn(HASH_DATA);
 

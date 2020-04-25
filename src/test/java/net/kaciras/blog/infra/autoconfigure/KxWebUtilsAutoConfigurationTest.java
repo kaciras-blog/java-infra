@@ -84,7 +84,7 @@ final class KxWebUtilsAutoConfigurationTest {
 				"server.http2.enabled=true"
 		);
 		runWithServer(runner, () -> {
-			var uri = "http:/" + getLANAddress() + ":54321";
+			var uri = "http://" + getLANAddress().getHostAddress() + ":54321";
 			var request = HttpRequest.newBuilder(URI.create(uri)).build();
 			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -98,7 +98,7 @@ final class KxWebUtilsAutoConfigurationTest {
 		var lan = getLANAddress();
 		var runner = contextRunner.withPropertyValues(
 				"server.additional-connector.port=54321",
-				"server.additional-connector.address=" + lan.toString().substring(1)
+				"server.additional-connector.address=" + lan.getHostAddress()
 		);
 		runWithServer(runner, () -> {
 			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();

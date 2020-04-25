@@ -14,10 +14,10 @@ public final class TestHelper {
 	 * 获取一个包内所有指定类的子类，不包括指定的类本身。
 	 *
 	 * @param clazz 指定的类
-	 * @param pkg 包名
+	 * @param pkg   包名
 	 * @return 类列表，没有泛型因为调用方可能要转换
 	 */
-	@SuppressWarnings("UnstableApiUsage")
+	@SuppressWarnings({"UnstableApiUsage", "rawtypes"})
 	public static <T> List getSubClassesInPackage(Class<T> clazz, String pkg) {
 		try {
 			return ClassPath
