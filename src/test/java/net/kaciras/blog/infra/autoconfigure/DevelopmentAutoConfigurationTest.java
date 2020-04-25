@@ -27,7 +27,7 @@ final class DevelopmentAutoConfigurationTest {
 			var capture = FilterChainCapture.doFilter(delayFilter);
 			var end = System.currentTimeMillis();
 
-			assertThat(end - begin).isCloseTo(100, Offset.offset(20L));
+			assertThat(end - begin).isCloseTo(100, Offset.offset(30L));
 			assertThat(capture.outRequest).isNotNull();
 		});
 	}
