@@ -19,7 +19,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static net.kaciras.blog.infra.TestHelper.getLANAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -84,8 +83,7 @@ final class KxWebUtilsAutoConfigurationTest {
 				"server.http2.enabled=true"
 		);
 		runWithServer(runner, () -> {
-			var uri = "http://" + getLANAddress().getHostAddress() + ":54321";
-			var request = HttpRequest.newBuilder(URI.create(uri)).build();
+			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
 			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
 			assertThat(resp.body()).isEqualTo("Hello");
@@ -94,15 +92,14 @@ final class KxWebUtilsAutoConfigurationTest {
 	}
 
 	@Test
-	void bindAddress() throws Exception {
-		var lan = getLANAddress();
+	void bindAddress() {
 		var runner = contextRunner.withPropertyValues(
 				"server.additional-connector.port=54321",
-				"server.additional-connector.address=" + lan.getHostAddress()
+				"server.additional-connector.address=localhost"
 		);
 		runWithServer(runner, () -> {
 			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
-			var client =  HttpClient.newHttpClient();
+			var client = HttpClient.newHttpClient();
 
 			assertThatThrownBy(() -> client.send(request, HttpResponse.BodyHandlers.ofString()))
 					.isInstanceOf(ConnectException.class);
