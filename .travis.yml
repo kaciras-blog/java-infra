@@ -17,3 +17,6 @@ services:
 
 env:
   - spring.profiles.active=EXAMPLE
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
