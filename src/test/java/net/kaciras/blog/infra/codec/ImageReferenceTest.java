@@ -29,11 +29,15 @@ final class ImageReferenceTest {
 	void parseInvalidName() {
 		assertThatThrownBy(() -> ImageReference.parse("../any_system_file.sys"))
 				.isInstanceOf(IllegalArgumentException.class);
+
 		assertThatThrownBy(() -> ImageReference.parse(""))
 				.isInstanceOf(IllegalArgumentException.class);
+
 		assertThatThrownBy(() -> ImageReference.parse("toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooolong"))
 				.isInstanceOf(IllegalArgumentException.class);
 
+		assertThatThrownBy(() -> ImageReference.parse("0FC3697B8E7787B53A76738016EB9355D812005CE6CFD354A3D6DBC812345678.abc"))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
