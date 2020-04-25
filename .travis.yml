@@ -12,6 +12,9 @@ cache:
 jdk:
   - oraclejdk14
   - openjdk14
-os:
-  - linux
-  - windows
+
+services:
+  - redis-server
+
+env:
+  - spring.profiles.active=EXAMPLE
