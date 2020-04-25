@@ -36,7 +36,7 @@ public final class RedisTokenBucket implements RateLimiter {
 
 	private Object[] bArgs = new Object[0];
 
-	/** 记录在Redis里的过期时间，该值是由容量和速率来计算的 */
+	/** Redis 键的过期时间，该值是由容量和速率来计算的 */
 	private int ttl;
 
 	/** 最小的一个桶的容量 */
@@ -91,10 +91,8 @@ public final class RedisTokenBucket implements RateLimiter {
 		args[2] = ttl;
 		System.arraycopy(bArgs, 0, args, 3, bArgs.length);
 
-		var waitTime = redis.execute(script, keys, args);
-		if (waitTime == null) {
-			throw new RuntimeException("限速脚本返回了空值，ID=" + id);
-		}
-		return waitTime;
+		// 仅在连接处于 pipeline 和 queue 状态下才会返回空值
+		// noinspection ConstantConditions
+		return redis.execute(script, keys, args);
 	}
 }
