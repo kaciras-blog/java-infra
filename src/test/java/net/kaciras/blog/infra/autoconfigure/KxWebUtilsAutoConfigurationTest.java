@@ -1,10 +1,11 @@
 package net.kaciras.blog.infra.autoconfigure;
 
 import net.kaciras.blog.infra.ExceptionResolver;
-import net.kaciras.blog.infra.func.UncheckedRunnable;
+import net.kaciras.blog.infra.func.UncheckedConsumer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
@@ -24,7 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class KxWebUtilsAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(KxWebUtilsAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(
+					KxWebUtilsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class
+			));
 
 	private static final class TestServlet extends HttpServlet {
 
@@ -36,10 +40,9 @@ final class KxWebUtilsAutoConfigurationTest {
 		}
 	}
 
-	private void runWithServer(WebApplicationContextRunner runner, UncheckedRunnable test) {
+	private void runWithServer(WebApplicationContextRunner runner,
+							   UncheckedConsumer<AssertableWebApplicationContext> test) {
 		runner.run(context -> {
-			assertThat(context).hasBean("httpPortCustomizer");
-
 			var factory = context.getBean(TomcatServletWebServerFactory.class);
 			var server = (TomcatWebServer) factory.getWebServer(ctx ->
 					ctx.addServlet("test", new TestServlet()).addMapping("/"));
@@ -47,44 +50,69 @@ final class KxWebUtilsAutoConfigurationTest {
 			server.getTomcat().setSilent(true);
 			server.start();
 			try {
-				test.runThrows();
+				test.acceptThrows(context);
 			} finally {
 				server.stop();
 			}
 		});
 	}
 
+	private HttpResponse<String> request(String url) throws Exception {
+		var request = HttpRequest
+				.newBuilder(URI.create(url))
+				.build();
+		var response = HttpClient
+				.newHttpClient()
+				.send(request, HttpResponse.BodyHandlers.ofString());
+
+		assertThat(response.body()).isEqualTo("Hello");
+		assertThat(response.statusCode()).isEqualTo(200);
+
+		return response;
+	}
+
 	@Test
 	void defaults() {
-		contextRunner.run(context -> {
-			assertThat(context).doesNotHaveBean("httpPortCustomizer");
+		runWithServer(contextRunner, (context -> {
+			assertThat(context).doesNotHaveBean("additionalConnectorCustomizer");
+			assertThat(context).doesNotHaveBean("springH2CCustomizer");
 			assertThat(context).hasSingleBean(ExceptionResolver.class);
+
+			var resp = request("http://localhost:8080");
+			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_1_1);
+		}));
+	}
+
+	@Test
+	void springH2CCustomizer() {
+		var runner = contextRunner.withPropertyValues("server.http2.enabled=true");
+		runWithServer(runner, (context) -> {
+			assertThat(context).hasBean("springH2CCustomizer");
+
+			var resp = request("http://localhost:8080");
+			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_2);
 		});
 	}
 
 	@Test
-	void tomcatHttp11() {
+	void additionalHttp11() {
 		var runner = contextRunner.withPropertyValues("server.additional-connector.port=54321");
-		runWithServer(runner, () -> {
-			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
-			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+		runWithServer(runner, (context) -> {
+			assertThat(context).hasBean("additionalConnectorCustomizer");
 
-			assertThat(resp.body()).isEqualTo("Hello");
+			var resp = request("http://localhost:54321");
 			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_1_1);
 		});
 	}
 
 	@Test
-	void tomcatHttp2() {
+	void additionalHttp2() {
 		var runner = contextRunner.withPropertyValues(
 				"server.additional-connector.port=54321",
 				"server.http2.enabled=true"
 		);
-		runWithServer(runner, () -> {
-			var request = HttpRequest.newBuilder(URI.create("http://localhost:54321")).build();
-			var resp = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-
-			assertThat(resp.body()).isEqualTo("Hello");
+		runWithServer(runner, (__) -> {
+			var resp = request("http://localhost:54321");
 			assertThat(resp.version()).isEqualTo(HttpClient.Version.HTTP_2);
 		});
 	}
