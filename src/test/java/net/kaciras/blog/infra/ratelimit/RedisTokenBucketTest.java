@@ -20,10 +20,11 @@ final class RedisTokenBucketTest {
 	private static final String KEY = "TEST";
 	private static final String NAMESPACE = "RATE_LIMIT:";
 
+	private final Clock clock = mock(Clock.class);
+
 	@Autowired
 	private RedisTemplate<String, Object> template;
 
-	private Clock clock = mock(Clock.class);
 	private int timeSecond;
 
 	private RedisTokenBucket limiter;

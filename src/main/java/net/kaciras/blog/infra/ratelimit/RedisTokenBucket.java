@@ -3,7 +3,6 @@ package net.kaciras.blog.infra.ratelimit;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.lang.NonNull;
 
 import java.time.Clock;
@@ -13,16 +12,22 @@ import java.util.Objects;
 
 /**
  * 令牌桶算法的实现，使用Redis存储相关记录，该类里可以包含多个令牌桶。
+ * 该类仅作为 Java 语言的接口，算法的实现在 Lua 脚本里，由 Redis 执行。
  * <p>
  * TODO: Spring Data Redis 里的 ScriptExecutor 跟 RedisTemplate 绑死了，很难直接基于 Connection 实现
  */
 public final class RedisTokenBucket implements RateLimiter {
 
-	/** 该类仅作为 Java 语言的接口，算法的实现在 Lua 脚本里，由 Redis 执行 */
-	private static final String SCRIPT_FILE = "TokenBucket.lua";
+	private static final DefaultRedisScript<Long> SCRIPT;
+
+	static {
+		SCRIPT = new DefaultRedisScript<>();
+		SCRIPT.setResultType(Long.class);
+		SCRIPT.setLocation(new ClassPathResource("TokenBucket.lua"));
+	}
 
 	/*
-	 * 经过一番思考，还是决定将命名空间放在限流器对象里，理由如下：
+	 * 经过一番思考，还是决定将命名空间放在限流器对象里（而不是上层）：
 	 *   1.命名空间应当看作限流器的一部分，用于标识键的类型以跟其他数据隔离
 	 *   2.如果需要进一步区分，则可以在id参数上做修改
 	 *   3.如果使用装饰模式来扩展，则必须要在实例里对命名空间做区分
@@ -32,8 +37,6 @@ public final class RedisTokenBucket implements RateLimiter {
 	private final Clock clock;
 	private final RedisTemplate<String, Object> redis;
 
-	private final RedisScript<Long> script;
-
 	private Object[] bArgs = new Object[0];
 
 	/** Redis 键的过期时间，该值是由容量和速率来计算的 */
@@ -42,15 +45,17 @@ public final class RedisTokenBucket implements RateLimiter {
 	/** 最小的一个桶的容量 */
 	private int minSize = Integer.MAX_VALUE;
 
+	/**
+	 * 创建 RedisTokenBucket 的新实例。
+	 *
+	 * @param namespace Redis键的前缀，用于多个限流器之间区分
+	 * @param redis     Redis配置
+	 * @param clock     用于获取当前时间，可以Mock该参数以便测试
+	 */
 	public RedisTokenBucket(String namespace, RedisTemplate<String, Object> redis, Clock clock) {
 		this.namespace = namespace;
 		this.redis = redis;
 		this.clock = clock;
-
-		var script = new DefaultRedisScript<Long>();
-		script.setResultType(Long.class);
-		script.setLocation(new ClassPathResource(SCRIPT_FILE));
-		this.script = script;
 	}
 
 	/**
@@ -58,14 +63,17 @@ public final class RedisTokenBucket implements RateLimiter {
 	 *
 	 * @param size 桶容量
 	 * @param rate 填充速率（令牌/秒）
+	 * @throws IllegalArgumentException 如果 size 或 rate 的取值范围错误
 	 */
 	public void addBucket(int size, double rate) {
 		if (size < 0 || rate <= 0) {
 			throw new IllegalArgumentException();
 		}
+
 		bArgs = Arrays.copyOf(bArgs, bArgs.length + 2);
 		bArgs[bArgs.length - 2] = size;
 		bArgs[bArgs.length - 1] = rate;
+
 		ttl = Math.max(ttl, (int) Math.ceil(size / rate));
 		minSize = Math.min(minSize, size);
 	}
@@ -91,8 +99,8 @@ public final class RedisTokenBucket implements RateLimiter {
 		args[2] = ttl;
 		System.arraycopy(bArgs, 0, args, 3, bArgs.length);
 
-		// 仅在连接处于 pipeline 和 queue 状态下才会返回空值
+		// 仅在连接处于 Pipeline 和 Queue 状态下才会返回空值
 		// noinspection ConstantConditions
-		return redis.execute(script, keys, args);
+		return redis.execute(SCRIPT, keys, args);
 	}
 }
