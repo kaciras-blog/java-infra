@@ -19,7 +19,7 @@ public interface RateLimiter {
 	 *
 	 * @param id      标识获取者的身份，一般是对方的IP之类的
 	 * @param permits 要获取的令牌数量
-	 * @return 需要等待的时间，0表示成功，负值表示永远无法完成
+	 * @return 需要等待的时间（秒），0表示成功，负值表示永远无法完成
 	 */
 	long acquire(@NonNull String id, int permits);
 }
