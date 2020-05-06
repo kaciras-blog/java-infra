@@ -17,9 +17,9 @@ final class ServletPrincipalFilterTest {
 	private static final String HEADER_NAME = "X-CSRF-Token";
 	private static final String PARAMETER_NAME = "csrf";
 
-	private ServletPrincipalFilter filter;
+	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
-	private MockHttpServletRequest request = new MockHttpServletRequest();
+	private ServletPrincipalFilter filter;
 
 	/**
 	 * 默认的请求和过滤器实例，大部分测试都是用它们。

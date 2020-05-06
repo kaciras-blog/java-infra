@@ -49,6 +49,8 @@ public class StringMatchPerf {
 					.toString()
 	);
 
+	// 不要设为 final 避免优化
+	@SuppressWarnings("FieldMayBeFinal")
 	private String string = S7;
 
 	@Benchmark

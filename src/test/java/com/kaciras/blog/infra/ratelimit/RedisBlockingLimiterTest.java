@@ -27,6 +27,8 @@ final class RedisBlockingLimiterTest {
 	private static final String NAMESPACE = "RATE_LIMIT:";
 	private static final int DEFAULT_BLOCK_TIME = 60;
 
+	private final Clock clock = mock(Clock.class);
+
 	@Autowired
 	private RedisConnectionFactory connectionFactory;
 
@@ -35,8 +37,6 @@ final class RedisBlockingLimiterTest {
 
 	@MockBean
 	private RateLimiter inner;
-
-	private Clock clock = mock(Clock.class);
 
 	private RedisBlockingLimiter limiter;
 

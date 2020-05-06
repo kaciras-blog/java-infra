@@ -8,9 +8,9 @@ import static org.mockito.Mockito.mock;
 
 abstract class AbstractTypeHandlerTest {
 
-	ResultSet resultSet = mock(ResultSet.class);
-	PreparedStatement preparedStatement = mock(PreparedStatement.class);
-	CallableStatement callableStatement = mock(CallableStatement.class);
+	final ResultSet resultSet = mock(ResultSet.class);
+	final PreparedStatement preparedStatement = mock(PreparedStatement.class);
+	final CallableStatement callableStatement = mock(CallableStatement.class);
 
 	abstract void setParameter() throws Exception;
 

@@ -17,7 +17,7 @@ final class KxCodecAutoConfigurationTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void defaults() throws Exception {
+	void defaults() {
 		var shouldRegistered = getSubClassesInPackage(TypeHandler.class, "com.kaciras.blog.infrastructure.codec");
 
 		contextRunner.run(context -> {

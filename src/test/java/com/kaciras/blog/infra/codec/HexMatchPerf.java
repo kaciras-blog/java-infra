@@ -12,22 +12,24 @@ import java.util.regex.Pattern;
 
 /**
  * 对比几种检查字符串是否是HEX的方式的性能。
- *
+ * <p>
  * f1894c00ba-default-非英文字符:
- * Benchmark                Mode    Cnt   Score   Error   Units
- * HexMatchPerf.bitSet      thrpt    5   9.068 ± 0.147  ops/us
- * HexMatchPerf.bySwitch    thrpt    5  10.783 ± 0.908  ops/us
- * HexMatchPerf.clr         thrpt    5   7.194 ± 0.563  ops/us
- * HexMatchPerf.ifRange     thrpt    5   9.684 ± 1.026  ops/us
- * HexMatchPerf.regexp      thrpt    5   5.826 ± 0.024  ops/us
- *
+ * Benchmark                         Mode    Cnt   Score   Error   Units
+ * HexMatchPerf.bitSet               thrpt    5   2.941 ± 0.151  ops/us
+ * HexMatchPerf.bySwitch             thrpt    5   2.325 ± 0.191  ops/us
+ * HexMatchPerf.clr                  thrpt    5   3.582 ± 0.210  ops/us
+ * HexMatchPerf.ifRange              thrpt    5   4.030 ± 0.158  ops/us
+ * HexMatchPerf.regexp               thrpt    5   1.779 ± 0.005  ops/us
+ * HexMatchPerf.switchExpression     thrpt    5   2.550 ± 0.188  ops/us
+ * <p>
  * 0de735be2d228599d4a48fe37f7cdc45b6134296a9bd59959590f7cefffeaf96:
- * Benchmark                Mode    Cnt   Score   Error   Units
- * HexMatchPerf.bitSet      thrpt    5   2.977 ± 0.135  ops/us
- * HexMatchPerf.bySwitch    thrpt    5   2.275 ± 0.018  ops/us
- * HexMatchPerf.clr         thrpt    5   3.610 ± 0.317  ops/us
- * HexMatchPerf.ifRange     thrpt    5   4.166 ± 0.267  ops/us
- * HexMatchPerf.regexp      thrpt    5   1.917 ± 0.007  ops/us
+ * Benchmark                         Mode    Cnt   Score   Error   Units
+ * HexMatchPerf.bitSet               thrpt    5   8.857 ± 0.475  ops/us
+ * HexMatchPerf.bySwitch             thrpt    5   7.451 ± 0.449  ops/us
+ * HexMatchPerf.clr                  thrpt    5   7.544 ± 0.114  ops/us
+ * HexMatchPerf.ifRange              thrpt    5   9.845 ± 0.590  ops/us
+ * HexMatchPerf.regexp               thrpt    5   6.245 ± 0.013  ops/us
+ * HexMatchPerf.switchExpression     thrpt    5  10.674 ± 1.342  ops/us
  */
 @State(Scope.Thread)
 @Fork(1)
@@ -47,46 +49,55 @@ public class HexMatchPerf {
 	@Param({"f1894c00ba-default-非英文字符", "0de735be2d228599d4a48fe37f7cdc45b6134296a9bd59959590f7cefffeaf96"})
 	private String text;
 
-	private boolean checkBySwitch(char character) {
-		switch (character) {
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-			case 'a':
-			case 'b':
-			case 'c':
-			case 'd':
-			case 'e':
-			case 'f':
-			case 'A':
-			case 'B':
-			case 'C':
-			case 'D':
-			case 'E':
-			case 'F':
-				return true;
-		}
-		return false;
-	}
-
 	@Benchmark
 	public void ifRange(Blackhole blackhole) {
-		for (var c: text.toCharArray()) {
+		for (var c : text.toCharArray()) {
 			blackhole.consume(CodecUtils.isHexDigit(c));
 		}
 	}
 
 	@Benchmark
+	public void switchExpression(Blackhole blackhole) {
+		for (var c : text.toCharArray()) {
+			switch (c) {
+				case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+						'a', 'b', 'c', 'd', 'e', 'f',
+						'A', 'B', 'C', 'D', 'E', 'F' -> blackhole.consume(true);
+				default -> blackhole.consume(false);
+			}
+		}
+	}
+
+	@SuppressWarnings("EnhancedSwitchMigration")
+	@Benchmark
 	public void bySwitch(Blackhole blackhole) {
 		for (var c : text.toCharArray()) {
-			blackhole.consume(checkBySwitch(c));
+			switch (c) {
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+				case 'a':
+				case 'b':
+				case 'c':
+				case 'd':
+				case 'e':
+				case 'f':
+				case 'A':
+				case 'B':
+				case 'C':
+				case 'D':
+				case 'E':
+				case 'F':
+					blackhole.consume(true);
+			}
+			blackhole.consume(false);
 		}
 	}
 
