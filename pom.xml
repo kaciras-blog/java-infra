@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<description>Kaciras Blog V10 Infrastructure</description>
 
-	<groupId>net.kaciras.blog</groupId>
+	<groupId>com.kaciras.blog</groupId>
 	<artifactId>infra</artifactId>
 	<version>1.0</version>
 
