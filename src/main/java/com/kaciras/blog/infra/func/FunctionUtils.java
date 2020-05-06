@@ -1,5 +1,7 @@
 package com.kaciras.blog.infra.func;
 
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -15,11 +17,19 @@ public final class FunctionUtils {
 		return consumer;
 	}
 
-	public static Runnable unchecked(UncheckedRunnable runnable) {
-		return runnable;
+	public static <T, U> BiConsumer<T, U> unchecked(UncheckedBiConsumer<T, U> consumer) {
+		return consumer;
 	}
 
 	public static <T, R> Function<T, R> unchecked(UncheckedFunction<T, R> function) {
 		return function;
+	}
+
+	public static <T, U, R> BiFunction<T, U, R> unchecked(UncheckedBiFunction<T, U, R> function) {
+		return function;
+	}
+
+	public static Runnable unchecked(UncheckedRunnable runnable) {
+		return runnable;
 	}
 }

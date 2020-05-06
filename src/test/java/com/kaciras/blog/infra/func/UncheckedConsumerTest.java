@@ -27,6 +27,7 @@ final class UncheckedConsumerTest {
 	@Test
 	void doThrows() {
 		Consumer<Object> throwing = (UncheckedConsumer<Object>) this::throwingConsumer;
+
 		assertThatThrownBy(() -> throwing.accept(null))
 				.isInstanceOf(UncheckedFunctionException.class)
 				.hasCauseInstanceOf(IOException.class);

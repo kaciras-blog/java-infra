@@ -23,6 +23,7 @@ final class UncheckedFunctionTest {
 	@Test
 	void doThrows() {
 		Function<Object, Object> throwing = (UncheckedFunction<Object, Object>) this::throwingFunction;
+
 		assertThatThrownBy(() -> throwing.apply(null))
 				.isInstanceOf(UncheckedFunctionException.class)
 				.hasCauseInstanceOf(IOException.class);
