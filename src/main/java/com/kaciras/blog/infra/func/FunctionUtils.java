@@ -21,15 +21,18 @@ public final class FunctionUtils {
 		return consumer;
 	}
 
-	public static <T, R> Function<T, R> unchecked(UncheckedFunction<T, R> function) {
-		return function;
-	}
-
-	public static <T, U, R> BiFunction<T, U, R> unchecked(UncheckedBiFunction<T, U, R> function) {
-		return function;
-	}
-
 	public static Runnable unchecked(UncheckedRunnable runnable) {
 		return runnable;
 	}
+
+	// Function 和 Consumer 前面一样，所以名字上加个Fn区别下
+
+	public static <T, R> Function<T, R> uncheckedFn(UncheckedFunction<T, R> function) {
+		return function;
+	}
+
+	public static <T, U, R> BiFunction<T, U, R> uncheckedFn(UncheckedBiFunction<T, U, R> function) {
+		return function;
+	}
+
 }

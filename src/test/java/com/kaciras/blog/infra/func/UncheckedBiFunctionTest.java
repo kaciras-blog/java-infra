@@ -32,7 +32,7 @@ final class UncheckedBiFunctionTest {
 
 	@Test
 	void uncheckedHelpers() {
-		BiFunction<?, ?, ?> BiFunction = FunctionUtils.unchecked(this::throwingFunction);
+		BiFunction<?, ?, ?> BiFunction = FunctionUtils.uncheckedFn(this::throwingFunction);
 		assertThat(BiFunction).isInstanceOf(UncheckedBiFunction.class);
 	}
 }

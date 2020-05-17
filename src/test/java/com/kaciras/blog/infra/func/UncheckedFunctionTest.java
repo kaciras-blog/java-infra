@@ -31,7 +31,7 @@ final class UncheckedFunctionTest {
 
 	@Test
 	void uncheckedHelpers() {
-		Function<?, ?> function = FunctionUtils.unchecked(this::throwingFunction);
+		Function<?, ?> function = FunctionUtils.uncheckedFn(this::throwingFunction);
 		assertThat(function).isInstanceOf(UncheckedFunction.class);
 	}
 }
