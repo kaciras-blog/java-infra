@@ -32,7 +32,7 @@ public class KxPrincipalAutoConfiguration {
 		return filter;
 	}
 
-	@ConditionalOnProperty(name = "kaciras.authorization.security-context", havingValue = "true")
+	@ConditionalOnProperty(name = "app.authorization.security-context", havingValue = "true")
 	@Bean
 	public ServletSecurityContextFilter securityContextFilter() {
 		return new ServletSecurityContextFilter();

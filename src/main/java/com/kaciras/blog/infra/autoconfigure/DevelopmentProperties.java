@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
 
-@ConfigurationProperties("kaciras.development")
+@ConfigurationProperties("app.development")
 @Getter
 @Setter
 public final class DevelopmentProperties {

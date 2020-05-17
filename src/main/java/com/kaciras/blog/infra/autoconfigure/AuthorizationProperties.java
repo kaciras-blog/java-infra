@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 
-@ConfigurationProperties("kaciras.authorization")
+@ConfigurationProperties("app.authorization")
 @Getter
 @Setter
 public final class AuthorizationProperties {

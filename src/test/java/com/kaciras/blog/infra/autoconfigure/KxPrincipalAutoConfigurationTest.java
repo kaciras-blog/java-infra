@@ -26,7 +26,7 @@ final class KxPrincipalAutoConfigurationTest {
 
 	@Test
 	void enableSecurityContext() {
-		contextRunner.withPropertyValues("kaciras.authorization.security-context=true")
+		contextRunner.withPropertyValues("app.authorization.security-context=true")
 				.run(context -> assertThat(context).hasSingleBean(ServletSecurityContextFilter.class));
 	}
 }

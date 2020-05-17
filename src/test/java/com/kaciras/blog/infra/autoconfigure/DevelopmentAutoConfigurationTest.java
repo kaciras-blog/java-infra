@@ -17,7 +17,7 @@ final class DevelopmentAutoConfigurationTest {
 
 	@Test
 	void delayFilter() {
-		contextRunner.withPropertyValues("kaciras.development.httpDelay=100ms").run(context -> {
+		contextRunner.withPropertyValues("app.development.httpDelay=100ms").run(context -> {
 			var delayFilter = context.getBean(Filter.class);
 
 			// warm up

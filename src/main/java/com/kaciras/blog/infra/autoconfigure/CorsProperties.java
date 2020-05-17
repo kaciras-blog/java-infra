@@ -7,7 +7,7 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
-@ConfigurationProperties("kaciras.cors")
+@ConfigurationProperties("app.cors")
 @Data
 public final class CorsProperties {
 
