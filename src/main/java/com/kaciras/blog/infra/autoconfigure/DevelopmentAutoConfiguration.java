@@ -21,7 +21,7 @@ public class DevelopmentAutoConfiguration {
 	private final DevelopmentProperties properties;
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	@ConditionalOnProperty("app.development.httpDelay")
+	@ConditionalOnProperty("app.development.http-delay")
 	@Bean
 	public Filter delayFilter() {
 		var millis = properties.getHttpDelay().toMillis();
