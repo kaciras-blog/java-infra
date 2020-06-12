@@ -6,15 +6,16 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
+import static com.kaciras.blog.infra.TestHelper.getSubClassesInPackage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 final class ExceptionResolverTest {
 
 	@SuppressWarnings("unchecked")
 	private static final List<Class<? extends WebBusinessException>> EXCEPTIONS =
-			TestHelper.getSubClassesInPackage(WebBusinessException.class, "com.kaciras.blog.infrastructure.exception");
+			getSubClassesInPackage(WebBusinessException.class, "com.kaciras.blog.infra.exception");
 
-	@SuppressWarnings("ConstantConditions")
+	@SuppressWarnings({"ConstantConditions", "rawtypes"})
 	@Test
 	void handleNotDebug() throws Exception {
 		var resolver = new ExceptionResolver(false);
