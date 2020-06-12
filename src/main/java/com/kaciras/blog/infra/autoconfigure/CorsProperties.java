@@ -1,6 +1,7 @@
 package com.kaciras.blog.infra.autoconfigure;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.web.cors.CorsConfiguration;
@@ -8,7 +9,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.util.List;
 
 @ConfigurationProperties("app.cors")
-@Data
+@Getter
+@Setter
 public final class CorsProperties {
 
 	@Nullable
