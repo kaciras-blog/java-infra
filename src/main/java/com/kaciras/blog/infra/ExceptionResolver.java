@@ -59,7 +59,7 @@ public final class ExceptionResolver {
 		}
 		if (e instanceof MethodArgumentTypeMismatchException) {
 			var ex = (MethodArgumentTypeMismatchException) e;
-			return String.format("控制器：%s 的参数：%s 类型错误，预期：%s，实际：%s",
+			return String.format("%s 的参数：%s 类型错误，需要：%s，实际：%s",
 					ex.getParameter().getMethod(), ex.getName(), ex.getRequiredType(), ex.getValue());
 		}
 		return DEFAULT_MESSAGE;
