@@ -10,6 +10,9 @@ import java.sql.*;
 /**
  * 将InetAddress转换成长度为16的字节数组(IPv6)存储在数据库中。
  * IPv4 将使用 IPv4 Mapped IPv6 Address 格式转码。
+ *
+ * 【设计原理】
+ * https://blog.kaciras.com/article/7/how-to-store-ip-address-in-database
  */
 public final class InetAddressTypeHandler extends BaseTypeHandler<InetAddress> {
 
