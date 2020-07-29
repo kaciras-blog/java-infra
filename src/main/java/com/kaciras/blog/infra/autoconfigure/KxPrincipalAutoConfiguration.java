@@ -1,7 +1,7 @@
 package com.kaciras.blog.infra.autoconfigure;
 
 import com.kaciras.blog.infra.principal.AuthorizeAspect;
-import com.kaciras.blog.infra.principal.RequireAuthorize;
+import com.kaciras.blog.infra.principal.RequirePermission;
 import com.kaciras.blog.infra.principal.ServletPrincipalFilter;
 import com.kaciras.blog.infra.principal.ServletSecurityContextFilter;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class KxPrincipalAutoConfiguration {
 	 *
 	 * @return 切面类
 	 * @see AuthorizeAspect
-	 * @see RequireAuthorize
+	 * @see RequirePermission
 	 */
 	@Bean
 	public AuthorizeAspect principalAspect() {

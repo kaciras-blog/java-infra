@@ -17,16 +17,16 @@ class AuthorizeAspectTest {
 
 	public static class MethodAopBean {
 
-		@RequireAuthorize
+		@RequirePermission
 		void requireAuth() {}
 	}
 
-	@RequireAuthorize
+	@RequirePermission
 	public static class ClassAopBean {
 
 		void requireAuth() {}
 
-		@RequireAuthorize(error = DataTooBigException.class)
+		@RequirePermission(error = DataTooBigException.class)
 		void customException() {}
 	}
 

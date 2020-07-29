@@ -16,10 +16,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 @Aspect
 public final class AuthorizeAspect {
 
-	@Pointcut("@within(com.kaciras.blog.infra.principal.RequireAuthorize)")
+	@Pointcut("@within(com.kaciras.blog.infra.principal.RequirePermission)")
 	private void clazz() {}
 
-	@Pointcut("@annotation(com.kaciras.blog.infra.principal.RequireAuthorize)")
+	@Pointcut("@annotation(com.kaciras.blog.infra.principal.RequirePermission)")
 	private void method() {}
 
 	/**
@@ -30,9 +30,9 @@ public final class AuthorizeAspect {
 	 */
 	@Before("clazz() && !method() && execution(!private * *(..))")
 	public void beforeClass(JoinPoint joinPoint) throws Exception {
-		var annotation = (RequireAuthorize) joinPoint.getSignature()
+		var annotation = (RequirePermission) joinPoint.getSignature()
 				.getDeclaringType()
-				.getDeclaredAnnotation(RequireAuthorize.class);
+				.getDeclaredAnnotation(RequirePermission.class);
 		check(annotation, joinPoint);
 	}
 
@@ -46,11 +46,11 @@ public final class AuthorizeAspect {
 	public void beforeMethod(JoinPoint joinPoint) throws Exception {
 		var annotation = ((MethodSignature) joinPoint.getSignature())
 				.getMethod()
-				.getDeclaredAnnotation(RequireAuthorize.class);
+				.getDeclaredAnnotation(RequirePermission.class);
 		check(annotation, joinPoint);
 	}
 
-	private void check(RequireAuthorize annotation, JoinPoint joinPoint) throws Exception {
+	private void check(RequirePermission annotation, JoinPoint joinPoint) throws Exception {
 		if (!SecurityContext.getPrincipal().hasPermission(annotation.value())) {
 			logger.info("Permission check failed for method: " + joinPoint.getSignature());
 			throw annotation.error().getConstructor().newInstance();
