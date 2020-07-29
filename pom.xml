@@ -95,6 +95,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- javax.validation API -->
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- 下面的是测试依赖 -->
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
