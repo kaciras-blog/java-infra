@@ -26,6 +26,8 @@ public final class RedisExtensions {
 		SCRIPT.setLocation(new ClassPathResource("SetIfExists.lua"));
 	}
 
+	private RedisExtensions() {}
+
 	// SpringDataRedis 这API都是怎么设计的？各种重载冲突、类型断档。
 	@SuppressWarnings({"unchecked", "rawtypes", "ConstantConditions"})
 	public static <K, HK, HV> Boolean hsetx(RedisOperations<K, ?> redis, K key, HK hkey, HV value) {

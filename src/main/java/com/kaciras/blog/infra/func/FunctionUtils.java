@@ -13,6 +13,8 @@ import java.util.function.Function;
  */
 public final class FunctionUtils {
 
+	private FunctionUtils() {}
+
 	public static <T> Consumer<T> unchecked(UncheckedConsumer<T> consumer) {
 		return consumer;
 	}
