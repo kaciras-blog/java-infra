@@ -35,6 +35,7 @@ final class HttpURIValidatorTest {
 		return Stream.of(
 				"/only/path?key=value#fragment",
 				"",
+				"https/",
 				"example.com",
 				"ftp://example.com"
 		).map(URI::create).map(Arguments::of);
