@@ -8,6 +8,8 @@ import com.kaciras.blog.infra.exception.PermissionException;
  */
 public final class SecurityContext {
 
+	private SecurityContext() {}
+
 	private static final ThreadLocal<WebPrincipal> threadLocal = new ThreadLocal<>();
 
 	public static void setPrincipal(WebPrincipal principal) {
@@ -19,7 +21,7 @@ public final class SecurityContext {
 		return threadLocal.get();
 	}
 
-/* ==================================== Helper Methods ==================================== */
+	/* ==================================== Helper Methods ==================================== */
 
 	public static int getUserId() {
 		return getPrincipal().getId();
