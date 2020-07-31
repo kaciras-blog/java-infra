@@ -47,6 +47,7 @@ public class HexMatchPerf {
 		for (char c = 'A'; c <= 'Z'; c++) BIT_SET.set(c);
 	}
 
+	@SuppressWarnings("unused")
 	@Param({"f1894c00ba-default-非英文字符", "0de735be2d228599d4a48fe37f7cdc45b6134296a9bd59959590f7cefffeaf96"})
 	private String text;
 

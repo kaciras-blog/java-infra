@@ -15,9 +15,10 @@ final class DevelopmentAutoConfigurationTest {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DevelopmentAutoConfiguration.class));
 
+	// 这时间波动也太大了，难道要用 PowerMockito 之类的来 mock Thread.sleep() ？
 	@Test
 	void delayFilter() {
-		contextRunner.withPropertyValues("app.development.http-delay=100ms").run(context -> {
+		contextRunner.withPropertyValues("app.development.http-delay=200ms").run(context -> {
 			var delayFilter = context.getBean(Filter.class);
 
 			// warm up
@@ -27,7 +28,7 @@ final class DevelopmentAutoConfigurationTest {
 			var capture = FilterChainCapture.doFilter(delayFilter);
 			var end = System.currentTimeMillis();
 
-			assertThat(end - begin).isCloseTo(100, Offset.offset(30L));
+			assertThat(end - begin).isCloseTo(200, Offset.offset(60L));
 			assertThat(capture.outRequest).isNotNull();
 		});
 	}
