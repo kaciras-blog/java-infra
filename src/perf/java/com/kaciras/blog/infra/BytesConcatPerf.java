@@ -1,4 +1,4 @@
-package com.kaciras.blog.infra.codec;
+package com.kaciras.blog.infra;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;

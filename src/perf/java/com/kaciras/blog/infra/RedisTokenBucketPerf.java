@@ -1,5 +1,7 @@
-package com.kaciras.blog.infra.ratelimit;
+package com.kaciras.blog.infra;
 
+import com.kaciras.blog.infra.ratelimit.RedisTokenBucket;
+import com.kaciras.blog.infra.ratelimit.TestRedisConfiguration;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
@@ -14,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 测量 RedisTokenBucket 的性能，其 acquire 方法包括三个方面的开销：JAVA层逻辑、通信开销、Redis脚本执行时间。
  * 如果单独衡量 TokenBucket.lua 脚本的性能，请使用 redis-benchmark 来测，结果见 resource/TokenBucketBenchmark.txt
- *
+ * <p>
  * Benchmark                       Mode  Cnt    Score    Error  Units
  * RedisTokenBucketPerf.buckets1   avgt    5  319.992 ±  7.507  us/op
  * RedisTokenBucketPerf.buckets40  avgt    5  461.470 ± 19.464  us/op

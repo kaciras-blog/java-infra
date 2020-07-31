@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 测下Jackson对构造方法、公共字段赋值、setter三种注入方式的性能差别。
- *
+ * <p>
  * 结果构造方法竟然比字段还快些……
- *
+ * <p>
  * 另外发现两个坑：
  * 1）Jackson 对构造方法参数名不是内置支持，需要 jackson-modules-java8  这个模块。
  * 2）setter 的字段名有讲究，vString 这种无法识别。

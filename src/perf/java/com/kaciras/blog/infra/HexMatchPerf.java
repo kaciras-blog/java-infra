@@ -1,5 +1,6 @@
-package com.kaciras.blog.infra.codec;
+package com.kaciras.blog.infra;
 
+import com.kaciras.blog.infra.codec.CodecUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
