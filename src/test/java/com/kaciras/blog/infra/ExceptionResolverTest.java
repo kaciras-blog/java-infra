@@ -2,6 +2,8 @@ package com.kaciras.blog.infra;
 
 import com.kaciras.blog.infra.exception.WebBusinessException;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,5 +39,16 @@ final class ExceptionResolverTest {
 		var resolver = new ExceptionResolver(false);
 		var e = new IOException();
 		assertThatThrownBy(() -> resolver.handle(e)).isEqualTo(e);
+	}
+
+	@Test
+	void respondErrorMessage() throws Exception {
+		var resolver = new ExceptionResolver(false);
+
+		var e = new BindException(resolver, "debug");
+		var response = (ResponseEntity) resolver.handle(e);
+		var message = ((Map<String, String>) response.getBody()).get("message");
+
+		assertThat(message).isEqualTo(ExceptionResolver.DEFAULT_MESSAGE);
 	}
 }

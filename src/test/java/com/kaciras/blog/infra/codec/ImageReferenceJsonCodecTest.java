@@ -43,6 +43,7 @@ final class ImageReferenceJsonCodecTest {
 		var json = "\"/static/img/" + name + "\"";
 		ImageReference image = reader.readValue(json);
 
+		assertThat(image.getName()).isEqualTo("测试图片.webp");
 		assertThat(image.getType()).isEqualTo(ImageType.Internal);
 		assertThat(image.toString()).isEqualTo(name);
 	}
@@ -53,6 +54,7 @@ final class ImageReferenceJsonCodecTest {
 		var json = "\"/image/" + name + "\"";
 		ImageReference image = reader.readValue(json);
 
+		assertThat(image.getName()).isEqualTo("0FC3697B8E7787B53A76738016EB9355D812005CE6CFD354A3D6DBC812345678");
 		assertThat(image.getType()).isEqualTo(ImageType.PNG);
 		assertThat(image.toString()).isEqualTo(name);
 	}
