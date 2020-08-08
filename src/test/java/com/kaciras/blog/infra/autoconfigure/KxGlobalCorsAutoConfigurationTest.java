@@ -77,6 +77,7 @@ final class KxGlobalCorsAutoConfigurationTest {
 		var response = result.inResponse;
 		assertThat(response.getHeader("Access-Control-Allow-Origin")).isEqualTo("https://example.com");
 		assertThat(response.getHeader("Access-Control-Allow-Methods")).isEqualTo("POST");
+		assertThat(response.getHeader("Access-Control-Max-Age")).isEqualTo("86400");
 	}
 
 	@Test

@@ -39,6 +39,10 @@ public class KxGlobalCorsAutoConfiguration {
 			config.setAllowedHeaders(all);
 		}
 
+		if (properties.getMaxAge() != null) {
+			config.setMaxAge(properties.getMaxAge());
+		}
+
 		if (properties.getAllowedOrigins() != null) {
 			config.setAllowedOrigins(properties.getAllowedOrigins());
 		}
@@ -51,9 +55,7 @@ public class KxGlobalCorsAutoConfiguration {
 		if (properties.getExposedHeaders() != null) {
 			config.setExposedHeaders(properties.getExposedHeaders());
 		}
-		if (properties.getMaxAge() != null) {
-			config.setMaxAge(properties.getMaxAge());
-		}
+
 		return config;
 	}
 

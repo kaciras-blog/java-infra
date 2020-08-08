@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.time.Duration;
 import java.util.List;
 
 @ConfigurationProperties("app.cors")
@@ -22,8 +23,10 @@ public final class CorsProperties {
 
 	private List<String> exposedHeaders;
 
-	/** 设置缓存时间，浏览器通常有自己的限制（Firefox:86400，Chrome/Blink: 600） */
-	private Long maxAge = 86400L;
+	/**
+	 * 设置缓存时间，浏览器通常有自己的限制（Firefox:86400，Chrome/Blink: 600）。
+	 */
+	private Duration maxAge = Duration.ofDays(1);
 
 	public enum CorsTemplate {
 
