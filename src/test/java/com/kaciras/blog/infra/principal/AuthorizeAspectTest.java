@@ -81,4 +81,21 @@ class AuthorizeAspectTest {
 	void customException() {
 		assertThatThrownBy(() -> classAopBean.customException()).isInstanceOf(DataTooBigException.class);
 	}
+
+	/**
+	 * Aspect 类的这俩方法仅作为注解的载体，不会被调用，所以会拉低测试覆盖率。
+	 * 这里给它调用一下，避免这种情况。
+	 */
+	@Test
+	void fixCoverage() throws Exception {
+		var instance = new AuthorizeAspect();
+
+		var method = AuthorizeAspect.class.getDeclaredMethod("clazz");
+		method.setAccessible(true);
+		method.invoke(instance);
+
+		var method2 = AuthorizeAspect.class.getDeclaredMethod("method");
+		method2.setAccessible(true);
+		method2.invoke(instance);
+	}
 }
