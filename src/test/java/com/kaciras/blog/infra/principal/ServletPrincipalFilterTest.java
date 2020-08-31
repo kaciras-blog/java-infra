@@ -100,9 +100,9 @@ final class ServletPrincipalFilterTest {
 	}
 
 	@Test
-	void changeToken() throws Exception {
+	void dynamicToken() throws Exception {
 		filter.setCookieName(COOKIE_NAME);
-		filter.setDomain("kaciras.example.com");
+		filter.setDomain("www.example.com");
 		filter.setDynamicToken(true);
 
 		request.setMethod("POST");
@@ -113,7 +113,21 @@ final class ServletPrincipalFilterTest {
 
 		var cookie = MockCookie.parse(result.inResponse.getHeader("Set-Cookie"));
 		assertThat(cookie.getName()).isEqualTo(COOKIE_NAME);
-		assertThat(cookie.getDomain()).isEqualTo("kaciras.example.com");
+		assertThat(cookie.getDomain()).isEqualTo("www.example.com");
+	}
+
+	@Test
+	void dynamicTokenSkipSafeRequest() throws Exception {
+		filter.setCookieName(COOKIE_NAME);
+		filter.setDomain("www.example.com");
+		filter.setDynamicToken(true);
+
+		request.setMethod("GET");
+		request.setCookies(new Cookie(COOKIE_NAME, "FOOBAR"));
+		request.addHeader(HEADER_NAME, "FOOBAR");
+
+		var result = FilterChainCapture.doFilter(filter, request);
+		assertThat(result.inResponse.getHeader("Set-Cookie")).isNull();
 	}
 
 	@Test

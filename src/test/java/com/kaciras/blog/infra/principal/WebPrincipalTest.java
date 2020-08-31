@@ -27,6 +27,7 @@ final class WebPrincipalTest {
 	void getName(int id, String name) {
 		var principal = new WebPrincipal(id);
 		assertThat(principal.getName()).isEqualTo(name);
+		assertThat(principal.getId()).isEqualTo(id);
 		assertThat(principal.toString()).isEqualTo(name);
 	}
 
