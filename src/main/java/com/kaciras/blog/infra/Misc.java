@@ -2,11 +2,11 @@ package com.kaciras.blog.infra;
 
 import sun.misc.Unsafe;
 
-import javax.net.ssl.*;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.servlet.http.HttpServletRequest;
-import java.net.Socket;
 import java.security.GeneralSecurityException;
-import java.security.cert.X509Certificate;
 import java.util.NoSuchElementException;
 
 /*
@@ -17,18 +17,6 @@ public final class Misc {
 
 	private Misc() {}
 
-	//@formatter:off
-	private static final class TrustAllManager extends X509ExtendedTrustManager {
-		public void checkClientTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
-		public void checkServerTrusted(X509Certificate[] certificates, String s, Socket socket)  {}
-		public void checkClientTrusted(X509Certificate[] certificates, String s, SSLEngine sslEngine) {}
-		public void checkServerTrusted(X509Certificate[] certificates, String s, SSLEngine sslEngine) {}
-		public void checkClientTrusted(X509Certificate[] chain, String authType) {}
-		public void checkServerTrusted(X509Certificate[] chain, String authType) {}
-		public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-	}
-	//@formatter:on
-
 	/**
 	 * 创建一个SSLContext对象，其被初始化为接受所有证书。
 	 *
@@ -37,7 +25,7 @@ public final class Misc {
 	 */
 	public static SSLContext createTrustAllSSLContext() throws GeneralSecurityException {
 		var sslc = SSLContext.getInstance("TLS");
-		sslc.init(null, new TrustManager[]{new TrustAllManager()}, null);
+		sslc.init(null, new TrustManager[]{new X509TrustAllManager()}, null);
 		return sslc;
 	}
 

@@ -1,3 +1,4 @@
-# 不包含逻辑的异常Class就不测试了
+# 不包含逻辑的异常 Class 就不测试了，X509TrustAllManager 一些方法用不到也不加入统计
 ignore:
   - "src/main/java/com/kaciras/blog/infra/exception"
+  - "src/main/java/com/kaciras/blog/infra/X509TrustAllManager"
