@@ -1,6 +1,9 @@
 package com.kaciras.blog.infra.codec;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -41,15 +44,17 @@ final class CodecUtilsTest {
 	}
 
 	@Test
-	void isHexDigit() {
-		var text = "0123456789abcdefABCDEF";
-		text.chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isTrue());
+	void hexDigit() {
+		"0123456789abcdefABCDEF".chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isTrue());
+	}
 
-		var fullWidth = "０１２３４５６７８９ａｂｃｄｅｆＡＢＣＤＥＦ";
-		fullWidth.chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isFalse());
-
-		var nonHex = "\r\n~!@@#$^&%*() /: @gG` 测下符号和边界值";
-		nonHex.chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isFalse());
+	@ValueSource(strings = {
+			"０１２３４５６７８９ａｂｃｄｅｆＡＢＣＤＥＦ",
+			"\r\n~!@@#$^&%*() /: @gG` 测下符号和边界值",
+	})
+	@ParameterizedTest
+	void nonHexDigit(String text) {
+		text.chars().forEach(c -> assertThat(CodecUtils.isHexDigit((char) c)).isFalse());
 	}
 
 	@Test
@@ -84,13 +89,14 @@ final class CodecUtilsTest {
 		}
 	}
 
-	@Test
-	void encodeHexHelloWorld() {
-		var helloWorld = "Hello World".getBytes();
-		assertThat(CodecUtils.encodeHex(helloWorld)).isEqualTo("48656c6c6f20576f726c64");
-
-		var unicode = "测试字符串".getBytes(StandardCharsets.UTF_8);
-		assertThat(CodecUtils.encodeHex(unicode)).isEqualTo("e6b58be8af95e5ad97e7aca6e4b8b2");
+	@CsvSource({
+			"Hello World, 48656c6c6f20576f726c64",
+			"测试字符串, e6b58be8af95e5ad97e7aca6e4b8b2",
+	})
+	@ParameterizedTest
+	void encodeHex(String text, String hex) {
+		var bytes = text.getBytes(StandardCharsets.UTF_8);
+		assertThat(CodecUtils.encodeHex(bytes)).isEqualTo(hex);
 	}
 
 	@Test

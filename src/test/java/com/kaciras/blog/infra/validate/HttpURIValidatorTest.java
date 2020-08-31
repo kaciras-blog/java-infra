@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class HttpURIValidatorTest {
 
 	@AllArgsConstructor
-	private static final class Wrapper {
+	private static final class FieldHost {
 
-		@HttpURI
 		@SuppressWarnings("unused")
+		@HttpURI
 		private final URI uri;
 	}
 
@@ -28,7 +28,7 @@ final class HttpURIValidatorTest {
 
 	@Test
 	void allowNull() {
-		assertThat(validator.validate(new Wrapper(null))).isEmpty();
+		assertThat(validator.validate(new FieldHost(null))).isEmpty();
 	}
 
 	private static Stream<Arguments> invalidValues() {
@@ -44,7 +44,7 @@ final class HttpURIValidatorTest {
 	@MethodSource("invalidValues")
 	@ParameterizedTest
 	void invalid(URI value) {
-		var violations = validator.validate(new Wrapper(value));
+		var violations = validator.validate(new FieldHost(value));
 
 		assertThat(violations).hasSize(1);
 		assertThat(getLast(violations).getPropertyPath().toString()).isEqualTo("uri");
@@ -60,7 +60,7 @@ final class HttpURIValidatorTest {
 
 	@MethodSource("validValues")
 	@ParameterizedTest
-	void valid(URI value) {
-		assertThat(validator.validate(new Wrapper(value))).isEmpty();
+	void validValues(URI value) {
+		assertThat(validator.validate(new FieldHost(value))).isEmpty();
 	}
 }
