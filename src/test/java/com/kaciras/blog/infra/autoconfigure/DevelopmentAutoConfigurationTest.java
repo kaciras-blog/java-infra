@@ -24,6 +24,9 @@ final class DevelopmentAutoConfigurationTest {
 			// warm up
 			FilterChainCapture.doFilter((req, res, chain) -> {});
 
+			// avoid gc pause in the next
+			System.gc();
+
 			var begin = System.currentTimeMillis();
 			var capture = FilterChainCapture.doFilter(delayFilter);
 			var end = System.currentTimeMillis();
