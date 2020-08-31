@@ -1,7 +1,7 @@
 package com.kaciras.blog.infra.ratelimit;
 
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.lang.NonNull;
 
@@ -35,7 +35,7 @@ public final class RedisTokenBucket implements RateLimiter {
 	 */
 	private final String namespace;
 	private final Clock clock;
-	private final RedisTemplate<String, Object> redis;
+	private final RedisOperations<String, Object> redis;
 
 	private Object[] bArgs = new Object[0];
 
@@ -52,7 +52,7 @@ public final class RedisTokenBucket implements RateLimiter {
 	 * @param redis     Redis配置
 	 * @param clock     用于获取当前时间，可以Mock该参数以便测试
 	 */
-	public RedisTokenBucket(String namespace, RedisTemplate<String, Object> redis, Clock clock) {
+	public RedisTokenBucket(String namespace, RedisOperations<String, Object> redis, Clock clock) {
 		this.namespace = namespace;
 		this.redis = redis;
 		this.clock = clock;
