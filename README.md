@@ -13,4 +13,4 @@
 mvn install
 ```
 
-如果要运行测试，则要指定Redis连接参数，可以参考 [application-EXAMPLE.yml](https://github.com/kaciras-blog/java-infra/blob/master/application-EXAMPLE.yml)
+如果要运行测试，则要指定Redis连接参数，可以参考 [application.yml](https://github.com/kaciras-blog/java-infra/blob/master/application.yml)
