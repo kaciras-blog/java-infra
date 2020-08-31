@@ -1,35 +1,82 @@
 package com.kaciras.blog.infra.principal;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 final class WebPrincipalTest {
 
-	@Test
-	void getName() {
-		var admin = new WebPrincipal(WebPrincipal.ADMIN_ID);
-		var anonymous = new WebPrincipal(WebPrincipal.ANONYMOUS_ID);
-		var u45 = new WebPrincipal(45);
-		var u123 = new WebPrincipal(123);
+	private static Stream<Arguments> getNameParams() {
+		return Stream.of(
+				Arguments.of(WebPrincipal.SYSTEM_ID, "System"),
+				Arguments.of(WebPrincipal.ADMIN_ID, "Admin"),
+				Arguments.of(5, "StandardUser:5"),
+				Arguments.of(WebPrincipal.ANONYMOUS_ID, "Anonymous")
+		);
+	}
 
-		assertThat(admin.getName()).isEqualTo(new WebPrincipal(WebPrincipal.ADMIN_ID).getName());
-		assertThat(anonymous.getName()).isEqualTo(WebPrincipal.ANONYMOUS.getName());
-		assertThat(u45.getName()).isEqualTo(u45.getName());
+	@MethodSource("getNameParams")
+	@ParameterizedTest
+	void getName(int id, String name) {
+		var principal = new WebPrincipal(id);
+		assertThat(principal.getName()).isEqualTo(name);
+		assertThat(principal.toString()).isEqualTo(name);
+	}
 
-		assertThat(Set.of(u123, u45, admin, anonymous)).size().isEqualTo(4);
+	private static Stream<Arguments> isXXXParams() {
+		return Stream.of(
+				Arguments.of(WebPrincipal.SYSTEM_ID, false, true, false),
+				Arguments.of(WebPrincipal.ADMIN_ID, false, false, true),
+				Arguments.of(5, false, false, false),
+				Arguments.of(WebPrincipal.ANONYMOUS_ID, true, false, false)
+		);
+	}
+
+	@MethodSource("isXXXParams")
+	@ParameterizedTest
+	void isXXX(int id, boolean anonymous, boolean sys, boolean admin) {
+		var principal = new WebPrincipal(id);
+		assertThat(principal.isAnonymous()).isEqualTo(anonymous);
+		assertThat(principal.isSystem()).isEqualTo(sys);
+		assertThat(principal.isAdminister()).isEqualTo(admin);
+	}
+
+	private static Stream<Arguments> hasPermissionParams() {
+		return Stream.of(
+				Arguments.of(WebPrincipal.SYSTEM_ID, true),
+				Arguments.of(WebPrincipal.ADMIN_ID, true),
+				Arguments.of(5, false),
+				Arguments.of(WebPrincipal.ANONYMOUS_ID, false)
+		);
+	}
+
+	@MethodSource("hasPermissionParams")
+	@ParameterizedTest
+	void hasPermission(int id, boolean expect) {
+		var principal = new WebPrincipal(id);
+		assertThat(principal.hasPermission("Any")).isEqualTo(expect);
 	}
 
 	@Test
-	void system() {
-		var principal = new WebPrincipal(WebPrincipal.SYSTEM_ID);
+	void equalsAngHashcode() {
+		var sys = new WebPrincipal(WebPrincipal.SYSTEM_ID);
+		var sys2 = new WebPrincipal(WebPrincipal.SYSTEM_ID);
+		var u66 = new WebPrincipal(66);
 
-		assertThat(principal.getId()).isEqualTo(WebPrincipal.SYSTEM_ID);
-		assertThat(principal.isSystem()).isTrue();
-		assertThat(principal.isAdminister()).isFalse();
-		assertThat(principal.getName()).isEqualTo("System");
-		assertThat(principal.hasPermission("Any")).isTrue();
+		assertThat(sys2).isEqualTo(sys);
+		assertThat(sys2).isNotEqualTo(u66);
+
+		var set = new HashSet<WebPrincipal>();
+		set.add(sys);
+		set.add(sys2);
+		set.add(u66);
+		assertThat(set).isEqualTo(Set.of(sys, u66));
 	}
 }

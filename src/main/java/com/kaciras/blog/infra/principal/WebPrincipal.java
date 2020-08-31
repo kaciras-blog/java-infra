@@ -15,12 +15,12 @@ public class WebPrincipal implements Principal {
 
 	private final int id;
 
-	public boolean isSystem() {
-		return id == SYSTEM_ID;
-	}
-
 	public boolean isAnonymous() {
 		return id == ANONYMOUS_ID;
+	}
+
+	public boolean isSystem() {
+		return id == SYSTEM_ID;
 	}
 
 	public boolean isAdminister() {
@@ -29,8 +29,7 @@ public class WebPrincipal implements Principal {
 
 	/**
 	 * 判断该用户是否具有给定的权限。
-	 * 默认的实现仅允许系统用户和管理员具有实现。
-	 * 在进入Domain后，装饰的新身份上重写此方法来实现自定义权限逻辑。
+	 * 默认的实现仅允许系统用户和管理员具有权限。
 	 *
 	 * @param name 权限名
 	 * @return 如果有则为true，反之false。
@@ -44,7 +43,13 @@ public class WebPrincipal implements Principal {
 		return switch (id) {
 			case ANONYMOUS_ID -> "Anonymous";
 			case SYSTEM_ID -> "System";
+			case ADMIN_ID -> "Admin";
 			default -> "StandardUser:" + id;
 		};
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 }
