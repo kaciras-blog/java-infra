@@ -10,8 +10,6 @@ import org.springframework.lang.Nullable;
 @Setter
 public final class AuthorizationProperties {
 
-	private boolean securityContext;
-
 	/** 所有用户的身份都设为管理员，在调试时有用. */
 	private boolean adminPrincipal;
 
