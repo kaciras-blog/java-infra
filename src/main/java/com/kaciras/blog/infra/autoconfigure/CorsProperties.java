@@ -18,9 +18,12 @@ public final class CorsProperties {
 	private CorsTemplate template;
 
 	private List<String> allowedOrigins;
+	private List<String> allowedOriginPatterns;
+
+	private Boolean allowCredentials;
+
 	private List<String> allowedMethods;
 	private List<String> allowedHeaders;
-
 	private List<String> exposedHeaders;
 
 	/**

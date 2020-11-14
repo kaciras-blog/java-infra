@@ -13,8 +13,8 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.List;
 
 /**
- * 配置全局的CORS处理，该类使用CorsFilter拦截器，有别于WebConfigurer中的配置。
- * 该类将检查 kaciras.cors 空间下的配置。
+ * 配置全局的 CORS 处理器，使用 CorsFilter 拦截器。
+ * 如果应用不需要区分不同路由的 CORS 则使用此类可以方便的处理。
  */
 @EnableConfigurationProperties(CorsProperties.class)
 @Configuration(proxyBeanMethods = false)
@@ -26,25 +26,30 @@ public class KxGlobalCorsAutoConfiguration {
 
 	private final CorsProperties properties;
 
-	private CorsConfiguration getCorsConfig() {
-		var config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-
+	private void configure(CorsConfiguration config) {
 		if (properties.getTemplate() == CorsTemplate.Default) {
 			config.applyPermitDefaultValues();
 		} else if (properties.getTemplate() == CorsTemplate.AllowAll) {
 			var all = List.of(CorsConfiguration.ALL);
 			config.setAllowedMethods(all);
-			config.setAllowedOrigins(all);
 			config.setAllowedHeaders(all);
-		}
-
-		if (properties.getMaxAge() != null) {
-			config.setMaxAge(properties.getMaxAge());
+			config.setAllowedOriginPatterns(all);
+			config.setAllowCredentials(true);
 		}
 
 		if (properties.getAllowedOrigins() != null) {
 			config.setAllowedOrigins(properties.getAllowedOrigins());
+		}
+		if (properties.getAllowedOrigins() != null) {
+			config.setAllowedOriginPatterns(properties.getAllowedOriginPatterns());
+		}
+
+		// 以下这些配置通常在开发和生产环境之间也不会变化。
+		if (properties.getAllowCredentials() != null) {
+			config.setAllowCredentials(properties.getAllowCredentials());
+		}
+		if (properties.getMaxAge() != null) {
+			config.setMaxAge(properties.getMaxAge());
 		}
 		if (properties.getAllowedMethods() != null) {
 			config.setAllowedMethods(properties.getAllowedMethods());
@@ -55,15 +60,15 @@ public class KxGlobalCorsAutoConfiguration {
 		if (properties.getExposedHeaders() != null) {
 			config.setExposedHeaders(properties.getExposedHeaders());
 		}
-
-		return config;
 	}
 
 	// 因为要设置优先级所以使用了 FilterRegistrationBean 来包装
 	@Bean
 	public FilterRegistrationBean<CorsFilter> corsFilter() {
 		var source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", getCorsConfig());
+		var config = new CorsConfiguration();
+		configure(config);
+		source.registerCorsConfiguration("/**", config);
 
 		var registration = new FilterRegistrationBean<CorsFilter>();
 		registration.setOrder(FILTER_ORDER);

@@ -28,8 +28,7 @@ final class KxGlobalCorsAutoConfigurationTest {
 		var result = FilterChainCapture.doFilter(createFilter(), request);
 
 		assertThat(result.outRequest).isSameAs(request);
-		assertThat(result.inResponse.getHeader("Access-Control-Allow-Origin")).isEqualTo("https://example.com");
-		assertThat(result.inResponse.getHeader("Access-Control-Allow-Credentials")).isEqualTo("true");
+		assertThat(result.inResponse.getHeader("Access-Control-Allow-Origin")).isEqualTo("*");
 	}
 
 	@Test
