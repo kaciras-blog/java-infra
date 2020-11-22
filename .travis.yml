@@ -9,14 +9,11 @@ cache:
     - $HOME/.m2
 
 jdk:
-  - oraclejdk14
-  - openjdk14
+  - oraclejdk15
+  - openjdk15
 
 services:
   - redis
-
-env:
-  - spring.profiles.active=EXAMPLE
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
