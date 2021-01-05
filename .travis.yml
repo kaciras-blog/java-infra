@@ -8,9 +8,10 @@ cache:
   directories:
     - $HOME/.m2
 
-os:
-  - windows
-  - linux
+# The language 'java' is currently unsupported on the Windows
+#os:
+#  - windows
+#  - linux
 
 jdk:
   - oraclejdk15
