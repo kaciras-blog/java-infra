@@ -81,7 +81,7 @@ public final class RedisBlockingLimiter implements RateLimiter {
 		try {
 			return doAcquire(connection, id, permits);
 		} finally {
-			RedisConnectionUtils.releaseConnection(connection, redisFactory, false);
+			RedisConnectionUtils.releaseConnection(connection, redisFactory);
 		}
 	}
 
