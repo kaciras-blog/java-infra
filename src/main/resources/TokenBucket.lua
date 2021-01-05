@@ -45,7 +45,7 @@ local function acquire(i)
 
 	--- 需要等待的时间（时间）= （所需令牌（令牌）- 当前令牌（令牌））/ 速率（令牌/时间）
 	--- 【注意1】Lua 的浮点数直接返回会被 Redis 向下截断成整数导致时间偏小，这里保守起见向上取整
-	--- 【注意2】Lua 除0返回 inf，Redis 会将 inf 转换为 -9223372036854775808
+	--- 【注意2】Lua 除零返回 inf，Redis 会将 inf 转换为 -2^64
 	return math.ceil((requirement - currPermits) / rate)
 end
 
