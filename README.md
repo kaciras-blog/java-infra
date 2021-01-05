@@ -9,8 +9,14 @@
 
 # 构建
 
+打包并安装到本地仓库，跳过测试。
+
 ```shell script
-mvn install
+mvn install -Dmaven.test.skip=true
 ```
 
 如果要运行测试，则要指定Redis连接参数，可以参考 [application.yml](https://github.com/kaciras-blog/java-infra/blob/master/application.yml)
+
+```shell script
+mvn test
+```
