@@ -9,6 +9,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.time.Duration;
 import java.util.List;
 
+// DefaultValue 不能放到自动上，无法搭配 RequiredArgsConstructor，所以暂不使用 ConstructorBinding
 @ConfigurationProperties("app.cors")
 @Getter
 @Setter
