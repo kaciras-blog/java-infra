@@ -8,13 +8,12 @@ import org.springframework.lang.NonNull;
 import java.time.Clock;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Objects;
 
 /**
  * 令牌桶算法的实现，使用Redis存储相关记录，该类里可以包含多个令牌桶。
  * 该类仅作为 Java 语言的接口，算法的实现在 Lua 脚本里，由 Redis 执行。
  * <p>
- * TODO: Spring Data Redis 里的 ScriptExecutor 跟 RedisTemplate 绑死了，很难直接基于 Connection 实现
+ * Spring Data Redis 里的 ScriptExecutor 跟 RedisTemplate 绑死了，很难直接基于 Connection 实现
  */
 public final class RedisTokenBucket implements RateLimiter {
 
@@ -66,8 +65,11 @@ public final class RedisTokenBucket implements RateLimiter {
 	 * @throws IllegalArgumentException 如果 size 或 rate 的取值范围错误
 	 */
 	public void addBucket(int size, double rate) {
-		if (size < 0 || rate <= 0) {
-			throw new IllegalArgumentException();
+		if (size < 0) {
+			throw new IllegalArgumentException("size cannot be negative");
+		}
+		if (rate <= 0) {
+			throw new IllegalArgumentException("rate must be greater than 0");
 		}
 
 		bArgs = Arrays.copyOf(bArgs, bArgs.length + 2);
@@ -91,7 +93,9 @@ public final class RedisTokenBucket implements RateLimiter {
 		if (permits > minSize) {
 			return -1;
 		}
-		var keys = Collections.singletonList(namespace + Objects.requireNonNull(id));
+
+		// id 已用 @NonNull，不再做运行期检查
+		var keys = Collections.singletonList(namespace + id);
 
 		var args = new Object[3 + bArgs.length];
 		args[0] = permits;
